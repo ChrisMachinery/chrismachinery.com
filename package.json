@@ -1,0 +1,42 @@
+{
+  "name": "chris-machinery",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "sanity": "sanity dev",
+    "dev:all": "concurrently -n web,studio -c cyan,magenta \"npm run dev\" \"npm run sanity\"",
+    "dev:autostart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-dev-autostart.ps1",
+    "seed:cms": "npx tsx scripts/seed-cms.ts",
+    "export:products": "npx tsx scripts/export-product-import-xlsx.ts"
+  },
+  "dependencies": {
+    "@sanity/client": "^8.2.0",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/presentation": "^2.0.0",
+    "@sanity/preview-url-secret": "^4.1.5",
+    "@sanity/visual-editing": "^6.1.1",
+    "next": "16.3.1",
+    "next-intl": "^4.13.7",
+    "next-sanity": "^13.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sanity": "^6.10.1",
+    "styled-components": "^6.5.3",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

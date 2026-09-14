@@ -1,0 +1,28 @@
+页面,位置,CMS 文档,字段,数量,页面展示框,建议上传尺寸 (px),比例,格式,Sanity 拉取宽度,备注
+全站,顶栏 Logo,pageContent (首页文档),logo,1,40×40 px,512×512,1:1,PNG（透明底）或 SVG,256,全站 Header 共用同一张。
+首页,全屏轮播 Banner,pageContent,heroSlides[].image,至少 4,全宽 × 约 70–80vh,2400×1200（最低 1920×800）,约 2:1 横图,JPG/WebP,2400,Studio 说明为 1920×800；按 80vh 全屏建议更宽更高。主体放中左，右侧可被渐变压暗。
+首页,热门系列卡片,pageContent,seriesCards[].image,5,卡片高 160px（h-40）,1200×800,3:2 横图,JPG/WebP 白底,1200,默认 5 个系列：Pod / Airstream / Square / Container / NY。
+首页,优势卡片配图,pageContent,advantages[].image,建议 6 张（3 列）,宽约 390px（三列）高约 292px；大屏约 4:3,1600×1200（最低 1200×900）,4:3 横图,JPG/WebP,1200,文件名 home-advantage-01-compliance.jpg ～ 06-innovation.jpg。Alt 填图片字段英文。主体居中，圆角裁边。
+Airstream系列页,三种弧度示意小图,sitePage path=/products/airstream,arcGuides[].image,3,约 390×156 px（三列卡片底部）,1000×400（最低 750×300）,5:2 横图,JPG/WebP 或白底 PNG,1000,文件名 airstream-arc-375.jpg / 500 / 700。侧面轮廓展示屋顶弧度。Alt 仅 SEO。
+首页,产品细节图文,pageContent,productDetails[].image,若干,半栏 8:5,1600×1000（也可 1600×1200）,8:5 或 4:3,JPG/WebP,1600,与文字交错的大图。
+首页,局部细节小图轮播,pageContent,detailShots[].image,建议 6–8 张（至少 4）,桌面一行 4 张、约 280×210 px,1200×900（最低 800×600）,4:3 横图,JPG/WebP,1200,Product details 与评价之间。特写：地板、焊缝、窗框、龙头、不锈钢边角。主体居中填满，不要整车远景。单张约 300KB–800KB。Alt 写英文。
+首页,客户评价头像,pageContent,testimonials[].photo,至少 8,64×64 圆形,400×400,1:1,JPG/PNG,200,建议真人头像居中裁方。
+首页,关于我们配图,pageContent,aboutImage,1,半栏、最低高 260px,1600×1067,3:2,JPG,1600,首页底部工厂实拍。
+产品列表,产品卡片主图,product,mainImage,每条产品 1 张（当前种子约 31）,卡片高 176px（h-44）三列,1600×1200,4:3 横图,JPG 白底,1600,列表与详情共用 mainImage。
+产品详情,主图大图,product,mainImage,同上,最低高 360px、约半栏宽,1600×1200,4:3,JPG 白底,1600,与列表同一字段，上传一张即可。
+产品,图库（备用）,product,gallery,可选、建议每产品 2–6 张,当前详情页不单独轮播,1600×1200,4:3,JPG,1600,缺 mainImage 时取 gallery 第一张。上传后暂不单独展示。
+解决方案,场景卡片,solution,sceneImage,每条方案 1 张（种子 5）,卡片高 208px（h-52）两列,1600×900,16:9,JPG,1600,咖啡 / 快餐 / 冰淇淋 / 移动吧 / 夜市。
+解决方案,客户反馈小图轮播,sitePage path=/solutions,customerPhotos[].image,建议 6–8 张（至少 4）,桌面一行 4 张、约 280×210 px,1200×900（最低 800×600）,4:3 横图,JPG/WebP,1200,方案卡片下方。客户现场实拍或交货照。车身居中填满，不要纯聊天竖图截屏。单张约 300KB–800KB。Alt 写英文。
+解决方案,列表图标,solution,icon,可选,前台解决方案页未使用,—,1:1,PNG,—,仅 Studio 预览用，可不做。
+博客列表,封面,blogPost,coverImage,每篇文章 1 张（种子 4）,卡片高 160px（h-40）,1600×900,16:9,JPG,1600,列表与详情共用。
+博客详情,封面大图,blogPost,coverImage,同上,内容栏约 768px 宽、最低高 224px,1600×900,16:9,JPG,1600,同一张 coverImage。
+关于我们,生产流程,sitePage path=/about,flowImages[],6,高 112px（h-28）六列,800×600,4:3,JPG,1600,顺序：Drafting / Cutting / Welding / Polishing / Painting / QC。
+关于我们,认证,sitePage path=/about,certImages[],2,96×144 px（h-24 w-36）,600×400,约 3:2,PNG 透明底,1600,ISO、CE 各一张。
+关于我们,工厂图库,sitePage path=/about,gallery[],最多 8 张,半栏 16:9,1800×1000（最低 1600×900）,16:9 横图,JPG,1600,About 页 Factory photos。车间实拍，主体居中。Presentation 可用增加/删除。
+关于我们,客户 Logo,sitePage path=/about,logos[],6,高 80px（h-20）六列,800×400（或方形 400×400）,横图或方图,PNG 透明底,1600,灰底卡片上居中。
+联系我们,地图截图,sitePage path=/contact,mapImage,1,半栏、最低高 224px,1600×900,16:9,JPG,1600,Google Maps 工厂位置截图。
+联系我们,微信二维码,sitePage path=/contact,qrImage,1,160×160 px（h-40 w-40）,800×800,1:1,PNG,1600,二维码四周留白，避免裁切。
+定制页,客户 Logo 上传,无（用户本地上传）,—,—,询盘附件、不展示在站内,—,不限,JPG/PNG/WebP ≤2MB,—,客户在定制流程上传，不进 CMS。
+SEO / 分享,Open Graph,静态文件 public/og.jpg,—,1,社交卡片 1200×630,1200×630,1.91:1,JPG,—,代码 DEFAULT_OG 指向 /og.jpg。
+浏览器,Favicon,静态文件 public/favicon.ico,—,1,16/32 px,含 32 与 256 的 ICO,1:1,ICO,—,layout icons.icon = /favicon.ico。
+系列页等,页头主图（未展示）,sitePage,heroImage,可选,—,—,—,—,1600,CMS 有字段；系列/博客/定制页当前未渲染，可先不拍。

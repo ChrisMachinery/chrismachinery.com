@@ -1,0 +1,284 @@
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
+import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
+import { HeroBanner } from "@/components/home/HeroBanner";
+import { AdvantageIcon } from "@/components/home/AdvantageIcon";
+import { DetailShotCarousel } from "@/components/home/DetailShotCarousel";
+import { ProductDetailRows } from "@/components/home/ProductDetailRows";
+import { Hreflang } from "@/components/seo/JsonLd";
+import { FlagAvatar } from "@/components/home/FlagAvatar";
+import { getPageContent } from "@/lib/sanity/fetch";
+import { urlFor } from "@/lib/sanity/client";
+import { advantageImageAlt, resolveAdvantageIcon } from "@/lib/advantageIcons";
+import { resolveTestimonialPlace } from "@/lib/testimonialFlags";
+import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
+import type { Metadata } from "next";
+
+export const revalidate = 10;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("homeTitle"), description: t("homeDescription") };
+}
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations();
+  const page = await getPageContent();
+  const id = page?._id || "pageContent";
+  const s = (path: string, text: string) => stegaText(id, "pageContent", path, text);
+
+  const hero = page?.homeHero;
+  const about = page?.aboutUs;
+
+  const defaultHeroSlides = [
+    {
+      title: t("home.slogan"),
+      subtitle: t("home.sub"),
+      imageLabel: "首页Hero Banner - 高清白底餐车全景图",
+      primaryText: t("cta.quote"),
+      primaryHref: "/contact",
+      secondaryText: t("cta.products"),
+      secondaryHref: "/products/pod",
+      src: page?.heroBackgroundUrl,
+    },
+    {
+      title: "Pod and Airstream series, wrap-ready from the factory.",
+      subtitle: "Compact street setups with stainless interiors and export packing included.",
+      imageLabel: "首页Banner 2 - Pod / Airstream 餐车",
+      primaryText: t("cta.quote"),
+      primaryHref: "/contact",
+      secondaryText: t("cta.products"),
+      secondaryHref: "/products/airstream",
+    },
+    {
+      title: "Galvanized chassis built for daily service.",
+      subtitle: "CE-ready frames, 1-year warranty, and QC photos before shipment.",
+      imageLabel: "首页Banner 3 - 热镀锌底盘",
+      primaryText: t("cta.quote"),
+      primaryHref: "/contact",
+      secondaryText: t("cta.products"),
+      secondaryHref: "/products/square",
+    },
+    {
+      title: "Custom layouts. Drawings and quotes within 24 hours.",
+      subtitle: "Tell us the kitchen plan — we spec length, windows, and equipment layout.",
+      imageLabel: "首页Banner 4 - 定制图纸",
+      primaryText: t("cta.quote"),
+      primaryHref: "/contact",
+      secondaryText: t("cta.customize"),
+      secondaryHref: "/customize",
+    },
+  ];
+
+  const cmsSlides = page?.heroSlides?.length ? page.heroSlides : [];
+  const heroSlides = Array.from({ length: Math.max(4, cmsSlides.length) }, (_, i) => {
+    const cms = cmsSlides[i];
+    const fallback = defaultHeroSlides[i] ?? defaultHeroSlides[0];
+    const useLegacy = i === 0 && !cms;
+    return {
+      title: s(
+        `heroSlides[${i}].title`,
+        cms?.title || (useLegacy ? hero?.headline : undefined) || fallback.title,
+      ),
+      subtitle: s(
+        `heroSlides[${i}].subtitle`,
+        cms?.subtitle || (useLegacy ? hero?.subheadline : undefined) || fallback.subtitle,
+      ),
+      imageLabel: s(`heroSlides[${i}].image`, fallback.imageLabel),
+      src: cms?.imageUrl || (i === 0 ? page?.heroBackgroundUrl : undefined) || fallback.src,
+      primaryText: s(
+        `heroSlides[${i}].primaryButtonText`,
+        cms?.primaryButtonText || (useLegacy ? hero?.ctaQuote : undefined) || fallback.primaryText,
+      ),
+      primaryHref:
+        cms?.primaryButtonLink ||
+        (useLegacy ? page?.heroButtonLink : undefined) ||
+        fallback.primaryHref,
+      secondaryText: s(
+        `heroSlides[${i}].secondaryButtonText`,
+        cms?.secondaryButtonText || (useLegacy ? hero?.ctaProducts : undefined) || fallback.secondaryText,
+      ),
+      secondaryHref: cms?.secondaryButtonLink || fallback.secondaryHref,
+    };
+  });
+
+  const defaultQuotes = [
+    { name: "Amelia K.", country: "UK", flag: "UK", text: "We ordered a 4000 Airstream stainless. Export pack was complete." },
+    { name: "Luca B.", country: "CH", flag: "CH", text: "Square 4500 with fryer line arrived crate-ready. Docs were complete." },
+    { name: "Sofia R.", country: "PT", flag: "PT", text: "Pod 3000 for a coffee concept — wrap-ready paint and solid welds." },
+    { name: "Erik N.", country: "NO", flag: "NO", text: "Factory visit confirmed the galvanizing. Would buy again." },
+    { name: "Anna M.", country: "AT", flag: "AT", text: "Chassis quality matched the drawings. Quote came back the same day." },
+    { name: "Sophie L.", country: "FR", flag: "FR", text: "Custom window layout and logo wrap were done in-house. Clean finish." },
+  ];
+
+  const cmsQuotes = (page?.testimonials ?? []).filter(
+    (item) => item?.name?.trim() || item?.text?.trim(),
+  );
+  const sourceQuotes = Array.from({ length: 6 }, (_, i) => cmsQuotes[i] ?? defaultQuotes[i]);
+  const quotes = sourceQuotes.map((item, i) => {
+    const place = resolveTestimonialPlace(item.country, item.flag);
+    return {
+      name: s(`testimonials[${i}].name`, item.name || ""),
+      country: place.country,
+      iso: place.iso,
+      text: s(`testimonials[${i}].text`, item.text || ""),
+    };
+  });
+
+  const advantageKeys = ["w1", "w2", "w3", "w4"] as const;
+  const advantageCount = Math.max(4, page?.advantages?.length ?? 0);
+  const advantages = Array.from({ length: advantageCount }, (_, i) => {
+    const key = advantageKeys[i] ?? "w1";
+    const cms = page?.advantages?.[i];
+    return {
+      icon: resolveAdvantageIcon(cms?.icon, i),
+      title: s(`advantages[${i}].title`, cms?.title || t(`advantages.${key}`)),
+      body: s(`advantages[${i}].body`, cms?.body || t(`advantages.${key}d`)),
+      imageUrl: cms?.image ? urlFor(cms.image as never)?.width(1200).auto("format").url() : undefined,
+      imageLabel: s(`advantages[${i}].image`, `优势配图 ${i + 1}`),
+      imageAlt: advantageImageAlt(cms?.image, i),
+    };
+  });
+
+  const defaultDetails = [
+    {
+      title: "Galvanized chassis and food-grade interiors",
+      body: "Hot-dip galvanized frames for coastal and winter roads. Stainless prep surfaces and wrap-ready bodies specified for daily service.",
+      imageLabel: "产品细节图 1 - 底盘与内装",
+    },
+    {
+      title: "Drawings, QC, and export packing",
+      body: "Layout drawings before production. In-process and final inspection, then crate-ready packing with photos before shipment.",
+      imageLabel: "产品细节图 2 - 图纸与质检",
+    },
+  ];
+  const cmsDetails = page?.productDetails ?? [];
+  const productDetails = (cmsDetails.length ? cmsDetails : defaultDetails).map((item, i) => {
+    const fallback = defaultDetails[i] ?? defaultDetails[0];
+    const cms = cmsDetails[i];
+    return {
+      title: s(`productDetails[${i}].title`, cms?.title || fallback.title),
+      body: s(`productDetails[${i}].body`, cms?.body || fallback.body),
+      imageUrl: cms?.image ? urlFor(cms.image as never)?.width(1600).auto("format").url() : undefined,
+      imageLabel: s(`productDetails[${i}].image`, fallback.imageLabel),
+    };
+  });
+  const detailShotCount = Math.max(6, page?.detailShots?.length ?? 0);
+  const detailShots = Array.from({ length: detailShotCount }, (_, i) => {
+    const cms = page?.detailShots?.[i];
+    return {
+      imageUrl: cms?.imageUrl,
+      caption: s(`detailShots[${i}].caption`, cms?.caption || ""),
+      imageLabel: s(`detailShots[${i}].image`, `局部细节图 ${i + 1} · 4:3 · 1200×900`),
+      alt: cms?.imageAlt,
+    };
+  });
+
+  return (
+    <div>
+      <Hreflang path="/" />
+      <HeroBanner documentId={id} slides={heroSlides} />
+
+      <section className="bg-white py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <h2 className="type-section">{s("advantagesTitle", page?.advantagesTitle || t("home.advantages"))}</h2>
+          <div className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            {advantages.map((item, i) => (
+              <article key={i} className="flex flex-col">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand text-white"
+                    {...cmsEdit(id, "pageContent", `advantages[${i}].icon`)}
+                  >
+                    <AdvantageIcon name={item.icon} />
+                  </div>
+                  <h3 className="type-sub">{item.title}</h3>
+                </div>
+                <p className="type-body mt-3">{item.body}</p>
+                <ImgPlaceholder
+                  documentId={id}
+                  documentType="pageContent"
+                  path={`advantages[${i}].image`}
+                  label={item.imageLabel}
+                  alt={item.imageAlt}
+                  className="mt-4 aspect-[4/3] w-full rounded-2xl"
+                  src={item.imageUrl}
+                />
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <ProductDetailRows
+        documentId={id}
+        heading={s("productDetailsTitle", page?.productDetailsTitle || t("home.details"))}
+        items={productDetails}
+      />
+
+      <DetailShotCarousel
+        documentId={id}
+        heading={s("detailShotsTitle", page?.detailShotsTitle || t("home.closeups"))}
+        slides={detailShots}
+      />
+
+      <section className="bg-white py-16 md:py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <h2 className="type-section">{s("testimonialsTitle", page?.testimonialsTitle || t("home.testimonials"))}</h2>
+          <div className="mt-8 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {quotes.map((q, i) => (
+              <blockquote
+                key={i}
+                className="card-hover flex h-full flex-col rounded-lg border border-black/5 bg-white p-5"
+              >
+                <FlagAvatar
+                  iso={q.iso}
+                  label={q.country}
+                  documentId={id}
+                  path={`testimonials[${i}].country`}
+                />
+                <p className="type-body flex-1 whitespace-pre-line">“{q.text}”</p>
+                <footer className="mt-3 text-sm font-semibold text-brand" {...cmsEdit(id, "pageContent", `testimonials[${i}].country`)}>
+                  {q.name} · {q.country}
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-neutral-200 py-16 md:py-20">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 lg:grid-cols-2">
+          <div>
+            <h2 className="type-section">
+              {s("aboutTitle", about?.title || t("home.aboutTitle"))}
+            </h2>
+            <p className="type-body mt-4 max-w-xl">
+              {s("aboutContent", about?.body || t("home.aboutBody"))}
+            </p>
+            <PreviewNavLink
+              href="/about"
+              className="mt-6 min-touch inline-flex items-center rounded bg-accent px-5 font-heading text-brand"
+            >
+              {plainText(page?.aboutButtonText || t("cta.learn"))}
+            </PreviewNavLink>
+          </div>
+          <ImgPlaceholder
+            documentId={id}
+            documentType="pageContent"
+            path="aboutImage"
+            label="工厂车间实拍 - 焊接工位"
+            className="min-h-[260px] rounded-lg"
+            src={page?.aboutImageUrl}
+          />
+        </div>
+      </section>
+    </div>
+  );
+}

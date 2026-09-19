@@ -117,5 +117,16 @@ export const presentationResolve = {
         locations: [{ title: "Solutions cards", href: "/solutions" }],
       }),
     }),
+    stockBoard: defineLocations({
+      resolve: () => ({
+        locations: [{ title: "In Stock cards", href: "/products/in-stock" }],
+      }),
+    }),
+    stockUnit: defineLocations({
+      select: { title: "title" },
+      resolve: (doc) => ({
+        locations: [{ title: doc?.title || "In-stock unit", href: "/products/in-stock" }],
+      }),
+    }),
   },
 };

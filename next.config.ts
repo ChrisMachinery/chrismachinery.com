@@ -4,7 +4,6 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -14,8 +13,10 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "http://localhost:3333",
     "http://127.0.0.1:3333",
+    "http://[::1]:3333",
     "localhost:3333",
     "127.0.0.1:3333",
+    "[::1]:3333",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
@@ -47,7 +48,7 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "frame-ancestors 'self' http://localhost:3333 http://127.0.0.1:3333 https://*.sanity.studio https://*.sanity.io",
+              "frame-ancestors 'self' http://localhost:3333 http://127.0.0.1:3333 http://[::1]:3333 https://*.sanity.studio https://*.sanity.io",
           },
         ],
       },

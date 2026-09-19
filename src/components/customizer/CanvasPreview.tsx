@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { localePrefix } from "@/lib/inquirySource";
 import { products as localProducts, productSizeKey, productSizeLabel, type Product } from "@/data/products";
 import { colorPresets, equipment as localEquipment, trailerExtras as localExtras } from "@/data/catalog";
 import {
@@ -46,6 +47,7 @@ export function Customizer({
   seedSolution?: { slug: string; name: string; equipmentIds: string[] };
 }) {
   const t = useTranslations("customizer");
+  const locale = useLocale();
   const router = useRouter();
   const [draft, setDraft] = useState<CustomizerDraft>(emptyDraft);
   const [ready, setReady] = useState(false);
@@ -84,15 +86,18 @@ export function Customizer({
           (seedShape && seriesShapes.includes(seedShape) ? seedShape : "") ||
           productShapeList[0] ||
           "";
+        const sameModel = next.slug === product.slug;
         next = {
-          ...next,
+          ...(sameModel ? next : emptyDraft),
           series: product.series,
           sizeKey: productSizeKey(product),
           sizeLabel: productSizeLabel(product),
           shape,
           material,
-          stainlessFinish: material === "stainless" ? next.stainlessFinish : "",
+          stainlessFinish: material === "stainless" ? (sameModel ? next.stainlessFinish : "") : "",
           slug: product.slug,
+          extras: sameModel ? next.extras : {},
+          equipment: sameModel ? next.equipment : [],
         };
       }
     }
@@ -261,6 +266,7 @@ export function Customizer({
             ? { material: "Paint" }
             : {}),
         ...(draft.solutionSlug ? { solution: draft.solutionSlug } : {}),
+        from: `${localePrefix(locale)}/customize`,
       }).toString()}`,
     );
   }

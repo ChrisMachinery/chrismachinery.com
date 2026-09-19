@@ -2,14 +2,15 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { isInquiryFormPath, localePrefix } from "@/lib/inquirySource";
 import type { EquipmentItem, TrailerExtra } from "@/data/catalog";
 import { equipment as localKitchen, trailerExtras as localExtras } from "@/data/catalog";
 import type { Product } from "@/data/products";
 import { getProduct } from "@/data/products";
 import { ShapeOptionChips } from "@/components/products/ShapeOptionChips";
 import { productMaterials, productShapes } from "@/lib/productFamily";
-import { DRAFT_KEY, formatInquiryMessage, isCustomizerDraft } from "@/lib/customizer";
+import { clearCustomizerDraft, draftForProduct, formatInquiryMessage } from "@/lib/customizer";
 import { buildQuoteSnapshot } from "@/lib/quoteTable";
 import { draftFromProduct } from "@/lib/solutionQuote";
 import { normalizeMaterial } from "@/lib/customizer";
@@ -21,6 +22,7 @@ export function ContactForm({
   extras = localExtras,
   kitchen = localKitchen,
   solutionQuote,
+  stockInquiry,
 }: {
   catalogProduct?: Product;
   initialShape?: string;
@@ -28,9 +30,18 @@ export function ContactForm({
   extras?: TrailerExtra[];
   kitchen?: EquipmentItem[];
   solutionQuote?: { slug: string; name: string; equipmentIds: string[] };
+  stockInquiry?: {
+    model: string;
+    quantity: string;
+    color: string;
+    dimension: string;
+    include: string;
+  };
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const params = useSearchParams();
+  const [sourceUrl, setSourceUrl] = useState("");
   const [status, setStatus] = useState<"idle" | "ok" | "error">("idle");
   const [inquiryId, setInquiryId] = useState("");
   const [sending, setSending] = useState(false);
@@ -46,10 +57,11 @@ export function ContactForm({
   const prefillProduct = useMemo(() => {
     const product = params.get("product");
     if (catalogProduct) return catalogProduct.name;
+    if (stockInquiry?.model) return stockInquiry.model;
     if (product) return getProduct(product)?.name ?? product;
     if (solutionQuote) return solutionQuote.name;
     return "";
-  }, [params, catalogProduct, solutionQuote]);
+  }, [params, catalogProduct, solutionQuote, stockInquiry]);
 
   const [message, setMessage] = useState("");
   const [product, setProduct] = useState(prefillProduct);
@@ -61,29 +73,31 @@ export function ContactForm({
 
   useEffect(() => {
     const productParam = params.get("product") ?? catalogProduct?.slug ?? "";
-    const raw = sessionStorage.getItem(DRAFT_KEY) ?? localStorage.getItem(DRAFT_KEY);
-    let draft: Record<string, unknown> | undefined;
-    if (raw) {
-      try {
-        draft = JSON.parse(raw) as Record<string, unknown>;
-      } catch {
-        draft = undefined;
-      }
+    if (stockInquiry?.model) {
+      setProduct(stockInquiry.model);
+      setProductSlug(productParam || catalogProduct?.slug || "");
+      setMessage(
+        t("stock.inquiryMessage", {
+          model: stockInquiry.model,
+          qty: stockInquiry.quantity || "1",
+          color: stockInquiry.color || "—",
+          dim: stockInquiry.dimension || "—",
+          include: stockInquiry.include || "—",
+        }),
+      );
+      return;
     }
 
-    const inquiryMessage = typeof draft?.inquiryMessage === "string" ? draft.inquiryMessage : "";
-    const draftSlug = typeof draft?.slug === "string" ? draft.slug : "";
-    const draftSolution = typeof draft?.solutionSlug === "string" ? draft.solutionSlug : "";
-    const customizerDraft = draft && isCustomizerDraft(draft) ? draft : undefined;
-    const matchesUrl =
-      Boolean(customizerDraft) &&
-      (!productParam || draftSlug === productParam) &&
-      (!solutionQuote || draftSolution === solutionQuote.slug || inquiryMessage);
+    const customizerDraft = draftForProduct(productParam);
+    const inquiryMessage = customizerDraft?.inquiryMessage || "";
+    const draftSlug = customizerDraft?.slug || "";
+    const draftSolution = customizerDraft?.solutionSlug || "";
+    const matchesSolution = !solutionQuote || draftSolution === solutionQuote.slug || Boolean(inquiryMessage);
 
-    if (inquiryMessage && matchesUrl) {
-      setMessage((prev) => prev || inquiryMessage);
+    if (customizerDraft && inquiryMessage && matchesSolution) {
+      setMessage(inquiryMessage);
       if (draftSlug) setProductSlug(draftSlug);
-      if (!prefillProduct && customizerDraft) {
+      if (!prefillProduct) {
         setProduct(
           [customizerDraft.series, customizerDraft.shape, customizerDraft.sizeLabel].filter(Boolean).join(" "),
         );
@@ -104,35 +118,83 @@ export function ContactForm({
       return;
     }
 
-    if (customizerDraft && !productParam && !solutionQuote) {
-      setMessage((prev) => prev || formatInquiryMessage(customizerDraft, extras, kitchen));
+    if (customizerDraft) {
+      setMessage(formatInquiryMessage(customizerDraft, extras, kitchen));
       if (draftSlug) setProductSlug(draftSlug);
+      return;
     }
-  }, [catalogProduct, extras, initialShape, kitchen, params, prefillProduct, solutionQuote]);
+
+    setProductSlug(productParam);
+    if (!solutionQuote) setMessage("");
+  }, [catalogProduct, extras, initialShape, kitchen, params, prefillProduct, solutionQuote, stockInquiry, t]);
+
+  useEffect(() => {
+    const origin = window.location.origin;
+    const from = params.get("from");
+    if (from) {
+      try {
+        const url = from.startsWith("http") ? new URL(from) : new URL(from, origin);
+        if (!isInquiryFormPath(url.pathname)) {
+          setSourceUrl(`${origin}${url.pathname}${url.hash}`);
+          return;
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+    try {
+      if (document.referrer) {
+        const url = new URL(document.referrer);
+        if (url.origin === origin && !isInquiryFormPath(url.pathname)) {
+          setSourceUrl(`${url.origin}${url.pathname}${url.hash}`);
+          return;
+        }
+      }
+    } catch {
+      /* fall through */
+    }
+    const prefix = localePrefix(locale);
+    if (params.get("stock")) {
+      const stockId = params.get("stockId");
+      setSourceUrl(`${origin}${prefix}/products/in-stock${stockId ? `#stock-${stockId}` : ""}`);
+      return;
+    }
+    if (params.get("solution") || solutionQuote?.slug) {
+      setSourceUrl(`${origin}${prefix}/solutions`);
+      return;
+    }
+    if (catalogProduct) {
+      setSourceUrl(`${origin}${prefix}/products/${catalogProduct.series}/${catalogProduct.slug}`);
+      return;
+    }
+    setSourceUrl("");
+  }, [catalogProduct, locale, params, solutionQuote]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    const customRaw = sessionStorage.getItem(DRAFT_KEY) ?? localStorage.getItem(DRAFT_KEY);
-    if (customRaw) {
-      try {
-        const parsed = JSON.parse(customRaw) as Record<string, unknown>;
-        if (isCustomizerDraft(parsed)) {
-          data.set(
-            "customConfig",
-            JSON.stringify({
-              ...parsed,
-              quoteSnapshot: buildQuoteSnapshot(parsed, extras, kitchen),
-              inquiryMessage: formatInquiryMessage(parsed, extras, kitchen),
-            }),
-          );
-        } else {
-          data.set("customConfig", JSON.stringify(parsed));
-        }
-      } catch {
-        data.set("customConfig", customRaw);
-      }
+    const customerMessage = String(data.get("message") ?? "");
+    const productKey = String(data.get("productSlug") ?? productSlug).trim();
+    const parsed = draftForProduct(productKey);
+    const selected =
+      parsed ||
+      draftFromProduct(catalogProduct || (productKey ? getProduct(productKey) : undefined), {
+        shape: String(data.get("shape") || shape),
+        material: normalizeMaterial(String(data.get("material") || material)) || undefined,
+        equipment: solutionQuote?.equipmentIds,
+        solutionSlug: solutionQuote?.slug,
+        solutionName: solutionQuote?.name,
+      });
+    if (selected.series || selected.slug || selected.sizeLabel) {
+      data.set(
+        "customConfig",
+        JSON.stringify({
+          ...selected,
+          quoteSnapshot: buildQuoteSnapshot(selected, extras, kitchen),
+          customerMessage,
+        }),
+      );
     }
 
     setSending(true);
@@ -143,17 +205,10 @@ export function ContactForm({
         setStatus("error");
         return;
       }
-      const json = (await res.json()) as { inquiryId: string; pdfBase64?: string; filename?: string };
+      const json = (await res.json()) as { inquiryId: string };
       setInquiryId(json.inquiryId);
       setStatus("ok");
-      if (json.pdfBase64 && json.filename) {
-        const bytes = Uint8Array.from(atob(json.pdfBase64), (c) => c.charCodeAt(0));
-        const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = json.filename;
-        a.click();
-      }
+      clearCustomizerDraft();
       form.reset();
     } catch {
       setStatus("error");
@@ -173,8 +228,8 @@ export function ContactForm({
   return (
     <form onSubmit={onSubmit} className="grid gap-4 text-sm">
       <label className="grid gap-1">
-        {t("contact.name")}
-        <input name="name" className="min-h-11 rounded border border-black/15 px-3" />
+        {t("contact.name")} *
+        <input required name="name" className="min-h-11 rounded border border-black/15 px-3" />
       </label>
       <label className="grid gap-1">
         {t("contact.email")} *
@@ -211,12 +266,19 @@ export function ContactForm({
             shapes={materials}
             value={material}
             onChange={materials.length > 1 ? setMaterial : undefined}
-            label="Material"
+            label={t("contact.material")}
           />
           <input type="hidden" name="material" value={material} />
         </div>
       ) : null}
       <input type="hidden" name="productSlug" value={productSlug} />
+      <input type="hidden" name="productSeries" value={catalogProduct?.series ?? ""} />
+      <input type="hidden" name="sourceUrl" value={sourceUrl} />
+      <input type="hidden" name="from" value={params.get("from") ?? ""} />
+      <input type="hidden" name="stock" value={params.get("stock") === "1" ? "1" : ""} />
+      <input type="hidden" name="stockId" value={params.get("stockId") ?? ""} />
+      <input type="hidden" name="solution" value={params.get("solution") ?? solutionQuote?.slug ?? ""} />
+      <input type="hidden" name="locale" value={locale} />
       <label className="grid gap-1">
         {t("contact.country")} *
         <input required name="country" className="min-h-11 rounded border border-black/15 px-3" />
@@ -244,7 +306,7 @@ export function ContactForm({
       <button type="submit" disabled={sending} className="min-touch rounded bg-accent font-heading text-sm text-brand disabled:opacity-60">
         {t("cta.send")}
       </button>
-      {status === "error" ? <p className="text-sm text-red-700">Please check required fields and try again.</p> : null}
+      {status === "error" ? <p className="text-sm text-red-700">{t("contact.error")}</p> : null}
     </form>
   );
 }

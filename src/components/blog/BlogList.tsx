@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Post } from "@/data/posts";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
@@ -9,7 +10,14 @@ import { stegaText } from "@/lib/sanity/visual";
 const cats = ["All", "Buying Guide", "Industry News", "Case Study"] as const;
 
 export function BlogList({ posts }: { posts: Post[] }) {
+  const t = useTranslations("blog");
   const [cat, setCat] = useState<(typeof cats)[number]>("All");
+  const labels: Record<(typeof cats)[number], string> = {
+    All: t("all"),
+    "Buying Guide": t("buyingGuide"),
+    "Industry News": t("industryNews"),
+    "Case Study": t("caseStudy"),
+  };
   const list = useMemo(
     () =>
       posts
@@ -28,7 +36,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
             className={`min-touch rounded px-4 text-sm font-semibold ${cat === item ? "bg-accent" : "border border-black/10"}`}
             onClick={() => setCat(item)}
           >
-            {item}
+            {labels[item]}
           </button>
         ))}
       </div>
@@ -44,7 +52,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
               src={post.coverUrl}
             />
             <div className="p-4">
-              <p className="text-xs">{post.date} · {post.category}</p>
+              <p className="text-xs">{post.date} · {labels[post.category as keyof typeof labels] || post.category}</p>
               <h2 className="type-card mt-2">{stegaText(post._id, "blogPost", "title", post.title)}</h2>
               <p className="type-body mt-2">{stegaText(post._id, "blogPost", "excerpt", post.excerpt)}</p>
             </div>

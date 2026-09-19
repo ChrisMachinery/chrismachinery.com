@@ -6,6 +6,8 @@ import { product } from "./product";
 import { sitePage } from "./sitePage";
 import { solution } from "./solution";
 import { solutionsBoard } from "./solutionsBoard";
+import { stockBoard } from "./stockBoard";
+import { stockUnit } from "./stockUnit";
 
 export const schemaTypes = [
   product,
@@ -14,6 +16,8 @@ export const schemaTypes = [
   sitePage,
   solution,
   solutionsBoard,
+  stockUnit,
+  stockBoard,
   inquiry,
   customizeCatalog,
 ];

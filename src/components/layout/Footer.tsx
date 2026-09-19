@@ -1,8 +1,9 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { SocialLink } from "@/components/layout/SocialLink";
 import { getPageContent } from "@/lib/sanity/fetch";
 import { resolveFooterSocialLinks } from "@/lib/socialLinks";
+import { uiText } from "@/lib/i18nCopy";
 import { plainText, stegaText } from "@/lib/sanity/visual";
 import type { ComponentProps } from "react";
 
@@ -21,6 +22,7 @@ function splitPhones(value?: string) {
 export async function Footer() {
   const t = await getTranslations("footer");
   const n = await getTranslations("nav");
+  const locale = await getLocale();
   const page = await getPageContent();
   const id = page?._id;
   const s = (path: string, text: string) => stegaText(id, "pageContent", path, text);
@@ -47,7 +49,7 @@ export async function Footer() {
           {s("brandName", page?.brandName || "Chris Machinery")}
         </p>
         <div className="space-y-2 md:col-start-1 md:row-start-2">
-          <p className={muted}>{s("footerBlurb", page?.footerBlurb || footer?.blurb || t("rights"))}</p>
+          <p className={muted}>{s("footerBlurb", uiText(locale, page?.footerBlurb || footer?.blurb, t("rights")))}</p>
           <p className={`${muted} whitespace-pre-line`}>{s("footerAddress", footer?.address || "Factory address")}</p>
           {email ? (
             <p className={muted}>

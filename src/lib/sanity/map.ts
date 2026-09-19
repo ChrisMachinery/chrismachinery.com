@@ -1,4 +1,5 @@
 import { vercelStegaClean } from "@vercel/stega";
+import { externalVideoHref } from "@/lib/factoryVideoEmbed";
 import type { Product, Axle, SeriesKey, StockStatus } from "@/data/products";
 import { productOverallLength, productOverallWidth } from "@/data/products";
 import { withFactorySpecs } from "@/data/productSpecs";
@@ -7,6 +8,7 @@ import { solutions as localSolutions } from "@/data/solutions";
 import { equipmentLabels, resolveEquipmentIds } from "@/lib/solutionQuote";
 import { cmsImageAlt } from "@/lib/advantageIcons";
 import { imageUrl } from "./client";
+import { cleanProductHref } from "@/lib/productUrl";
 
 export type SanityProductDoc = {
   _id: string;
@@ -284,7 +286,7 @@ export function mapSanityProduct(doc: SanityProductDoc): Product {
     customOptions: cleanList(doc.customOptions),
     viewProductText: doc.viewProductText ? vercelStegaClean(doc.viewProductText) : undefined,
     viewProductLink: doc.viewProductLink
-      ? vercelStegaClean(doc.viewProductLink).trim() || undefined
+      ? cleanProductHref(vercelStegaClean(doc.viewProductLink), doc.series, doc.slug) || undefined
       : undefined,
     quoteText: doc.quoteText ? vercelStegaClean(doc.quoteText) : undefined,
     quoteLink: doc.quoteLink ? vercelStegaClean(doc.quoteLink) : undefined,
@@ -397,11 +399,41 @@ export type SitePageDoc = {
   faqTitle?: string;
   faq?: { question?: string; answer?: string }[];
   included?: string[];
+  customizable?: string[];
   arcGuideTitle?: string;
   arcGuideNote?: string;
   arcGuides?: { _key?: string; label?: string; body?: string; image?: unknown }[];
   customerPhotosTitle?: string;
   customerPhotos?: { _key?: string; image?: unknown; imageAlt?: string }[];
+  podGuide?: {
+    introTitle?: string;
+    intro?: string;
+    shapeBody?: string;
+    introImage?: unknown;
+    sizeTitle?: string;
+    sizeNote?: string;
+    sizeRows?: {
+      scene?: string;
+      length?: string;
+      width?: string;
+      axle?: string;
+      shape?: string;
+      material?: string;
+      note?: string;
+      exampleLabel?: string;
+      exampleHref?: string;
+      image?: unknown;
+    }[];
+    kitchenTitle?: string;
+    kitchenBody?: string;
+    kitchenImage?: unknown;
+    kitchenLinkLabel?: string;
+    kitchenLinkHref?: string;
+    quoteLabel?: string;
+    quoteHref?: string;
+    faqTitle?: string;
+    faq?: { question?: string; answer?: string }[];
+  };
 };
 
 export function mapSitePage(doc: SitePageDoc) {
@@ -437,6 +469,7 @@ export function mapSitePage(doc: SitePageDoc) {
     faqTitle: doc.faqTitle,
     faq: doc.faq,
     included: (doc.included ?? []).map((item) => vercelStegaClean(item)).filter(Boolean),
+    customizable: (doc.customizable ?? []).map((item) => vercelStegaClean(item)).filter(Boolean),
     arcGuideTitle: doc.arcGuideTitle ? vercelStegaClean(doc.arcGuideTitle) : undefined,
     arcGuideNote: doc.arcGuideNote ? vercelStegaClean(doc.arcGuideNote) : undefined,
     customerPhotosTitle: doc.customerPhotosTitle,
@@ -454,6 +487,42 @@ export function mapSitePage(doc: SitePageDoc) {
           ? vercelStegaClean(String((item.image as { alt?: string }).alt || ""))
           : undefined,
     })),
+    podGuide: doc.podGuide
+      ? {
+          introTitle: doc.podGuide.introTitle,
+          intro: doc.podGuide.intro,
+          shapeBody: doc.podGuide.shapeBody,
+          introImageUrl: img(doc.podGuide.introImage),
+          introImageAlt: cmsImageAlt(doc.podGuide.introImage),
+          sizeTitle: doc.podGuide.sizeTitle,
+          sizeNote: doc.podGuide.sizeNote,
+          sizeRows: (doc.podGuide.sizeRows ?? []).map((row) => ({
+            scene: row.scene,
+            length: row.length,
+            width: row.width,
+            axle: row.axle,
+            shape: row.shape,
+            material: row.material,
+            note: row.note,
+            exampleLabel: row.exampleLabel,
+            exampleHref: row.exampleHref ? vercelStegaClean(row.exampleHref) : "",
+            imageUrl: imageUrl(row.image, 1200),
+            imageAlt: cmsImageAlt(row.image),
+          })),
+          kitchenTitle: doc.podGuide.kitchenTitle,
+          kitchenBody: doc.podGuide.kitchenBody,
+          kitchenImageUrl: img(doc.podGuide.kitchenImage),
+          kitchenImageAlt: cmsImageAlt(doc.podGuide.kitchenImage),
+          kitchenLinkLabel: doc.podGuide.kitchenLinkLabel,
+          kitchenLinkHref: doc.podGuide.kitchenLinkHref
+            ? vercelStegaClean(doc.podGuide.kitchenLinkHref)
+            : "",
+          quoteLabel: doc.podGuide.quoteLabel,
+          quoteHref: doc.podGuide.quoteHref ? vercelStegaClean(doc.podGuide.quoteHref) : "",
+          faqTitle: doc.podGuide.faqTitle,
+          faq: doc.podGuide.faq,
+        }
+      : undefined,
   };
 }
 
@@ -552,5 +621,51 @@ export function mapSanitySolution(doc: SanitySolutionDoc) {
     equipment: equipmentLabels(equipmentIds),
     advice: doc.advice ?? doc.description ?? "",
     imageUrl: imageUrl(doc.sceneImage) || imageUrl(doc.icon),
+  };
+}
+
+export type SanityStockUnitDoc = {
+  _id?: string;
+  title?: string;
+  quantity?: number;
+  colorMaterial?: string;
+  bodyDimension?: string;
+  include?: string;
+  summary?: string;
+  videoUrl?: string;
+  photos?: unknown[];
+  product?: { _id?: string; title?: string; slug?: string; series?: string };
+};
+
+export type StockCard = {
+  _id: string;
+  model: string;
+  quantity: number;
+  colorMaterial: string;
+  bodyDimension: string;
+  include: string;
+  videoUrl?: string;
+  photos: { url?: string; alt?: string }[];
+  productSlug?: string;
+  productHref?: string;
+};
+
+export function mapStockUnit(doc: SanityStockUnitDoc): StockCard {
+  const series = vercelStegaClean(doc.product?.series || "");
+  const slug = vercelStegaClean(doc.product?.slug || "");
+  return {
+    _id: (doc._id || "").replace(/^drafts\./, ""),
+    model: vercelStegaClean(doc.title || doc.product?.title || ""),
+    quantity: Number(doc.quantity) > 0 ? Math.floor(Number(doc.quantity)) : 1,
+    colorMaterial: vercelStegaClean(doc.colorMaterial || ""),
+    bodyDimension: vercelStegaClean(doc.bodyDimension || ""),
+    include: vercelStegaClean(doc.include || doc.summary || ""),
+    videoUrl: externalVideoHref(vercelStegaClean(doc.videoUrl || "")) || undefined,
+    photos: (doc.photos ?? []).map((photo) => ({
+      url: imageUrl(photo, 1600) || undefined,
+      alt: cmsImageAlt(photo),
+    })),
+    productSlug: slug || undefined,
+    productHref: slug && series ? `/products/${series}/${slug}` : undefined,
   };
 }

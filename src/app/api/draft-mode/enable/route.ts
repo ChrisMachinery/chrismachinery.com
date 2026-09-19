@@ -4,6 +4,7 @@ import { perspectiveCookieName, variantCookieName } from "@sanity/preview-url-se
 import { cookies, draftMode } from "next/headers";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { client } from "@/lib/sanity.client";
+import { draftModeCookieFlags } from "@/lib/draftModeCookies";
 
 function secretsEqual(a: string, b: string) {
   const left = Buffer.from(a);
@@ -30,21 +31,6 @@ function safeRedirectPath(path: string) {
   if (!path.startsWith("/") || path.startsWith("//")) return "/";
   if (path.startsWith("/api/draft-mode")) return "/";
   return path;
-}
-
-function cookieFlags(request: Request) {
-  const isSecure = true;
-  const partitioned =
-    isSecure &&
-    request.headers.get("sec-fetch-dest") === "iframe" &&
-    request.headers.get("sec-fetch-site") === "cross-site";
-  return {
-    httpOnly: true,
-    path: "/",
-    secure: true,
-    sameSite: "none" as const,
-    partitioned,
-  };
 }
 
 export async function GET(request: Request) {
@@ -102,7 +88,7 @@ async function enableDraftMode(request: Request) {
     draftModeStore.enable();
   }
 
-  const flags = cookieFlags(request);
+  const flags = draftModeCookieFlags(request);
   const cookieStore = await cookies();
   const bypass = cookieStore.get("__prerender_bypass");
   if (bypass?.value) {

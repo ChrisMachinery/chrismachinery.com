@@ -1,6 +1,25 @@
 export const SITE_NAME = "Chris Machinery";
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://chrismachinery.com";
+const PRODUCTION_SITE_URL = "https://www.chrismachinery.com";
+
+export function canonicalSiteUrl(raw = process.env.NEXT_PUBLIC_SITE_URL) {
+  const value = raw?.trim();
+  if (!value) return PRODUCTION_SITE_URL;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+    if (host === "localhost" || host === "127.0.0.1") {
+      return `${url.protocol}//${url.host}`.replace(/\/$/, "");
+    }
+    if (host === "chrismachinery.com" || host.endsWith(".vercel.app")) {
+      return PRODUCTION_SITE_URL;
+    }
+    return `${url.protocol}//${url.host}`.replace(/\/$/, "");
+  } catch {
+    return PRODUCTION_SITE_URL;
+  }
+}
+
+export const SITE_URL = canonicalSiteUrl();
 export const DEFAULT_OG = `${SITE_URL}/og.jpg`;
 
 export const seriesList = [

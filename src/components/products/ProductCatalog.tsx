@@ -6,6 +6,7 @@ import type { Product, SeriesKey } from "@/data/products";
 import { filterOptions, productKgLabel, productSizeLabel } from "@/data/products";
 import { CatalogProductCard } from "@/components/products/CatalogProductCard";
 import { materialFilterIsUseful, productMaterials, productShapes, shapeFilterIsUseful } from "@/lib/productFamily";
+import { specLabel, specList } from "@/lib/specI18n";
 
 type Filters = {
   width: number[];
@@ -23,10 +24,10 @@ const empty: Filters = {
   axle: [],
 };
 
-function axleFilterLabel(value: string) {
-  if (value === "Single Axle") return "Single";
-  if (value === "Tandem Axle") return "Tandem";
-  return value;
+function axleFilterLabel(t: (key: string) => string, value: string) {
+  if (value === "Single Axle") return t("specs.single");
+  if (value === "Tandem Axle") return t("specs.tandem");
+  return specLabel(t, value);
 }
 
 function toggle(list: number[] | string[], value: number | string) {
@@ -123,7 +124,11 @@ export function ProductCatalog({
                       }))
                     }
                   >
-                    {key === "axle" ? axleFilterLabel(String(value)) : String(value)}
+                    {key === "axle"
+                      ? axleFilterLabel(t, String(value))
+                      : key === "shape" || key === "material"
+                        ? specLabel(t, String(value))
+                        : String(value)}
                   </button>
                 );
               })}
@@ -175,7 +180,7 @@ export function ProductCatalog({
           {filtered.length === 0 ? (
             <p className="rounded border border-dashed border-black/20 p-8">
               {items.length === 0
-                ? "This series has no products yet. Publish a product in Structure with this series selected."
+                ? t("products.emptySeries")
                 : mode === "stock"
                   ? t("products.inStockEmpty")
                   : t("products.noMatch")}
@@ -204,14 +209,14 @@ export function ProductCatalog({
               <thead>
                 <tr>
                   {[
-                    "Model",
+                    t("specs.model"),
                     t("products.bodySize"),
                     t("products.weight"),
                     t("products.loadCapacity"),
-                    "Axle",
-                    "Shape",
-                    "Material",
-                    "Stock",
+                    t("specs.axle"),
+                    t("specs.shape"),
+                    t("specs.material"),
+                    t("specs.stock"),
                   ].map((label) => (
                     <th key={label} className="bg-white font-heading font-semibold text-brand">
                       <div>{label}</div>
@@ -227,10 +232,10 @@ export function ProductCatalog({
                       productSizeLabel(item),
                       productKgLabel(item.weight) || "—",
                       productKgLabel(item.loadCapacity) || "—",
-                      item.axle,
-                      productShapes(item).join(" / ") || "—",
-                      productMaterials(item).join(" / ") || "—",
-                      item.stockStatus,
+                      specLabel(t, item.axle),
+                      specList(t, productShapes(item)) || "—",
+                      specList(t, productMaterials(item)) || "—",
+                      specLabel(t, item.stockStatus),
                     ].map((value, col) => (
                       <td key={col} className={col === 0 ? "font-semibold text-brand" : "text-brand"}>
                         <div>{value}</div>

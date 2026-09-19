@@ -27,7 +27,12 @@ export default defineConfig({
     drafts: { enabled: true },
     newDocumentOptions: (prev, { creationContext }) =>
       creationContext.type === "global"
-        ? prev.filter((template) => template.templateId !== "customizeCatalog" && template.templateId !== "solutionsBoard")
+        ? prev.filter(
+            (template) =>
+              template.templateId !== "customizeCatalog" &&
+              template.templateId !== "solutionsBoard" &&
+              template.templateId !== "stockBoard",
+          )
         : prev,
     actions: (prev, { schemaType }) => {
       if (schemaType !== "inquiry") return prev;
@@ -87,6 +92,21 @@ export default defineConfig({
                       .id("solutions-board")
                       .child(S.document().schemaType("solutionsBoard").documentId("solutionsBoard")),
                     S.documentTypeListItem("solution").id("solution-docs").title("方案内容（图片 / 设备 / 车型）"),
+                  ]),
+              ),
+            S.listItem()
+              .title("现货卡片")
+              .id("stock-cards")
+              .child(
+                S.list()
+                  .id("stock-cards-list")
+                  .title("现货卡片")
+                  .items([
+                    S.listItem()
+                      .title("增减 / 排序（点这里控制数量）")
+                      .id("stock-board")
+                      .child(S.document().schemaType("stockBoard").documentId("stockBoard")),
+                    S.documentTypeListItem("stockUnit").id("stock-unit-docs").title("现货车内容（图片 / 型号 / 简介）"),
                   ]),
               ),
             S.listItem()

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Hreflang } from "@/components/seo/JsonLd";
 import { getCatalogProduct, getSitePage, getSolutions, getCustomizeOptions } from "@/lib/sanity/fetch";
+import { uiText } from "@/lib/i18nCopy";
 import { stegaText } from "@/lib/sanity/visual";
 import type { Metadata } from "next";
 
@@ -17,7 +18,18 @@ export default async function ContactPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ product?: string; shape?: string; material?: string; solution?: string }>;
+  searchParams: Promise<{
+    product?: string;
+    shape?: string;
+    material?: string;
+    solution?: string;
+    stock?: string;
+    model?: string;
+    qty?: string;
+    color?: string;
+    dim?: string;
+    include?: string;
+  }>;
 }) {
   const { locale } = await params;
   const query = await searchParams;
@@ -46,14 +58,14 @@ export default async function ContactPage({
       ["q6", "a6"],
     ] as const
   ).map(([q, a], i) => ({
-    q: s(`faq[${i}].question`, page?.faq?.[i]?.question || t(`faq.${q}`)),
-    a: s(`faq[${i}].answer`, page?.faq?.[i]?.answer || t(`faq.${a}`)),
+    q: s(`faq[${i}].question`, uiText(locale, page?.faq?.[i]?.question, t(`faq.${q}`))),
+    a: s(`faq[${i}].answer`, uiText(locale, page?.faq?.[i]?.answer, t(`faq.${a}`))),
   }));
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <Hreflang path="/contact" />
-      <h1 className="sr-only">{s("title", page?.title ?? t("nav.contact"))}</h1>
+      <h1 className="sr-only">{s("title", uiText(locale, page?.title, t("nav.contact")))}</h1>
       <Suspense>
         <ContactForm
           catalogProduct={quotedProduct}
@@ -70,11 +82,22 @@ export default async function ContactPage({
                 }
               : undefined
           }
+          stockInquiry={
+            query.stock
+              ? {
+                  model: query.model || quotedProduct?.name || query.product || "",
+                  quantity: query.qty || "1",
+                  color: query.color || "",
+                  dimension: query.dim || "",
+                  include: query.include || "",
+                }
+              : undefined
+          }
         />
       </Suspense>
       <section className="mt-10">
         <h2 className="font-heading text-base font-semibold text-brand">
-          {s("faqTitle", page?.faqTitle || t("faq.title"))}
+          {s("faqTitle", uiText(locale, page?.faqTitle, t("faq.title")))}
         </h2>
         <div className="mt-3 divide-y border-y">
           {faqs.map((item, i) => (

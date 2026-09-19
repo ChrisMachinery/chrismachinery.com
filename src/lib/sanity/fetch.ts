@@ -18,11 +18,13 @@ import {
   mapSanityProduct,
   mapSanitySolution,
   mapSitePage,
+  mapStockUnit,
   normalizePageContent,
   type PageContent,
   type SanityPostDoc,
   type SanityProductDoc,
   type SanitySolutionDoc,
+  type SanityStockUnitDoc,
   type SitePageDoc,
 } from "./map";
 import {
@@ -36,6 +38,7 @@ import {
   sitePagesByPathsQuery,
   solutionsQuery,
   solutionsBoardQuery,
+  stockBoardQuery,
   customizeCatalogQuery,
 } from "./queries";
 
@@ -276,6 +279,26 @@ export async function getSolutions() {
       }));
     return { ...item, equipment, recommendedProducts };
   });
+}
+
+const getStockBoardDoc = cache(async () =>
+  querySanity<{ _id?: string; cards?: SanityStockUnitDoc[] | null } | null>(
+    stockBoardQuery,
+    {},
+    { stega: false },
+  ),
+);
+
+export async function getStockBoardId() {
+  const board = await getStockBoardDoc();
+  return board?._id?.replace(/^drafts\./, "") || "stockBoard";
+}
+
+export async function getStockCards() {
+  const board = await getStockBoardDoc();
+  return (board?.cards ?? [])
+    .filter((item): item is SanityStockUnitDoc => Boolean(item?._id || item?.title))
+    .map(mapStockUnit);
 }
 
 export async function getBlogPosts() {

@@ -44,3 +44,29 @@ export function factoryVideoEmbedSrc(value?: string) {
   }
   return undefined;
 }
+
+export function externalVideoHref(value?: string) {
+  const raw = (value || "").trim();
+  if (!raw) return "";
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+export type VideoHostKind = "youtube" | "vimeo" | "bilibili" | "video";
+
+export function videoHostKind(value?: string): VideoHostKind {
+  try {
+    const host = new URL(externalVideoHref(value) || "https://invalid.local").hostname.replace(/^www\./, "");
+    if (host === "youtu.be" || host.endsWith("youtube.com") || host === "youtube-nocookie.com") return "youtube";
+    if (host === "vimeo.com" || host === "player.vimeo.com") return "vimeo";
+    if (host.endsWith("bilibili.com")) return "bilibili";
+  } catch {
+    /* ignore */
+  }
+  return "video";
+}

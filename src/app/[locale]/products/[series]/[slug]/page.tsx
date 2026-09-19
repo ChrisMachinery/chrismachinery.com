@@ -7,12 +7,21 @@ import { ProductDetailActions } from "@/components/products/ProductDetailActions
 import { productMaterials, productShapes } from "@/lib/productFamily";
 import { AIRSTREAM_ARC_PDP_NOTE } from "@/lib/airstreamArc";
 import { POD_SHAPE_PDP_NOTE } from "@/lib/podShapeGuide";
+import { isGuideSeries, SERIES_GUIDE_DEFAULTS } from "@/lib/seriesGuides";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { Hreflang, JsonLd } from "@/components/seo/JsonLd";
 import { productJsonLd } from "@/lib/seo";
 import { productCustomizable, productIncluded, productKgLabel, productOverallLength, productOverallWidth, productSizeLabel } from "@/data/products";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
+import {
+  localizedAirstreamGuide,
+  localizedCustomOptions,
+  localizedIncluded,
+  localizedList,
+  localizedPodGuide,
+} from "@/data/localizedHome";
+import { specLabel, specList } from "@/lib/specI18n";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -34,6 +43,7 @@ export async function generateMetadata({
   return {
     title: `${product.name} (${productSizeLabel(product)} ${product.axle}) Food Trailer - Chris Machinery`,
     description: `Buy ${product.name} custom food trailer (body ${productSizeLabel(product)}, ${productShapes(product).join(" / ") || "standard"}, ${productMaterials(product).join(" / ") || "factory finish"}). Fast shipping worldwide.`,
+    alternates: { canonical: `/products/${product.series}/${product.slug}` },
   };
 }
 
@@ -55,10 +65,20 @@ export default async function ProductDetailPage({
   const id = product._id;
   const s = (path: string, text: string) => stegaText(id, "product", path, text);
   const related = relatedRaw.filter((item) => item.slug !== product.slug).slice(0, 6);
+  const included = localizedList(
+    locale,
+    seriesPage?.included,
+    localizedIncluded[locale]?.[product.series] || productIncluded(product),
+  );
+  const customizable = localizedList(
+    locale,
+    seriesPage?.customizable?.length ? seriesPage.customizable : pageContent?.productCustomOptions,
+    localizedCustomOptions[locale]?.[product.series] || productCustomizable(product),
+  );
   const includedFromCms = Boolean(seriesPage?.included?.length);
-  const customFromCms = Boolean(pageContent?.productCustomOptions?.length);
-  const included = productIncluded(product, seriesPage?.included);
-  const customizable = productCustomizable(product, pageContent?.productCustomOptions);
+  const customFromCms = Boolean(seriesPage?.customizable?.length || pageContent?.productCustomOptions?.length);
+  const airstreamNote = localizedAirstreamGuide[locale]?.pdp || AIRSTREAM_ARC_PDP_NOTE;
+  const podNote = localizedPodGuide[locale]?.pdp || POD_SHAPE_PDP_NOTE;
   const overallLength = productOverallLength(product.length);
   const overallWidth = productOverallWidth(product.width);
   const seriesId = seriesPage?._id;
@@ -131,24 +151,24 @@ export default async function ProductDetailPage({
                 </td>
               </tr>
               <tr>
-                <td className="border border-black/20 px-2 py-2.5">Axle</td>
-                <td className="border border-black/20 px-2 py-2.5" colSpan={3}>{s("axle", product.axle)}</td>
+                <td className="border border-black/20 px-2 py-2.5">{t("specs.axle")}</td>
+                <td className="border border-black/20 px-2 py-2.5" colSpan={3}>{s("axle", specLabel(t, product.axle))}</td>
               </tr>
               <tr>
-                <td className="border border-black/20 px-2 py-2.5">Shape</td>
+                <td className="border border-black/20 px-2 py-2.5">{t("specs.shape")}</td>
                 <td className="border border-black/20 px-2 py-2.5" colSpan={3}>
-                  {productShapes(product).join(" / ") || "—"}
+                  {specList(t, productShapes(product)) || "—"}
                 </td>
               </tr>
               <tr>
-                <td className="border border-black/20 px-2 py-2.5">Material</td>
+                <td className="border border-black/20 px-2 py-2.5">{t("specs.material")}</td>
                 <td className="border border-black/20 px-2 py-2.5" colSpan={3}>
-                  {productMaterials(product).join(" / ") || "—"}
+                  {specList(t, productMaterials(product)) || "—"}
                 </td>
               </tr>
               <tr>
-                <td className="border border-black/20 px-2 py-2.5">Stock</td>
-                <td className="border border-black/20 px-2 py-2.5" colSpan={3}>{s("stockStatus", product.stockStatus)}</td>
+                <td className="border border-black/20 px-2 py-2.5">{t("specs.stock")}</td>
+                <td className="border border-black/20 px-2 py-2.5" colSpan={3}>{s("stockStatus", specLabel(t, product.stockStatus))}</td>
               </tr>
             </tbody>
           </table>
@@ -165,19 +185,23 @@ export default async function ProductDetailPage({
               quoteLabel={t("products.getQuote")}
               customizeLabel={t("cta.customize")}
               seriesGuideHref={
-                product.series === "airstream"
-                  ? { pathname: "/products/airstream", hash: "arc-guide" }
-                  : product.series === "pod"
-                    ? { pathname: "/products/pod", hash: "shape-guide" }
-                    : undefined
+                isGuideSeries(product.series)
+                  ? {
+                      pathname: `/products/${product.series}`,
+                      hash: SERIES_GUIDE_DEFAULTS[product.series].compareSectionId,
+                    }
+                  : undefined
               }
               seriesGuideText={
                 product.series === "airstream"
-                  ? AIRSTREAM_ARC_PDP_NOTE
+                  ? airstreamNote
                   : product.series === "pod"
-                    ? POD_SHAPE_PDP_NOTE
-                    : undefined
+                    ? podNote
+                    : isGuideSeries(product.series)
+                      ? SERIES_GUIDE_DEFAULTS[product.series].pdpNote
+                      : undefined
               }
+              materialLabel={t("specs.material")}
             />
           </Suspense>
         </div>
@@ -194,14 +218,16 @@ export default async function ProductDetailPage({
             ))}
           </ul>
         </section>
-        <section {...cmsEdit(contentId, "pageContent", "productCustomOptions")}>
+        <section {...cmsEdit(seriesId, "sitePage", "customizable")}>
           <h2 className="type-section">{t("products.customizable")}</h2>
           <ul className="type-body mt-4 list-disc space-y-2 ps-5">
             {customizable.map((item, i) => (
               <li key={`${item}-${i}`}>
-                {customFromCms
-                  ? stegaText(contentId, "pageContent", `productCustomOptions[${i}]`, item)
-                  : item}
+                {seriesPage?.customizable?.length
+                  ? stegaText(seriesId, "sitePage", `customizable[${i}]`, item)
+                  : customFromCms
+                    ? stegaText(contentId, "pageContent", `productCustomOptions[${i}]`, item)
+                    : item}
               </li>
             ))}
           </ul>
@@ -227,7 +253,7 @@ export default async function ProductDetailPage({
                   <div className="p-4">
                     <h3 className="type-card">{stegaText(item._id, "product", "title", item.name)}</h3>
                     <p className="type-body mt-2">{productSizeLabel(item)}</p>
-                    <p className="type-body mt-1">{productShapes(item).join(" / ")}</p>
+                    <p className="type-body mt-1">{specList(t, productShapes(item))}</p>
                   </div>
                 </PreviewNavLink>
               </article>

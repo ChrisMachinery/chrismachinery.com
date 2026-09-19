@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSanityInquiry } from "@/lib/sanity/fetch";
+import { requestOrigin, resolveInquirySourceUrl } from "@/lib/inquirySource";
 import { quotePdf, saveLead } from "@/lib/leads";
+import { notifyLeadEmail } from "@/lib/notifyLead";
 
 function isBot(form: FormData | Record<string, unknown>) {
   const honey =
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
   const country = String(payload.country ?? "").trim();
   const product = String(payload.product ?? "").trim();
   const message = String(payload.message ?? "").trim();
-  if (!email || !country) {
+  if (!name || !email || !country) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
@@ -60,7 +62,17 @@ export async function POST(req: NextRequest) {
     message,
     country,
     budget: String(payload.budget ?? ""),
-    sourceUrl: req.headers.get("referer") ?? "",
+    sourceUrl: resolveInquirySourceUrl({
+      origin: requestOrigin(req.headers),
+      locale: String(payload.locale ?? "").trim(),
+      submitted: String(payload.sourceUrl ?? payload.from ?? "").trim(),
+      referer: req.headers.get("referer") ?? "",
+      productSlug: String(payload.productSlug ?? "").trim(),
+      productSeries: String(payload.productSeries ?? "").trim(),
+      stock: String(payload.stock ?? "") === "1",
+      stockId: String(payload.stockId ?? "").trim(),
+      solutionSlug: String(payload.solution ?? "").trim(),
+    }),
     customConfig,
     geo: req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? "",
   });
@@ -102,17 +114,14 @@ export async function POST(req: NextRequest) {
     }).catch(() => undefined);
   }
 
-  if (process.env.SALES_NOTIFY_EMAIL) {
-    console.info(`[lead] notify ${process.env.SALES_NOTIFY_EMAIL}`, lead.inquiryId);
-  }
-
   const pdf = await quotePdf(lead);
+  await notifyLeadEmail(lead, pdf).catch((error) => {
+    console.error("[lead] email notify failed", error);
+  });
   return NextResponse.json(
     {
       ok: true,
       inquiryId: lead.inquiryId,
-      pdfBase64: pdf.toString("base64"),
-      filename: `${lead.inquiryId}.pdf`,
     },
     { status: 201 },
   );

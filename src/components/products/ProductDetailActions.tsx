@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState, type ComponentProps } from "react";
 import { ProductCtaButton } from "@/components/products/ProductCtaButton";
 import { ShapeOptionChips } from "@/components/products/ShapeOptionChips";
@@ -20,6 +20,7 @@ export function ProductDetailActions({
   customizeLabel,
   seriesGuideHref,
   seriesGuideText,
+  materialLabel = "Material",
 }: {
   documentId?: string;
   slug: string;
@@ -33,8 +34,10 @@ export function ProductDetailActions({
   customizeLabel: string;
   seriesGuideHref?: ComponentProps<typeof PreviewNavLink>["href"];
   seriesGuideText?: string;
+  materialLabel?: string;
 }) {
   const params = useSearchParams();
+  const pathname = usePathname();
   const fromShape = params.get("shape") || "";
   const fromMaterial = params.get("material") || "";
   const solution = params.get("solution") || "";
@@ -46,6 +49,7 @@ export function ProductDetailActions({
     shape,
     material,
     solution: solution || undefined,
+    from: pathname,
   });
   const customizeHref = withSearchParams(customizeLink || `/customize?product=${slug}`, {
     shape,
@@ -64,7 +68,7 @@ export function ProductDetailActions({
         shapes={materials}
         value={material}
         onChange={materials.length > 1 ? setMaterial : undefined}
-        label="Material"
+        label={materialLabel}
       />
       {seriesGuideHref && seriesGuideText ? (
         <p className="mt-2 text-xs text-black/55">

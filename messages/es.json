@@ -36,10 +36,22 @@
     "footprint": "Huella global",
     "testimonials": "Lo que dicen los compradores",
     "aboutTitle": "Producción propia, exportación mundial",
-    "aboutBody": "De diseño a QC en planta propia — 5.000㎡, 200+ unidades al año, 50+ técnicos, 30+ mercados."
+    "aboutBody": "De diseño a QC en planta propia — 5.000㎡, 200+ unidades al año, 50+ técnicos, 30+ mercados.",
+    "hero2Title": "Series Pod y Airstream, listas para wrapping de fábrica.",
+    "hero2Sub": "Setups compactos de calle, interiores inox y embalaje de exportación incluido.",
+    "hero3Title": "Chasis galvanizado para el servicio diario.",
+    "hero3Sub": "Bastidores listos para CE, 1 año de garantía y fotos de QC antes del envío.",
+    "hero4Title": "Layouts a medida. Planos y presupuesto en 24 h.",
+    "hero4Sub": "Cuéntenos el plan de cocina: definimos largo, ventanas y equipo."
   },
   "solutions": {
-    "feedback": "De nuestros clientes"
+    "title": "Soluciones",
+    "subtitle": "Paquetes por escena con modelos recomendados, listas de equipo y presupuesto en un clic. También puede tener su solución única.",
+    "feedback": "De nuestros clientes",
+    "recommendedModels": "Modelos recomendados:",
+    "recommendedEquipment": "Equipo recomendado",
+    "packageFrom": "Pack de equipo desde USD {amount}",
+    "quote": "Presupuesto de solución"
   },
   "advantages": {
     "w1": "1 año de garantía",
@@ -52,7 +64,9 @@
     "w4d": "Color, logo y paquete de cocina de fábrica."
   },
   "products": {
-    "inStockEmpty": "Currently no units in stock. Please check our standard product lines or contact us for custom orders.",
+    "viewProduct": "Ver producto",
+    "emptySeries": "Esta serie aún no tiene modelos. Contáctenos para un pedido a medida.",
+    "inStockEmpty": "Ahora no hay unidades listas para envío. Pida un pedido a medida, o vuelva cuando haya stock.",
     "noMatch": "Sin coincidencias. Ajusta los filtros.",
     "summary": "Filtros actuales — {count} modelos",
     "sortLength": "Longitud",
@@ -79,6 +93,54 @@
     "filterShape": "Forma",
     "filterMaterial": "Material"
   },
+  "stock": {
+    "model": "Modelo",
+    "qtyLabel": "Cant.",
+    "color": "Color / Material",
+    "dimension": "Dimensión de caja",
+    "include": "Incluye",
+    "quote": "Presupuesto de esta unidad",
+    "view": "Ver especificaciones",
+    "video": "Vídeo",
+    "watchVideo": "Ver vídeo",
+    "watchYoutube": "Ver en YouTube",
+    "watchVimeo": "Ver en Vimeo",
+    "watchBilibili": "Ver en Bilibili",
+    "inquiryMessage": "Consulta de stock\nModelo: {model}\nCant.: {qty}\nColor / Material: {color}\nDimensión: {dim}\nIncluye:\n{include}\nPor favor cotice esta unidad lista para envío, con flete marítimo a mi país."
+  },
+  "specs": {
+    "model": "Modelo",
+    "axle": "Eje",
+    "shape": "Forma",
+    "material": "Material",
+    "stock": "Stock",
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "madeToOrder": "Bajo pedido",
+    "singleAxle": "Eje simple",
+    "tandemAxle": "Eje tándem",
+    "single": "Simple",
+    "tandem": "Tándem",
+    "dome": "Cúpula",
+    "square": "Cuadrado",
+    "paint": "Pintura",
+    "stainless": "Acero inoxidable",
+    "arc375": "Arco 375",
+    "arc500": "Arco 500",
+    "arc700": "Arco 700"
+  },
+  "blog": {
+    "title": "Blog",
+    "all": "Todos",
+    "buyingGuide": "Guía de compra",
+    "industryNews": "Noticias",
+    "caseStudy": "Caso de estudio"
+  },
+  "navExtra": {
+    "seriesMenu": "Productos",
+    "inStock": "En stock",
+    "others": "Otros"
+  },
   "contact": {
     "name": "Nombre",
     "email": "Email",
@@ -89,24 +151,25 @@
     "message": "Mensaje",
     "country": "País",
     "budget": "Presupuesto",
-    "success": "Thank you! We will get back to you within 24 hours.",
+    "success": "¡Gracias! Le responderemos en 24 h.",
+    "error": "Revise los campos obligatorios e inténtelo de nuevo.",
     "hours": "Horario: lun–vie, 9:00–18:00 hora de Pekín",
     "address": "【TEXT: Factory address】"
   },
   "faq": {
     "title": "FAQ",
-    "q1": "【TEXT: FAQ-Q1 Lead Time】",
-    "a1": "【TEXT: FAQ-A1】",
-    "q2": "【TEXT: FAQ-Q2 MOQ】",
-    "a2": "【TEXT: FAQ-A2】",
-    "q3": "【TEXT: FAQ-Q3 Payment Terms】",
-    "a3": "【TEXT: FAQ-A3】",
-    "q4": "【TEXT: FAQ-Q4 Shipping Method】",
-    "a4": "【TEXT: FAQ-A4】",
-    "q5": "【TEXT: FAQ-Q5 Warranty Policy】",
-    "a5": "【TEXT: FAQ-A5】",
-    "q6": "【TEXT: FAQ-Q6 Factory Visit】",
-    "a6": "【TEXT: FAQ-A6】"
+    "q1": "¿Cuál es el plazo de fabricación?",
+    "a1": "Los modelos estándar suelen salir en 4–8 semanas tras el depósito y la firma de planos. El stock puede salir antes.",
+    "q2": "¿Hay pedido mínimo?",
+    "a2": "Sin MOQ. Una unidad basta — venta de fábrica, incluidos layouts a medida.",
+    "q3": "¿Cuáles son las condiciones de pago?",
+    "a3": "Normalmente un depósito para empezar y el saldo antes del envío. Lo confirmamos en el presupuesto.",
+    "q4": "¿Cómo envían?",
+    "a4": "Embalaje de exportación incluido. Organizamos flete marítimo o carga en el puerto que indique.",
+    "q5": "¿Cuál es la garantía?",
+    "a5": "Garantía de fábrica de 1 año en estructura y mano de obra. Soporte con fotos, piezas y ayuda remota.",
+    "q6": "¿Puedo visitar la fábrica?",
+    "a6": "Sí. Reserve una visita en Jiangsu: de la soldadura al embalaje."
   },
   "customizer": {
     "title": "Configura tu trailer",

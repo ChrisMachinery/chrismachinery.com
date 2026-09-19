@@ -199,11 +199,42 @@ export const sitePageByPathQuery = `*[_type == "sitePage" && path == $path][0] {
   faqTitle,
   faq,
   included,
+  customizable,
   arcGuideTitle,
   arcGuideNote,
   arcGuides[]{ _key, label, body, image{..., alt} },
   customerPhotosTitle,
-  customerPhotos[]{ image{..., alt} }
+  customerPhotos[]{ image{..., alt} },
+  podGuide{
+    introTitle,
+    intro,
+    shapeBody,
+    introImage{..., alt},
+    sizeTitle,
+    sizeNote,
+    sizeRows[]{
+      _key,
+      scene,
+      length,
+      width,
+      axle,
+      shape,
+      material,
+      note,
+      exampleLabel,
+      exampleHref,
+      image{..., alt}
+    },
+    kitchenTitle,
+    kitchenBody,
+    kitchenImage{..., alt},
+    kitchenLinkLabel,
+    kitchenLinkHref,
+    quoteLabel,
+    quoteHref,
+    faqTitle,
+    faq[]{ _key, question, answer }
+  }
 }`;
 
 const solutionFields = `
@@ -237,6 +268,22 @@ export const solutionsBoardQuery = `*[_id in ["solutionsBoard", "drafts.solution
   _id,
   cards[]->{
     ${solutionFields}
+  }
+}`;
+
+export const stockBoardQuery = `*[_id in ["stockBoard", "drafts.stockBoard"]] | order(_updatedAt desc)[0]{
+  _id,
+  cards[]->{
+    _id,
+    title,
+    quantity,
+    colorMaterial,
+    bodyDimension,
+    include,
+    summary,
+    videoUrl,
+    photos[]{..., alt},
+    product->{_id, title, "slug": slug.current, series}
   }
 }`;
 

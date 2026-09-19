@@ -52,14 +52,16 @@ function PhotoGrid({
 export function FactoryPhotoGallery({
   documentId,
   images,
+  heading = "Factory photos",
 }: {
   documentId?: string;
   images: (string | undefined)[];
+  heading?: string;
 }) {
   if (!images.length) return null;
   return (
     <section className="mt-16">
-      <h2 className="type-section">Factory photos</h2>
+      <h2 className="type-section">{heading}</h2>
       <PhotoGrid documentId={documentId} images={images} />
     </section>
   );
@@ -68,9 +70,11 @@ export function FactoryPhotoGallery({
 export function FactoryPhotoGalleryEditor({
   documentId,
   images,
+  heading = "Factory photos",
 }: {
   documentId?: string;
   images: (string | undefined)[];
+  heading?: string;
 }) {
   const { getDocument } = useDocuments();
   const count = images.length;
@@ -95,7 +99,7 @@ export function FactoryPhotoGalleryEditor({
   return (
     <section className="mt-16" {...cmsEdit(documentId, "sitePage", "gallery")}>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="type-section">Factory photos</h2>
+        <h2 className="type-section">{heading}</h2>
         <div className="flex gap-2">
           <button
             type="button"

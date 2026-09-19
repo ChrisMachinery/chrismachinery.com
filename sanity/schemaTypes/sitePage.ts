@@ -13,6 +13,10 @@ const notOptionGuidePage = ({ document }: { document?: { path?: unknown } }) => 
   const path = String(document?.path || "");
   return path !== "/products/airstream" && path !== "/products/pod";
 };
+const notSeriesGuidePage = ({ document }: { document?: { path?: unknown } }) =>
+  !["/products/pod", "/products/airstream", "/products/square", "/products/container", "/products/capsule"].includes(
+    String(document?.path || ""),
+  );
 
 export const sitePage = defineType({
   name: "sitePage",
@@ -79,11 +83,20 @@ export const sitePage = defineType({
     }),
     defineField({
       name: "included",
-      title: "Included (all models in this series)",
+      title: "Included / 标配（该系列全部车型）",
       type: "array",
       hidden: notSeriesPage,
       description:
-        "该系列所有产品详情页共用。改这里即可，不必每台车改一遍。留空则用代码默认 4 条。",
+        "产品详情页左侧 Included。该系列所有型号共用。改这里即可，不必每台车改。",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "customizable",
+      title: "Customize / 选配（该系列全部车型）",
+      type: "array",
+      hidden: notSeriesPage,
+      description:
+        "产品详情页右侧 Can be customized。按系列填写。留空则回退到首页「全站选配」列表。",
       of: [{ type: "string" }],
     }),
     defineField({
@@ -143,6 +156,126 @@ export const sitePage = defineType({
             select: { title: "label", subtitle: "body", media: "image" },
           },
         },
+      ],
+    }),
+    defineField({
+      name: "podGuide",
+      title: "系列选型指南",
+      type: "object",
+      hidden: notSeriesGuidePage,
+      description:
+        "写在对应系列页（Pod / Airstream / Square / Container / Capsule）。不改产品参数。图片可空（网页显示带参数的占位图）。代表车型链接可空（网页显示【LINK】和写入位置）。",
+      fields: [
+        defineField({ name: "introTitle", title: "H1 下方选型标题", type: "string" }),
+        defineField({
+          name: "intro",
+          title: "定位正文（约 100–140 词）",
+          type: "text",
+          rows: 8,
+          description: "页面第 1 块。800–1500 是全页各块加总，不是只写在这里。",
+        }),
+        defineField({
+          name: "introImage",
+          title: "选型总图",
+          type: "image",
+          description: "可选。空则显示占位：长宽/造型/轴数。建议 16:9，约 1800×1000 JPG。",
+          options: { hotspot: siteImageHotspot },
+          fields: [imageAltField],
+        }),
+        defineField({
+          name: "shapeBody",
+          title: "造型/系列对比正文（约 80–160 词）",
+          type: "text",
+          rows: 6,
+          description: "写在对比卡下方（Pod 的 Dome/Square、Airstream 的弧度）。Square / Container / Capsule 没有对比卡，这段就是对比节正文。",
+        }),
+        defineField({ name: "sizeTitle", title: "尺寸对照标题", type: "string" }),
+        defineField({ name: "sizeNote", title: "尺寸对照说明（约 80–120 词）", type: "text", rows: 5 }),
+        defineField({
+          name: "sizeRows",
+          title: "尺寸档（3 条）",
+          type: "array",
+          validation: (Rule) => Rule.max(3),
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({ name: "scene", title: "场景名", type: "string" }),
+                defineField({
+                  name: "length",
+                  title: "长度（现有筛选项）",
+                  type: "string",
+                  description: "只写已有长度，例如 2300 / 2500 / 2800 / 2900 / 3000 mm",
+                }),
+                defineField({ name: "width", title: "宽度", type: "string" }),
+                defineField({ name: "axle", title: "轴数", type: "string" }),
+                defineField({ name: "shape", title: "造型", type: "string" }),
+                defineField({ name: "material", title: "材质", type: "string" }),
+                defineField({ name: "note", title: "说明", type: "text", rows: 3 }),
+                defineField({
+                  name: "image",
+                  title: "示意",
+                  type: "image",
+                  description: "可选。4:3，约 1200×900。空则占位图会写出该档参数。",
+                  options: { hotspot: siteImageHotspot },
+                  fields: [imageAltField],
+                }),
+                defineField({ name: "exampleLabel", title: "代表车型链接文案", type: "string" }),
+                defineField({
+                  name: "exampleHref",
+                  title: "代表车型链接（可空）",
+                  type: "string",
+                  description: "写入位置：podGuide.sizeRows[n].exampleHref。粘贴 /products/{系列}/slug 或完整 URL。空则网页显示【LINK】占位。",
+                }),
+              ],
+              preview: { select: { title: "scene", subtitle: "length" } },
+            },
+          ],
+        }),
+        defineField({ name: "kitchenTitle", title: "厨房/轴数标题", type: "string" }),
+        defineField({ name: "kitchenBody", title: "厨房/轴数正文（约 120–180 词）", type: "text", rows: 8 }),
+        defineField({
+          name: "kitchenImage",
+          title: "厨房示意",
+          type: "image",
+          description: "可选。4:3，约 1200×900。",
+          options: { hotspot: siteImageHotspot },
+          fields: [imageAltField],
+        }),
+        defineField({ name: "kitchenLinkLabel", title: "自定义页链接文案", type: "string" }),
+        defineField({
+          name: "kitchenLinkHref",
+          title: "自定义页链接（可空）",
+          type: "string",
+          description: "写入位置：podGuide.kitchenLinkHref。例如 /customize。空则显示【LINK】占位。",
+        }),
+        defineField({
+          name: "quoteLabel",
+          title: "Get Quote 按钮文案",
+          type: "string",
+        }),
+        defineField({
+          name: "quoteHref",
+          title: "Get Quote 链接",
+          type: "string",
+          description: "默认 /contact?from=/products/{系列}。点蓝框可改。",
+        }),
+        defineField({ name: "faqTitle", title: "FAQ 标题", type: "string" }),
+        defineField({
+          name: "faq",
+          title: "FAQ",
+          type: "array",
+          validation: (Rule) => Rule.max(6),
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "question", type: "string", title: "Question" },
+                { name: "answer", type: "text", title: "Answer" },
+              ],
+            },
+          ],
+        }),
       ],
     }),
     defineField({

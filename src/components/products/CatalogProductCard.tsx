@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Product } from "@/data/products";
 import { productSizeLabel } from "@/data/products";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { ProductCtaButton } from "@/components/products/ProductCtaButton";
 import { ShapeOptionChips } from "@/components/products/ShapeOptionChips";
 import { productMaterials, productShapes } from "@/lib/productFamily";
+import { localePrefix } from "@/lib/inquirySource";
+import { cleanProductHref, productPath } from "@/lib/productUrl";
+import { uiText } from "@/lib/i18nCopy";
+import { specLabel } from "@/lib/specI18n";
 import { stegaText } from "@/lib/sanity/visual";
 
 export function CatalogProductCard({
@@ -22,19 +26,22 @@ export function CatalogProductCard({
   onCompare: (slug: string, on: boolean) => void;
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const shapes = productShapes(item);
   const materials = productMaterials(item);
   const [shape, setShape] = useState(shapes[0] ?? "");
   const [material, setMaterial] = useState(materials[0] ?? "");
-  const q = [
+  const viewHref = cleanProductHref(item.viewProductLink, item.series, item.slug);
+  const from = `${localePrefix(locale)}${productPath(item.series, item.slug)}`;
+  const quoteQuery = [
     shape ? `shape=${encodeURIComponent(shape)}` : "",
     material ? `material=${encodeURIComponent(material)}` : "",
   ]
     .filter(Boolean)
     .join("&");
-  const qs = q ? `?${q}` : "";
-  const viewHref = item.viewProductLink?.trim() || `/products/${item.series}/${item.slug}${qs}`;
-  const quoteHref = item.quoteLink || `/contact?product=${item.slug}${q ? `&${q}` : ""}`;
+  const quoteHref =
+    item.quoteLink ||
+    `/contact?product=${item.slug}${quoteQuery ? `&${quoteQuery}` : ""}&from=${encodeURIComponent(from)}`;
 
   return (
     <article className="card-hover flex h-full flex-col overflow-hidden rounded-lg border border-black/5 bg-white">
@@ -50,11 +57,11 @@ export function CatalogProductCard({
       <div className="flex flex-1 flex-col p-4">
         <div className="flex min-h-8 flex-wrap gap-2">
           <span className="rounded bg-black/5 px-2 py-1 text-xs">
-            {stegaText(item._id, "product", "axle", item.axle)}
+            {stegaText(item._id, "product", "axle", specLabel(t, item.axle))}
           </span>
           {item.stockStatus === "In Stock" ? (
             <span className="rounded bg-accent px-2 py-1 text-xs font-semibold">
-              {stegaText(item._id, "product", "stockStatus", "In Stock")}
+              {stegaText(item._id, "product", "stockStatus", t("specs.inStock"))}
             </span>
           ) : null}
         </div>
@@ -66,7 +73,7 @@ export function CatalogProductCard({
           shapes={materials}
           value={material}
           onChange={materials.length > 1 ? setMaterial : undefined}
-          label="Material"
+          label={t("specs.material")}
         />
         <table className="type-body mt-3 w-full" suppressHydrationWarning>
           <tbody>
@@ -87,7 +94,7 @@ export function CatalogProductCard({
             documentId={item._id}
             textPath="viewProductText"
             linkPath="viewProductLink"
-            text={item.viewProductText || "View product"}
+            text={uiText(locale, item.viewProductText, t("products.viewProduct"))}
             href={viewHref}
             previewNavigates
             className="min-touch inline-flex w-full items-center justify-center rounded border border-brand font-heading"
@@ -96,7 +103,7 @@ export function CatalogProductCard({
             documentId={item._id}
             textPath="quoteText"
             linkPath="quoteLink"
-            text={item.quoteText || quoteLabel}
+            text={uiText(locale, item.quoteText, quoteLabel)}
             href={quoteHref}
             className="min-touch inline-flex w-full items-center justify-center rounded bg-accent font-heading text-brand"
           />

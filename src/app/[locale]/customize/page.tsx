@@ -4,6 +4,7 @@ import { getCatalogProducts, getCustomizeOptions, getSitePage, getSolutions } fr
 import { Customizer } from "@/components/customizer/CanvasPreview";
 import { Hreflang } from "@/components/seo/JsonLd";
 import { stegaText } from "@/lib/sanity/visual";
+import { uiText } from "@/lib/i18nCopy";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -38,7 +39,7 @@ export default async function CustomizePage({
     <div className="mx-auto max-w-7xl px-4 py-10">
       <Hreflang path="/customize" />
       <h1 className="type-page mb-8">
-        {stegaText(page?._id, "sitePage", "title", page?.title ?? t("title"))}
+        {stegaText(page?._id, "sitePage", "title", uiText(locale, page?.title, t("title")))}
       </h1>
       <Customizer
         catalog={catalog}

@@ -80,37 +80,43 @@ export function productKgLabel(kg?: number) {
   return kg ? `${kg}KG` : "";
 }
 
+/** Standard equipment from factory spec sheet — same on Pod / Airstream / Square / Container / Capsule. */
+export const seriesStandardIncluded = [
+  "Water system: dual sinks / tanks / pump / tap",
+  "Electricity: plug / fuse box / 4 sockets / lights",
+  "Workbench: 304 food grade stainless steel",
+  "Taillight system / 4 lifting jacks / door stop",
+];
+
+const customizeBase = [
+  "Wall cabinet / drawer / hood / gas box / cashier",
+  "110V / 220V / 380V",
+] as const;
+
+const customizePod = [
+  "Length / Interior layout / equipment options",
+  "Paint color / sticker / roof logo / LED rope",
+  ...customizeBase,
+];
+
+const customizeAirstream = [
+  "Length / Interior layout / equipment options",
+  "Paint color & material / sticker / roof logo / LED rope",
+  ...customizeBase,
+];
+
+const customizeSquare = [
+  "Length / Interior layout & material / equipment options",
+  "Paint color / sticker / roof logo / LED rope",
+  ...customizeBase,
+];
+
 export const seriesIncluded: Record<SeriesKey, string[]> = {
-  pod: [
-    "Galvanized chassis and wrap-ready body",
-    "Serving hatch with LED interior lighting",
-    "Non-slip floor; stainless worktop option",
-    "1-year factory warranty and export crate packing",
-  ],
-  airstream: [
-    "Streamlined body, galvanized chassis",
-    "Commercial interior space, wrap-ready or stainless",
-    "LED lighting and service window",
-    "1-year factory warranty and export crate packing",
-  ],
-  square: [
-    "Box body on galvanized chassis",
-    "Efficient kitchen layout, wrap-ready paint",
-    "Non-slip floor and LED lighting",
-    "1-year factory warranty and export crate packing",
-  ],
-  container: [
-    "Heavy-duty container-inspired body",
-    "Galvanized chassis for long service hours",
-    "Non-slip floor and stainless worktop option",
-    "1-year factory warranty and export crate packing",
-  ],
-  capsule: [
-    "Capsule glass service front",
-    "Galvanized chassis, wrap-ready body",
-    "Configurable window layout",
-    "1-year factory warranty and export crate packing",
-  ],
+  pod: [...seriesStandardIncluded],
+  airstream: [...seriesStandardIncluded],
+  square: [...seriesStandardIncluded],
+  container: [...seriesStandardIncluded],
+  capsule: [...seriesStandardIncluded],
   others: [
     "Custom chassis and body to drawing",
     "Factory QC photos before shipment",
@@ -119,21 +125,35 @@ export const seriesIncluded: Record<SeriesKey, string[]> = {
   ],
 };
 
-export const defaultCustomOptions = [
-  "Length, windows, and hatch layout",
-  "Paint, stainless, or wrap graphics",
-  "Kitchen equipment package",
-  "110V / 220V / 380V electrical spec",
-];
+export const seriesCustomizable: Record<SeriesKey, string[]> = {
+  pod: [...customizePod],
+  airstream: [...customizeAirstream],
+  square: [...customizeSquare],
+  container: [...customizeSquare],
+  capsule: [...customizeAirstream],
+  others: [
+    "Length, windows, and hatch layout",
+    "Paint, stainless, or wrap graphics",
+    "Kitchen equipment package",
+    "110V / 220V / 380V electrical spec",
+  ],
+};
+
+export const defaultCustomOptions = seriesCustomizable.pod;
 
 export function productIncluded(product: Product, seriesList?: string[]) {
   if (seriesList?.length) return seriesList;
   return seriesIncluded[product.series];
 }
 
-export function productCustomizable(_product: Product, globalList?: string[]) {
+export function productCustomizable(
+  product: Product,
+  seriesList?: string[],
+  globalList?: string[],
+) {
+  if (seriesList?.length) return seriesList;
   if (globalList?.length) return globalList;
-  return defaultCustomOptions;
+  return seriesCustomizable[product.series];
 }
 
 function p(partial: Product): Product {

@@ -95,28 +95,48 @@ function toPdfLines(chunks: string[]) {
   return chunks.flatMap((chunk) => chunk.split(/\r?\n/)).flatMap((line) => wrapLine(line || " "));
 }
 
+function hasQuoteConfig(config?: Record<string, unknown>) {
+  if (!config) return false;
+  if (String(config.series ?? "").trim() || String(config.sizeLabel ?? "").trim() || String(config.slug ?? "").trim()) {
+    return true;
+  }
+  if (Array.isArray(config.equipment) && config.equipment.length > 0) return true;
+  const extras = config.extras;
+  if (extras && typeof extras === "object") {
+    return Object.values(extras as Record<string, unknown>).some((qty) => Number(qty) > 0);
+  }
+  return false;
+}
+
 async function bodyFromLead(lead: Lead) {
   const config = lead.customConfig;
-  if (config && typeof config === "object" && (config.series || config.equipment || config.extras)) {
+  const note = lead.message.replace(/\r\n/g, "\n").trim();
+  const parts: string[] = [];
+  if (hasQuoteConfig(config)) {
     const options = await getCustomizeOptions();
-    return formatQuoteTable(
-      {
-        series: String(config.series ?? ""),
-        shape: String(config.shape ?? ""),
-        sizeLabel: String(config.sizeLabel ?? ""),
-        material: String(config.material ?? ""),
-        stainlessFinish: String(config.stainlessFinish ?? ""),
-        hex: String(config.hex ?? ""),
-        extras: (config.extras as Record<string, number>) || {},
-        equipment: Array.isArray(config.equipment) ? config.equipment.map(String) : [],
-        solutionName: String(config.solutionName ?? ""),
-      },
-      options.extras,
-      options.kitchen,
-      (config.quoteSnapshot as QuoteSnapshot | undefined) || undefined,
+    parts.push(
+      formatQuoteTable(
+        {
+          series: String(config?.series ?? ""),
+          shape: String(config?.shape ?? ""),
+          sizeLabel: String(config?.sizeLabel ?? ""),
+          material: String(config?.material ?? ""),
+          stainlessFinish: String(config?.stainlessFinish ?? ""),
+          hex: String(config?.hex ?? ""),
+          extras: (config?.extras as Record<string, number>) || {},
+          equipment: Array.isArray(config?.equipment) ? config.equipment.map(String) : [],
+          solutionName: String(config?.solutionName ?? ""),
+        },
+        options.extras,
+        options.kitchen,
+        (config?.quoteSnapshot as QuoteSnapshot | undefined) || undefined,
+      ),
     );
   }
-  return lead.message.replace(/\r\n/g, "\n");
+  if (note) {
+    parts.push("", "CUSTOMER MESSAGE", note);
+  }
+  return parts.join("\n").trim() || "-";
 }
 
 export async function quotePdf(lead: Lead): Promise<Buffer> {
@@ -127,6 +147,9 @@ export async function quotePdf(lead: Lead): Promise<Buffer> {
     `Email: ${lead.email}`,
     `Phone: ${lead.phone || "-"}`,
     `Country: ${lead.country || lead.geo || "-"}`,
+    `Product: ${lead.product?.trim() || "-"}`,
+    `Shape: ${lead.shape?.trim() || "-"}`,
+    `Material: ${lead.material?.trim() || "-"}`,
     `Budget: ${lead.budget || "-"}`,
     "",
     await bodyFromLead(lead),

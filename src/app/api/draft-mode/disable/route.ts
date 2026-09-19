@@ -1,12 +1,6 @@
 import { cookies, draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
-const cookieBase = {
-  httpOnly: true,
-  path: "/",
-  secure: true,
-  sameSite: "none" as const,
-};
+import { draftModeCookieFlags } from "@/lib/draftModeCookies";
 
 function safeRedirectPath(path: string) {
   if (!path.startsWith("/") || path.startsWith("//")) return "/";
@@ -15,6 +9,7 @@ function safeRedirectPath(path: string) {
 }
 
 export async function GET(request: NextRequest) {
+  const cookieBase = draftModeCookieFlags(request);
   try {
     (await draftMode()).disable();
     const store = await cookies();

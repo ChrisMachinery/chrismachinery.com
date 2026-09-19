@@ -8,6 +8,8 @@ import { Hreflang } from "@/components/seo/JsonLd";
 import { factoryVideoEmbedSrc } from "@/lib/factoryVideoEmbed";
 import { getSitePage } from "@/lib/sanity/fetch";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
+import { uiText } from "@/lib/i18nCopy";
+import { localizedAbout } from "@/data/localizedHome";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -17,13 +19,6 @@ export const metadata: Metadata = {
   description: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
 };
 
-const defaultSteps = [
-  { title: "Drafting", body: "Layout drawings signed off before we cut steel." },
-  { title: "Cutting & welding", body: "Galvanized chassis and body work to drawing." },
-  { title: "Finishing", body: "Polish, paint, or stainless — wrap-ready skins." },
-  { title: "QC & packing", body: "Inspection photos, then crate-ready export packing." },
-] as const;
-
 export default async function AboutPage({
   params,
 }: {
@@ -31,23 +26,24 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const copy = localizedAbout[locale] ?? localizedAbout.en;
   const isDraft = (await draftMode()).isEnabled;
   const page = await getSitePage("/about");
   const id = page?._id;
   const s = (path: string, text: string) => stegaText(id, "sitePage", path, text);
   const stats = [
-    ["Factory Area", s("factoryArea", page?.factoryArea ?? "5,000㎡")],
-    ["Annual Output", s("annualOutput", page?.annualOutput ?? "200+ Units")],
-    ["Skilled Technicians", s("technicians", page?.technicians ?? "50+")],
-    ["Countries Exported", s("countries", page?.countries ?? "30+")],
+    [copy.stats[0], s("factoryArea", page?.factoryArea ?? "5,000㎡")],
+    [copy.stats[1], s("annualOutput", page?.annualOutput ?? "200+ Units")],
+    [copy.stats[2], s("technicians", page?.technicians ?? "50+")],
+    [copy.stats[3], s("countries", page?.countries ?? "30+")],
   ] as const;
   const factoryVideo = factoryVideoEmbedSrc(page?.factoryVideoUrl);
   const gallery = isDraft
     ? (page?.galleryUrls ?? [])
     : (page?.galleryUrls ?? []).filter(Boolean);
-  const steps = defaultSteps.map((step, i) => ({
-    title: s(`buildSteps[${i}].title`, page?.buildSteps?.[i]?.title || step.title),
-    body: s(`buildSteps[${i}].body`, page?.buildSteps?.[i]?.body || step.body),
+  const steps = copy.steps.map((step, i) => ({
+    title: s(`buildSteps[${i}].title`, uiText(locale, page?.buildSteps?.[i]?.title, step.title)),
+    body: s(`buildSteps[${i}].body`, uiText(locale, page?.buildSteps?.[i]?.body, step.body)),
     imageUrls: page?.buildSteps?.[i]?.imageUrls,
   }));
 
@@ -55,10 +51,10 @@ export default async function AboutPage({
     <div className="mx-auto max-w-7xl px-4 py-10">
       <Hreflang path="/about" />
       <h1 className="type-page" {...cmsEdit(id, "sitePage", "title")}>
-        {s("title", page?.title ?? "About Us")}
+        {s("title", uiText(locale, page?.title, copy.title))}
       </h1>
       <p className="type-lede mt-4 max-w-3xl" {...cmsEdit(id, "sitePage", "subtitle")}>
-        {s("subtitle", page?.subtitle || "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.")}
+        {s("subtitle", uiText(locale, page?.subtitle, copy.subtitle))}
       </p>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(([k, v], i) => {
@@ -75,17 +71,14 @@ export default async function AboutPage({
       <div className="mt-16 grid items-center gap-10 lg:grid-cols-2">
         <div>
           <h2 className="type-section" {...cmsEdit(id, "sitePage", "factoryTitle")}>
-            {s("factoryTitle", page?.factoryTitle ?? "Our factory")}
+            {s("factoryTitle", uiText(locale, page?.factoryTitle, copy.factoryTitle))}
           </h2>
           <PlainTextBody
             className="mt-4 max-w-xl"
             documentId={id}
             documentType="sitePage"
             path="factoryBody"
-            text={
-              page?.factoryBody ??
-              "One plant in Jiangsu: drawings, fabrication, finish, and export packing under the same roof. Buyers get a named factory — not a trading desk."
-            }
+            text={uiText(locale, page?.factoryBody, copy.factoryBody)}
           />
         </div>
         <div>
@@ -119,17 +112,14 @@ export default async function AboutPage({
       </div>
 
       <h2 className="type-section mt-16" {...cmsEdit(id, "sitePage", "buildTitle")}>
-        {s("buildTitle", page?.buildTitle ?? "How we build")}
+        {s("buildTitle", uiText(locale, page?.buildTitle, copy.buildTitle))}
       </h2>
       <PlainTextBody
         className="mt-3 w-full"
         documentId={id}
         documentType="sitePage"
         path="buildIntro"
-        text={
-          page?.buildIntro ??
-          "Four stages, one factory. This is the path we quote and ship against."
-        }
+        text={uiText(locale, page?.buildIntro, copy.buildIntro)}
       />
       <ol className="mt-8 grid items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, i) => (
@@ -147,9 +137,9 @@ export default async function AboutPage({
       </ol>
 
       {isDraft ? (
-        <FactoryPhotoGalleryEditor documentId={id} images={gallery} />
+        <FactoryPhotoGalleryEditor documentId={id} images={gallery} heading={copy.factoryPhotos} />
       ) : (
-        <FactoryPhotoGallery documentId={id} images={gallery} />
+        <FactoryPhotoGallery documentId={id} images={gallery} heading={copy.factoryPhotos} />
       )}
     </div>
   );

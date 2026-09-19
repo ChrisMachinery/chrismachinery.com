@@ -1,13 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@sanity/client";
-import { defaultCustomOptions, productOverallLength, productOverallWidth, products, seriesIncluded } from "../src/data/products";
+import { defaultCustomOptions, productOverallLength, productOverallWidth, products, seriesCustomizable, seriesIncluded } from "../src/data/products";
 import { posts } from "../src/data/posts";
 import { solutions } from "../src/data/solutions";
 import { equipment, trailerExtras } from "../src/data/catalog";
 import { seriesMeta } from "../src/lib/site";
 import { AIRSTREAM_ARC_GUIDE_DEFAULTS } from "../src/lib/airstreamArc";
 import { POD_SHAPE_GUIDE_DEFAULTS } from "../src/lib/podShapeGuide";
+import { isGuideSeries, seedSeriesGuide, type GuideSeries } from "../src/lib/seriesGuides";
 
 function loadEnv() {
   const file = path.join(process.cwd(), ".env.local");
@@ -240,6 +241,7 @@ async function main() {
       subtitle: meta.blurb,
       extra: {
         included: seriesIncluded[series as keyof typeof seriesIncluded],
+        customizable: seriesCustomizable[series as keyof typeof seriesCustomizable],
         ...(series === "airstream"
           ? {
               arcGuideTitle: AIRSTREAM_ARC_GUIDE_DEFAULTS.title,
@@ -263,6 +265,7 @@ async function main() {
                 })),
               }
             : {}),
+        ...(isGuideSeries(series) ? { podGuide: seedSeriesGuide(series as GuideSeries) } : {}),
       },
     });
   }
@@ -277,6 +280,13 @@ async function main() {
       ...page.extra,
     });
   }
+
+  docs.push({
+    _id: "stockBoard",
+    _type: "stockBoard",
+    title: "现货卡片",
+    cards: [],
+  });
 
   let created = 0;
   for (const doc of docs) {
@@ -337,12 +347,19 @@ async function main() {
 
   for (const series of Object.keys(seriesMeta)) {
     const id = `sitePage-products-${series}`;
-    const doc = await client.getDocument(id);
-    if (doc && (!Array.isArray(doc.included) || doc.included.length === 0)) {
-      await client
-        .patch(id)
-        .set({ included: seriesIncluded[series as keyof typeof seriesIncluded] })
-        .commit();
+    await client
+      .patch(id)
+      .set({
+        included: seriesIncluded[series as keyof typeof seriesIncluded],
+        customizable: seriesCustomizable[series as keyof typeof seriesCustomizable],
+      })
+      .commit();
+    if (isGuideSeries(series)) {
+      const existing = await client.getDocument(id);
+      const hasGuide = Boolean((existing as { podGuide?: unknown } | undefined)?.podGuide);
+      if (!hasGuide) {
+        await client.patch(id).set({ podGuide: seedSeriesGuide(series as GuideSeries) }).commit();
+      }
     }
   }
 

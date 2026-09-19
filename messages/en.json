@@ -36,10 +36,22 @@
     "footprint": "Global footprint",
     "testimonials": "What buyers say",
     "aboutTitle": "Built in-house, exported worldwide",
-    "aboutBody": "From drafting to QC, every trailer is produced in our own plant — 5,000㎡, 200+ units a year, 50+ technicians, 30+ export markets."
+    "aboutBody": "From drafting to QC, every trailer is produced in our own plant — 5,000㎡, 200+ units a year, 50+ technicians, 30+ export markets.",
+    "hero2Title": "Pod and Airstream series, wrap-ready from the factory.",
+    "hero2Sub": "Compact street setups with stainless interiors and export packing included.",
+    "hero3Title": "Galvanized chassis built for daily service.",
+    "hero3Sub": "CE-ready frames, 1-year warranty, and QC photos before shipment.",
+    "hero4Title": "Custom layouts. Drawings and quotes within 24 hours.",
+    "hero4Sub": "Tell us the kitchen plan — we spec length, windows, and equipment layout."
   },
   "solutions": {
-    "feedback": "From our customers"
+    "title": "Solutions",
+    "subtitle": "Scene-based packages with recommended models, equipment lists, and a one-click quote. You could always have your own unique solution!",
+    "feedback": "From our customers",
+    "recommendedModels": "Recommended models:",
+    "recommendedEquipment": "Recommended equipment",
+    "packageFrom": "Package equipment from USD {amount}",
+    "quote": "Get Solution Quote"
   },
   "advantages": {
     "w1": "1-year warranty",
@@ -52,7 +64,9 @@
     "w4d": "Colors, logo wrap, and kitchen packages from the factory."
   },
   "products": {
-    "inStockEmpty": "Currently no units in stock. Please check our standard product lines or contact us for custom orders.",
+    "viewProduct": "View product",
+    "emptySeries": "This series has no products yet. Contact us for a custom build.",
+    "inStockEmpty": "No ready-to-ship units right now. Ask for a custom build, or check back when new stock is listed.",
     "noMatch": "No matching products. Adjust your filters.",
     "summary": "Current filters — {count} models",
     "sortLength": "Length",
@@ -79,6 +93,54 @@
     "filterShape": "Shape",
     "filterMaterial": "Material"
   },
+  "stock": {
+    "model": "Model",
+    "qtyLabel": "Qty",
+    "color": "Color / Material",
+    "dimension": "Body dimension",
+    "include": "Include",
+    "quote": "Get this unit quoted",
+    "view": "View specs",
+    "video": "Video",
+    "watchVideo": "Watch video",
+    "watchYoutube": "Watch on YouTube",
+    "watchVimeo": "Watch on Vimeo",
+    "watchBilibili": "Watch on Bilibili",
+    "inquiryMessage": "In-stock inquiry\nModel: {model}\nQty: {qty}\nColor / Material: {color}\nBody dimension: {dim}\nInclude:\n{include}\nPlease quote this ready-to-ship unit, including ocean freight to my country."
+  },
+  "specs": {
+    "model": "Model",
+    "axle": "Axle",
+    "shape": "Shape",
+    "material": "Material",
+    "stock": "Stock",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "madeToOrder": "Made to Order",
+    "singleAxle": "Single Axle",
+    "tandemAxle": "Tandem Axle",
+    "single": "Single",
+    "tandem": "Tandem",
+    "dome": "Dome",
+    "square": "Square",
+    "paint": "Paint",
+    "stainless": "Stainless steel",
+    "arc375": "375 Arc",
+    "arc500": "500 Arc",
+    "arc700": "700 Arc"
+  },
+  "blog": {
+    "title": "Blog",
+    "all": "All",
+    "buyingGuide": "Buying Guide",
+    "industryNews": "Industry News",
+    "caseStudy": "Case Study"
+  },
+  "navExtra": {
+    "seriesMenu": "Products",
+    "inStock": "In Stock",
+    "others": "Others"
+  },
   "contact": {
     "name": "Name",
     "email": "Email",
@@ -90,23 +152,24 @@
     "country": "Country",
     "budget": "Budget",
     "success": "Thank you! We will get back to you within 24 hours.",
+    "error": "Please check required fields and try again.",
     "hours": "Working Hours: Mon–Fri, 9:00–18:00 Beijing Time",
     "address": "【TEXT: Factory address】"
   },
   "faq": {
     "title": "FAQ",
-    "q1": "【TEXT: FAQ-Q1 Lead Time】",
-    "a1": "【TEXT: FAQ-A1】",
-    "q2": "【TEXT: FAQ-Q2 MOQ】",
-    "a2": "【TEXT: FAQ-A2】",
-    "q3": "【TEXT: FAQ-Q3 Payment Terms】",
-    "a3": "【TEXT: FAQ-A3】",
-    "q4": "【TEXT: FAQ-Q4 Shipping Method】",
-    "a4": "【TEXT: FAQ-A4】",
-    "q5": "【TEXT: FAQ-Q5 Warranty Policy】",
-    "a5": "【TEXT: FAQ-A5】",
-    "q6": "【TEXT: FAQ-Q6 Factory Visit】",
-    "a6": "【TEXT: FAQ-A6】"
+    "q1": "What is the lead time?",
+    "a1": "Standard builds typically ship in 4–8 weeks after deposit and drawing sign-off. In-stock units can leave sooner.",
+    "q2": "Is there a minimum order quantity?",
+    "a2": "No MOQ. One trailer is fine — factory-direct, including custom layouts.",
+    "q3": "What are the payment terms?",
+    "a3": "Usually a deposit to start production, balance before shipment. We confirm terms on the quote.",
+    "q4": "How do you ship?",
+    "a4": "Export crate packing is included. We arrange sea freight or load at the port you specify.",
+    "q5": "What is the warranty?",
+    "a5": "One-year factory warranty on structure and workmanship. We support with photos, parts, and remote guidance.",
+    "q6": "Can I visit the factory?",
+    "a6": "Yes. Book a visit to Jiangsu — we walk the line from welding to packing."
   },
   "customizer": {
     "title": "Build your trailer",

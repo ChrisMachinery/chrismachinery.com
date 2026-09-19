@@ -12,6 +12,13 @@ import { urlFor } from "@/lib/sanity/client";
 import { advantageImageAlt, resolveAdvantageIcon } from "@/lib/advantageIcons";
 import { resolveTestimonialPlace } from "@/lib/testimonialFlags";
 import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
+import { uiText } from "@/lib/i18nCopy";
+import {
+  localizedAdvantages,
+  localizedBlock,
+  localizedProductDetails,
+  localizedTestimonials,
+} from "@/data/localizedHome";
 import type { Metadata } from "next";
 
 export const revalidate = 10;
@@ -48,8 +55,8 @@ export default async function HomePage({
       src: page?.heroBackgroundUrl,
     },
     {
-      title: "Pod and Airstream series, wrap-ready from the factory.",
-      subtitle: "Compact street setups with stainless interiors and export packing included.",
+      title: t("home.hero2Title"),
+      subtitle: t("home.hero2Sub"),
       imageLabel: "首页Banner 2 - Pod / Airstream 餐车",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
@@ -57,8 +64,8 @@ export default async function HomePage({
       secondaryHref: "/products/airstream",
     },
     {
-      title: "Galvanized chassis built for daily service.",
-      subtitle: "CE-ready frames, 1-year warranty, and QC photos before shipment.",
+      title: t("home.hero3Title"),
+      subtitle: t("home.hero3Sub"),
       imageLabel: "首页Banner 3 - 热镀锌底盘",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
@@ -66,8 +73,8 @@ export default async function HomePage({
       secondaryHref: "/products/square",
     },
     {
-      title: "Custom layouts. Drawings and quotes within 24 hours.",
-      subtitle: "Tell us the kitchen plan — we spec length, windows, and equipment layout.",
+      title: t("home.hero4Title"),
+      subtitle: t("home.hero4Sub"),
       imageLabel: "首页Banner 4 - 定制图纸",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
@@ -84,17 +91,29 @@ export default async function HomePage({
     return {
       title: s(
         `heroSlides[${i}].title`,
-        cms?.title || (useLegacy ? hero?.headline : undefined) || fallback.title,
+        uiText(
+          locale,
+          cms?.title || (useLegacy ? hero?.headline : undefined),
+          fallback.title,
+        ),
       ),
       subtitle: s(
         `heroSlides[${i}].subtitle`,
-        cms?.subtitle || (useLegacy ? hero?.subheadline : undefined) || fallback.subtitle,
+        uiText(
+          locale,
+          cms?.subtitle || (useLegacy ? hero?.subheadline : undefined),
+          fallback.subtitle,
+        ),
       ),
       imageLabel: s(`heroSlides[${i}].image`, fallback.imageLabel),
       src: cms?.imageUrl || (i === 0 ? page?.heroBackgroundUrl : undefined) || fallback.src,
       primaryText: s(
         `heroSlides[${i}].primaryButtonText`,
-        cms?.primaryButtonText || (useLegacy ? hero?.ctaQuote : undefined) || fallback.primaryText,
+        uiText(
+          locale,
+          cms?.primaryButtonText || (useLegacy ? hero?.ctaQuote : undefined),
+          fallback.primaryText,
+        ),
       ),
       primaryHref:
         cms?.primaryButtonLink ||
@@ -102,7 +121,11 @@ export default async function HomePage({
         fallback.primaryHref,
       secondaryText: s(
         `heroSlides[${i}].secondaryButtonText`,
-        cms?.secondaryButtonText || (useLegacy ? hero?.ctaProducts : undefined) || fallback.secondaryText,
+        uiText(
+          locale,
+          cms?.secondaryButtonText || (useLegacy ? hero?.ctaProducts : undefined),
+          fallback.secondaryText,
+        ),
       ),
       secondaryHref: cms?.secondaryButtonLink || fallback.secondaryHref,
     };
@@ -127,19 +150,21 @@ export default async function HomePage({
       name: s(`testimonials[${i}].name`, item.name || ""),
       country: place.country,
       iso: place.iso,
-      text: s(`testimonials[${i}].text`, item.text || ""),
+      text: s(
+        `testimonials[${i}].text`,
+        uiText(locale, item.text, localizedTestimonials[locale]?.[i] || ""),
+      ),
     };
   });
 
-  const advantageKeys = ["w1", "w2", "w3", "w4"] as const;
   const advantageCount = Math.max(4, page?.advantages?.length ?? 0);
   const advantages = Array.from({ length: advantageCount }, (_, i) => {
-    const key = advantageKeys[i] ?? "w1";
     const cms = page?.advantages?.[i];
+    const copy = localizedBlock(locale, i, cms, localizedAdvantages);
     return {
       icon: resolveAdvantageIcon(cms?.icon, i),
-      title: s(`advantages[${i}].title`, cms?.title || t(`advantages.${key}`)),
-      body: s(`advantages[${i}].body`, cms?.body || t(`advantages.${key}d`)),
+      title: s(`advantages[${i}].title`, copy.title),
+      body: s(`advantages[${i}].body`, copy.body),
       imageUrl: cms?.image ? urlFor(cms.image as never)?.width(1200).auto("format").url() : undefined,
       imageLabel: s(`advantages[${i}].image`, `优势配图 ${i + 1}`),
       imageAlt: advantageImageAlt(cms?.image, i),
@@ -162,9 +187,10 @@ export default async function HomePage({
   const productDetails = (cmsDetails.length ? cmsDetails : defaultDetails).map((item, i) => {
     const fallback = defaultDetails[i] ?? defaultDetails[0];
     const cms = cmsDetails[i];
+    const copy = localizedBlock(locale, i, cms, localizedProductDetails);
     return {
-      title: s(`productDetails[${i}].title`, cms?.title || fallback.title),
-      body: s(`productDetails[${i}].body`, cms?.body || fallback.body),
+      title: s(`productDetails[${i}].title`, copy.title || fallback.title),
+      body: s(`productDetails[${i}].body`, copy.body || fallback.body),
       imageUrl: cms?.image ? urlFor(cms.image as never)?.width(1600).auto("format").url() : undefined,
       imageLabel: s(`productDetails[${i}].image`, fallback.imageLabel),
     };
@@ -187,7 +213,7 @@ export default async function HomePage({
 
       <section className="bg-white py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="type-section">{s("advantagesTitle", page?.advantagesTitle || t("home.advantages"))}</h2>
+          <h2 className="type-section">{s("advantagesTitle", uiText(locale, page?.advantagesTitle, t("home.advantages")))}</h2>
           <div className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {advantages.map((item, i) => (
               <article key={i} className="flex flex-col">
@@ -218,19 +244,19 @@ export default async function HomePage({
 
       <ProductDetailRows
         documentId={id}
-        heading={s("productDetailsTitle", page?.productDetailsTitle || t("home.details"))}
+        heading={s("productDetailsTitle", uiText(locale, page?.productDetailsTitle, t("home.details")))}
         items={productDetails}
       />
 
       <DetailShotCarousel
         documentId={id}
-        heading={s("detailShotsTitle", page?.detailShotsTitle || t("home.closeups"))}
+        heading={s("detailShotsTitle", uiText(locale, page?.detailShotsTitle, t("home.closeups")))}
         slides={detailShots}
       />
 
       <section className="bg-white py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="type-section">{s("testimonialsTitle", page?.testimonialsTitle || t("home.testimonials"))}</h2>
+          <h2 className="type-section">{s("testimonialsTitle", uiText(locale, page?.testimonialsTitle, t("home.testimonials")))}</h2>
           <div className="mt-8 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {quotes.map((q, i) => (
               <blockquote
@@ -257,16 +283,16 @@ export default async function HomePage({
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 lg:grid-cols-2">
           <div>
             <h2 className="type-section">
-              {s("aboutTitle", about?.title || t("home.aboutTitle"))}
+              {s("aboutTitle", uiText(locale, about?.title, t("home.aboutTitle")))}
             </h2>
             <p className="type-body mt-4 max-w-xl">
-              {s("aboutContent", about?.body || t("home.aboutBody"))}
+              {s("aboutContent", uiText(locale, about?.body, t("home.aboutBody")))}
             </p>
             <PreviewNavLink
               href="/about"
               className="mt-6 min-touch inline-flex items-center rounded bg-accent px-5 font-heading text-brand"
             >
-              {plainText(page?.aboutButtonText || t("cta.learn"))}
+              {plainText(uiText(locale, page?.aboutButtonText, t("cta.learn")))}
             </PreviewNavLink>
           </div>
           <ImgPlaceholder

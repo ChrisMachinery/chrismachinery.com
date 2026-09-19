@@ -1,6 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { shapeChipLabel, shapeGroupLabel } from "@/lib/productFamily";
+import { specLabel } from "@/lib/specI18n";
 
 export function ShapeOptionChips({
   shapes,
@@ -13,8 +15,9 @@ export function ShapeOptionChips({
   onChange?: (shape: string) => void;
   label?: string;
 }) {
+  const t = useTranslations();
   if (!shapes.length) return null;
-  const group = label ?? shapeGroupLabel(shapes);
+  const group = label ?? (shapeGroupLabel(shapes) === "Arc" ? t("specs.shape") : t("specs.shape"));
   return (
     <div className="mt-2">
       <p className="text-xs text-black/55">{group}</p>
@@ -22,6 +25,8 @@ export function ShapeOptionChips({
         {shapes.map((shape) => {
           const selected = value ? value === shape : false;
           const clickable = Boolean(onChange);
+          const mapped = specLabel(t, shape);
+          const display = mapped !== shape ? mapped : shapeChipLabel(shape);
           return clickable ? (
             <button
               key={shape}
@@ -29,11 +34,11 @@ export function ShapeOptionChips({
               className={`rounded border px-2 py-1 text-xs ${selected ? "border-brand bg-accent" : "border-black/15 bg-black/5"}`}
               onClick={() => onChange?.(shape)}
             >
-              {shapeChipLabel(shape)}
+              {display}
             </button>
           ) : (
             <span key={shape} className="rounded bg-black/5 px-2 py-1 text-xs">
-              {shapeChipLabel(shape)}
+              {display}
             </span>
           );
         })}

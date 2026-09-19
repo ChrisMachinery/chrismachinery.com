@@ -97,25 +97,25 @@ export function HeroBanner({
           <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-transparent" />
         ) : null}
 
-        <div className="absolute inset-0 z-10 flex items-start justify-start p-2 md:p-3">
+        <div className="absolute inset-0 z-10 flex items-start justify-start p-2 sm:p-3 md:p-4">
           <div
             key={index}
-            className="max-w-md rounded-lg bg-white/30 p-4 shadow-sm ring-1 ring-white/40 backdrop-blur-[6px] md:max-w-lg md:p-5"
+            className="w-[min(100%,13.75rem)] rounded-md bg-white/25 p-2.5 shadow-sm ring-1 ring-white/35 backdrop-blur-[4px] sm:w-auto sm:max-w-xs sm:p-3 md:max-w-sm md:p-3.5"
           >
-            <h1 className="type-page drop-shadow-sm">
+            <h1 className="font-heading text-base leading-snug text-brand drop-shadow-sm sm:text-lg md:text-xl">
               {current.title}
             </h1>
-            <p className="type-lede mt-2 max-w-xl">{current.subtitle}</p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <p className="mt-1 text-xs leading-snug text-black/70 sm:text-sm">{current.subtitle}</p>
+            <div className="mt-2.5 flex flex-col gap-1.5 sm:mt-3 sm:flex-row sm:flex-wrap sm:gap-2">
               <BannerLink
                 href={current.primaryHref}
-                className="min-touch inline-flex items-center rounded bg-accent px-5 font-heading text-brand shadow-sm hover:scale-[1.02]"
+                className="min-touch inline-flex items-center justify-center rounded bg-accent px-3 font-heading text-xs text-brand shadow-sm hover:scale-[1.02] sm:px-4 sm:text-sm"
               >
                 {current.primaryText}
               </BannerLink>
               <BannerLink
                 href={current.secondaryHref}
-                className="min-touch inline-flex items-center rounded border border-brand px-5 font-heading text-brand hover:bg-black/5"
+                className="min-touch inline-flex items-center justify-center rounded border border-brand px-3 font-heading text-xs text-brand hover:bg-black/5 sm:px-4 sm:text-sm"
               >
                 {current.secondaryText}
               </BannerLink>

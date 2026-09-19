@@ -1,6 +1,6 @@
 export const POD_SHAPE_GUIDE_DEFAULTS = {
   title: "Body shapes: Dome / Square",
-  note: "Two Pod roofs on the same trailer family. Pick the look that fits your brand and service window.",
+  note: "Two roofs on the same Pod size list. Dome is the rounded classic pod. Square is the flatter, more upright face. Length does not change with the roof.",
   items: [
     {
       label: "Dome",

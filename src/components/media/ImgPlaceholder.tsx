@@ -46,7 +46,9 @@ export function ImgPlaceholder({
         />
         <span
           data-protect-image=""
-          className="absolute inset-0 z-[1] flex items-center justify-center overflow-hidden px-3 text-center text-sm text-transparent"
+          className="img-seo-label absolute inset-0 z-[1] flex items-center justify-center overflow-hidden px-3 text-center text-sm text-transparent"
+          style={{ fontSize: 0, color: "transparent", overflow: "hidden" }}
+          aria-hidden
         >
           {encoded}
         </span>

@@ -54,7 +54,7 @@ export function SeriesArcGuide({
       {...cmsEdit(documentId, "sitePage", "arcGuides")}
     >
       <h2 className="font-heading text-lg text-brand">{s("arcGuideTitle", heading)}</h2>
-      <p className="type-body mt-2 max-w-3xl">{s("arcGuideNote", blurb)}</p>
+      <p className="type-body mt-2">{s("arcGuideNote", blurb)}</p>
       <div className={columns === 2 ? "mt-5 grid gap-4 sm:grid-cols-2" : "mt-5 grid gap-4 sm:grid-cols-3"}>
         {shown.map((item, i) => {
           const fallback = defaults.items[i];

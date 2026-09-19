@@ -28,6 +28,7 @@ export const inquiry = defineType({
       name: "name",
       title: "客户名",
       type: "string",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "productName",

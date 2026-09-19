@@ -191,3 +191,47 @@ export function formatInquiryMessage(
 export function isCustomizerDraft(value: unknown): value is CustomizerDraft {
   return Boolean(value && typeof value === "object" && "series" in (value as object));
 }
+
+export type StoredCustomizerDraft = CustomizerDraft & { inquiryMessage?: string };
+
+export function parseCustomizerDraft(raw: string | null): StoredCustomizerDraft | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as StoredCustomizerDraft;
+    return isCustomizerDraft(parsed) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function draftHasQuote(draft: CustomizerDraft) {
+  const extras = draft.extras ?? {};
+  return Boolean(
+    String(draft.series || "").trim() ||
+      String(draft.sizeLabel || "").trim() ||
+      String(draft.slug || "").trim() ||
+      draft.equipment?.length ||
+      Object.values(extras).some((qty) => Number(qty) > 0),
+  );
+}
+
+/** Only reuse a saved customizer when it is for this product, or this tab just sent it. */
+export function draftForProduct(productSlug?: string) {
+  if (typeof window === "undefined") return undefined;
+  const session = parseCustomizerDraft(sessionStorage.getItem(DRAFT_KEY));
+  const local = parseCustomizerDraft(localStorage.getItem(DRAFT_KEY));
+  const slug = productSlug?.trim() || "";
+  if (session && draftHasQuote(session) && (!slug || !session.slug || session.slug === slug)) {
+    return session;
+  }
+  if (slug && local && draftHasQuote(local) && local.slug === slug) {
+    return local;
+  }
+  return undefined;
+}
+
+export function clearCustomizerDraft() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(DRAFT_KEY);
+  localStorage.removeItem(DRAFT_KEY);
+}

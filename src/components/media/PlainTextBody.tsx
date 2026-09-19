@@ -14,6 +14,12 @@ function headingText(line: string) {
   return match ? match[2].trim() : null;
 }
 
+function headingLevel(line: string): 2 | 3 | null {
+  const match = line.match(/^(#{2,3})\s+(.+)$/);
+  if (!match) return null;
+  return match[1] === "##" ? 2 : 3;
+}
+
 export function PlainTextBody({
   text,
   documentId,
@@ -48,11 +54,14 @@ export function PlainTextBody({
           .map((line) => line.trim())
           .filter(Boolean);
         const onlyHeading = lines.length === 1 ? headingText(lines[0]) : null;
+        const onlyLevel = lines.length === 1 ? headingLevel(lines[0]) : null;
         if (onlyHeading) {
+          const Tag = onlyLevel === 2 ? "h2" : "h3";
+          const cls = onlyLevel === 2 ? "type-section" : "type-card";
           return (
-            <h3 key={i} className={`type-card ${i === 0 ? "" : "mt-6"}`}>
+            <Tag key={i} className={`${cls} ${i === 0 ? "" : "mt-8"}`}>
               {encode(onlyHeading)}
-            </h3>
+            </Tag>
           );
         }
 
@@ -65,11 +74,14 @@ export function PlainTextBody({
           <div key={i} className={i === 0 ? undefined : "mt-4"}>
             {intro.map((line, j) => {
               const heading = headingText(line);
+              const level = headingLevel(line);
               if (heading) {
+                const Tag = level === 2 ? "h2" : "h3";
+                const cls = level === 2 ? "type-section" : "type-card";
                 return (
-                  <h3 key={`h-${j}`} className={j === 0 ? "type-card" : "type-card mt-6"}>
+                  <Tag key={`h-${j}`} className={j === 0 ? cls : `${cls} mt-8`}>
                     {encode(heading)}
-                  </h3>
+                  </Tag>
                 );
               }
               const introHeading = j === intro.length - 1 && bullets.length > 0;

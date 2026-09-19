@@ -131,11 +131,11 @@ export const pageContent = defineType({
     }),
     defineField({
       name: "productCustomOptions",
-      title: "Can be customized (all products)",
+      title: "Can be customized（全站兜底）",
       type: "array",
       group: "catalog",
       description:
-        "所有产品详情页共用这一列表。全站改这一处即可，不必每台车改。留空则用代码默认 4 条。",
+        "各系列页已有独立选配列表时，以系列页为准。这里只给没有填系列选配的页面做兜底。",
       of: [{ type: "string" }],
     }),
     defineField({

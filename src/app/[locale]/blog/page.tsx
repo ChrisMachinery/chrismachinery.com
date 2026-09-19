@@ -26,9 +26,12 @@ export default async function BlogPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <Hreflang path="/blog" />
-      <h1 className="type-page mb-8">
+      <h1 className="type-page">
         {stegaText(page?._id, "sitePage", "title", uiText(locale, page?.title, t("title")))}
       </h1>
+      <p className="type-lede mt-3 mb-8 max-w-3xl">
+        {stegaText(page?._id, "sitePage", "subtitle", uiText(locale, page?.subtitle, t("subtitle")))}
+      </p>
       <BlogList posts={posts} />
     </div>
   );

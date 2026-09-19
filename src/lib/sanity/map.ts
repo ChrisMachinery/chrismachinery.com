@@ -544,6 +544,8 @@ export type SanitySolutionDoc = {
   description?: string;
   equipment?: string[];
   advice?: string;
+  lede?: string;
+  content?: unknown[];
   recommendedSlugs?: string[];
   sceneImage?: unknown;
   icon?: unknown;
@@ -620,6 +622,8 @@ export function mapSanitySolution(doc: SanitySolutionDoc) {
     equipmentIds,
     equipment: equipmentLabels(equipmentIds),
     advice: doc.advice ?? doc.description ?? "",
+    lede: typeof doc.lede === "string" ? doc.lede : "",
+    content: Array.isArray(doc.content) ? doc.content : [],
     imageUrl: imageUrl(doc.sceneImage) || imageUrl(doc.icon),
   };
 }

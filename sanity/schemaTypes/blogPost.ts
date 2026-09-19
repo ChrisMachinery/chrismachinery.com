@@ -49,11 +49,12 @@ export const blogPost = defineType({
       name: "category",
       title: "Category",
       type: "string",
+      description: "Buying Guide = 怎么选。Industry News = 工厂/合规。Case Study = 出货案例（国家+菜单+车型），只写在 Blog，不要另开栏目。",
       options: {
         list: [
           { title: "Buying Guide", value: "Buying Guide" },
           { title: "Industry News", value: "Industry News" },
-          { title: "Case Study", value: "Case Study" },
+          { title: "Case Study（出货案例）", value: "Case Study" },
         ],
       },
     }),

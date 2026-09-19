@@ -5,6 +5,7 @@ import { defaultCustomOptions, productOverallLength, productOverallWidth, produc
 import { posts } from "../src/data/posts";
 import { solutions } from "../src/data/solutions";
 import { equipment, trailerExtras } from "../src/data/catalog";
+import { SOLUTION_ARTICLES } from "../src/lib/solutionArticles";
 import { seriesMeta } from "../src/lib/site";
 import { AIRSTREAM_ARC_GUIDE_DEFAULTS } from "../src/lib/airstreamArc";
 import { POD_SHAPE_GUIDE_DEFAULTS } from "../src/lib/podShapeGuide";
@@ -162,6 +163,7 @@ async function main() {
   }
 
   for (const item of solutions) {
+    const article = SOLUTION_ARTICLES[item.slug];
     docs.push({
       _id: `solution-${item.slug}`,
       _type: "solution",
@@ -169,6 +171,8 @@ async function main() {
       slug: { _type: "slug", current: item.slug },
       description: item.advice,
       advice: item.advice,
+      lede: article?.lede || item.advice,
+      content: article ? blocks(article.body) : undefined,
       equipment: item.equipment,
       recommendedSlugs: item.recommended,
     });
@@ -210,12 +214,12 @@ async function main() {
     {
       path: "/solutions",
       title: "Solutions",
-      subtitle: "Scene-based packages with recommended chassis, equipment lists, and a one-click quote.",
+      subtitle: "Menu chapters. Open a card for the full article, then get a quote.",
     },
     {
       path: "/blog",
       title: "Blog",
-      subtitle: "Buying guides, industry news, and customer case studies.",
+      subtitle: "Buying guides, factory notes, and Case Study shipping cases.",
     },
     {
       path: "/contact",

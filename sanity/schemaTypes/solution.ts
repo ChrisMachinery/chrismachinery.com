@@ -67,12 +67,19 @@ export const solution = defineType({
       ],
     }),
     defineField({
+      name: "lede",
+      title: "目录卡片摘要",
+      type: "text",
+      rows: 3,
+      description: "写在 /solutions 卡片上，一两句。点进卡片才是 800–1500 词正文。",
+    }),
+    defineField({
       name: "sceneImage",
-      title: "Scene image (solutions card)",
+      title: "Scene image (catalog card + article)",
       type: "image",
       options: { hotspot: siteImageHotspot },
       fields: [imageAltField],
-      description: "This is the photo on the Solutions page card. Upload here, not as an icon.",
+      description: "Solutions 目录卡片和文章页头图。",
     }),
     defineField({
       name: "icon",
@@ -103,8 +110,9 @@ export const solution = defineType({
     }),
     defineField({
       name: "content",
-      title: "Content",
+      title: "文章正文（约 800–1500 词）",
       type: "array",
+      description: "点进目录卡片后的长文。空则网站用英文默认章。不要把长文写在卡片摘要里。",
       of: [{ type: "block" }, { type: "image", options: { hotspot: siteImageHotspot }, fields: [imageAltField] }],
     }),
     defineField({

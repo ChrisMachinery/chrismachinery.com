@@ -51,7 +51,9 @@
     "recommendedModels": "Modèles recommandés :",
     "recommendedEquipment": "Équipement recommandé",
     "packageFrom": "Pack équipement à partir de {amount} USD",
-    "quote": "Devis solution"
+    "quote": "Devis solution",
+    "readArticle": "Lire l’article",
+    "backToCatalog": "Toutes les solutions"
   },
   "advantages": {
     "w1": "Garantie 1 an",
@@ -131,6 +133,7 @@
   },
   "blog": {
     "title": "Blog",
+    "subtitle": "Guides d’achat, notes d’usine, et Case Study (cas de livraison : pays, menu, unité).",
     "all": "Tous",
     "buyingGuide": "Guide d’achat",
     "industryNews": "Actualités",

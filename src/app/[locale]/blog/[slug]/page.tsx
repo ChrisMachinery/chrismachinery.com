@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getBlogPost, getBlogPosts } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { PortableText } from "@/components/sanity/PortableText";
@@ -55,7 +56,17 @@ export default async function BlogPostPage({
   const post = await getBlogPost(slug);
   if (!post) notFound();
   const all = await getBlogPosts();
-  const related = all.filter((item) => item.slug !== slug).slice(0, 3);
+  const related = all
+    .filter((item) => item.slug !== slug)
+    .sort((a, b) => {
+      if (post.category === "Case Study") {
+        const aCase = a.category === "Case Study" ? 0 : 1;
+        const bCase = b.category === "Case Study" ? 0 : 1;
+        if (aCase !== bCase) return aCase - bCase;
+      }
+      return 0;
+    })
+    .slice(0, 3);
 
   const s = (path: string, text: string) => stegaText(post._id, "blogPost", path, text);
   const shareUrl = encodeURIComponent(`${SITE_URL}/blog/${slug}`);
@@ -75,6 +86,11 @@ export default async function BlogPostPage({
       <p className="mt-6 text-sm">
         {s("publishedAt", post.date)} · {s("author", post.author)} · {s("category", post.category)}
       </p>
+      {post.category === "Case Study" ? (
+        <p className="type-body mt-2">
+          Shipping case: country, menu, and the unit we built. Other Case Studies live in the Blog filter — not on Solutions.
+        </p>
+      ) : null}
       <h1 className="type-page mt-2">{s("title", post.title)}</h1>
       <div className="mt-6">
         {post.bodyBlocks?.length ? (
@@ -83,6 +99,16 @@ export default async function BlogPostPage({
           renderMarkdown(s("body", post.body))
         )}
       </div>
+      {post.category === "Case Study" ? (
+        <p className="mt-10">
+          <PreviewNavLink
+            href={`/contact?from=/blog/${slug}`}
+            className="min-touch inline-flex items-center rounded bg-accent px-5 font-heading text-brand"
+          >
+            Get Quote
+          </PreviewNavLink>
+        </p>
+      ) : null}
       <div className="mt-10 flex flex-wrap gap-3 text-sm">
         <span>Share:</span>
         <a

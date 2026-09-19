@@ -11,6 +11,7 @@ import {
 } from "@/data/products";
 import { groupProductsByFamily, productFamilyKey, withFamilyShapes } from "@/lib/productFamily";
 import { equipment, trailerExtras, type EquipmentItem, type TrailerExtra } from "@/data/catalog";
+import { solutionArticle } from "@/lib/solutionArticles";
 import { equipmentLabels } from "@/lib/solutionQuote";
 import { client, getSanityClient, isSanityConfigured } from "./client";
 import {
@@ -262,11 +263,17 @@ export async function getSolutions() {
         equipmentIds: item.equipment,
         equipment: equipmentLabels(item.equipment, options.kitchen),
         recommendedProducts: [] as ReturnType<typeof mapSanitySolution>["recommendedProducts"],
+        lede: solutionArticle(item.slug).lede,
+        content: [] as unknown[],
       }));
 
   return mapped.map((item) => {
+    const article = solutionArticle(item.slug);
     const equipment = equipmentLabels(item.equipmentIds ?? item.equipment, options.kitchen);
-    if (item.recommendedProducts.length) return { ...item, equipment };
+    const lede = ("lede" in item && item.lede?.trim()) || article.lede;
+    const content = "content" in item && Array.isArray(item.content) ? item.content : [];
+    const withArticle = { ...item, equipment, lede, content, articleBody: article.body };
+    if (withArticle.recommendedProducts.length) return withArticle;
     const recommendedProducts = (item.recommended ?? [])
       .map((slug) => catalog.find((product) => product.slug === slug) ?? getLocalProduct(slug))
       .filter((product): product is Product => Boolean(product))
@@ -277,8 +284,13 @@ export async function getSolutions() {
         series: product.series,
         href: `/products/${product.series}/${product.slug}`,
       }));
-    return { ...item, equipment, recommendedProducts };
+    return { ...withArticle, recommendedProducts };
   });
+}
+
+export async function getSolution(slug: string) {
+  const items = await getSolutions();
+  return items.find((item) => item.slug === slug) ?? null;
 }
 
 const getStockBoardDoc = cache(async () =>

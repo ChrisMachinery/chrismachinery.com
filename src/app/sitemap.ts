@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getBlogPosts, getCatalogProducts } from "@/lib/sanity/fetch";
+import { getBlogPosts, getCatalogProducts, getSolutions } from "@/lib/sanity/fetch";
 import { seriesList, SITE_URL } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 
@@ -14,7 +14,11 @@ function localized(path: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, posts] = await Promise.all([getCatalogProducts(), getBlogPosts()]);
+  const [products, posts, solutions] = await Promise.all([
+    getCatalogProducts(),
+    getBlogPosts(),
+    getSolutions(),
+  ]);
   const paths = [
     "/",
     "/about",
@@ -24,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/customize",
     ...seriesList.map((series) => `/products/${series}`),
     ...products.map((item) => `/products/${item.series}/${item.slug}`),
+    ...solutions.map((item) => `/solutions/${item.slug}`),
     ...posts.map((post) => `/blog/${post.slug}`),
   ];
   return paths.flatMap((path) =>

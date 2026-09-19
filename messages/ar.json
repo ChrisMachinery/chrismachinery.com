@@ -51,7 +51,9 @@
     "recommendedModels": "الموديلات الموصى بها:",
     "recommendedEquipment": "المعدات الموصى بها",
     "packageFrom": "باقة المعدات من {amount} دولار",
-    "quote": "عرض سعر الحل"
+    "quote": "عرض سعر الحل",
+    "readArticle": "اقرأ المقال",
+    "backToCatalog": "كل الحلول"
   },
   "advantages": {
     "w1": "ضمان سنة",
@@ -131,6 +133,7 @@
   },
   "blog": {
     "title": "المدونة",
+    "subtitle": "أدلة الشراء وملاحظات المصنع ودراسات الحالة (دولة + قائمة + الوحدة).",
     "all": "الكل",
     "buyingGuide": "دليل الشراء",
     "industryNews": "أخبار القطاع",

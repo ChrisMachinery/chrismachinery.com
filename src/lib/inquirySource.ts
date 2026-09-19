@@ -57,7 +57,7 @@ export function resolveInquirySourceUrl(input: {
     return `${origin}${prefix}/products/in-stock${hash}`;
   }
   if (input.solutionSlug) {
-    return `${origin}${prefix}/solutions`;
+    return `${origin}${prefix}/solutions/${input.solutionSlug}`;
   }
   const series =
     input.productSeries || (input.productSlug ? getProduct(input.productSlug)?.series : undefined);

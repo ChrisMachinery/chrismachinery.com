@@ -244,6 +244,8 @@ const solutionFields = `
   description,
   equipment,
   advice,
+  lede,
+  content,
   recommendedSlugs,
   recommendedModels[]{
     label,

@@ -46,12 +46,14 @@
   },
   "solutions": {
     "title": "Solutions",
-    "subtitle": "Scene-based packages with recommended models, equipment lists, and a one-click quote. You could always have your own unique solution!",
+    "subtitle": "Menu chapters. Open a card for the full article, then get a quote. You could always have your own unique solution!",
     "feedback": "From our customers",
     "recommendedModels": "Recommended models:",
     "recommendedEquipment": "Recommended equipment",
     "packageFrom": "Package equipment from USD {amount}",
-    "quote": "Get Solution Quote"
+    "quote": "Get Solution Quote",
+    "readArticle": "Read article",
+    "backToCatalog": "All solutions"
   },
   "advantages": {
     "w1": "1-year warranty",
@@ -131,6 +133,7 @@
   },
   "blog": {
     "title": "Blog",
+    "subtitle": "Buying guides, factory notes, and Case Study shipping cases (country, menu, the unit we built).",
     "all": "All",
     "buyingGuide": "Buying Guide",
     "industryNews": "Industry News",

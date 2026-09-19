@@ -51,7 +51,9 @@
     "recommendedModels": "Modelos recomendados:",
     "recommendedEquipment": "Equipo recomendado",
     "packageFrom": "Pack de equipo desde USD {amount}",
-    "quote": "Presupuesto de solución"
+    "quote": "Presupuesto de solución",
+    "readArticle": "Leer artículo",
+    "backToCatalog": "Todas las soluciones"
   },
   "advantages": {
     "w1": "1 año de garantía",
@@ -131,6 +133,7 @@
   },
   "blog": {
     "title": "Blog",
+    "subtitle": "Guías de compra, notas de fábrica y Case Study (casos de entrega: país, menú, unidad).",
     "all": "Todos",
     "buyingGuide": "Guía de compra",
     "industryNews": "Noticias",

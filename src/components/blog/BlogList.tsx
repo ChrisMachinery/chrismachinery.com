@@ -7,7 +7,7 @@ import type { Post } from "@/data/posts";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { stegaText } from "@/lib/sanity/visual";
 
-const cats = ["All", "Buying Guide", "Industry News", "Case Study"] as const;
+const cats = ["All", "Case Study", "Buying Guide", "Industry News"] as const;
 
 export function BlogList({ posts }: { posts: Post[] }) {
   const t = useTranslations("blog");

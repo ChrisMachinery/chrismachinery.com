@@ -210,6 +210,11 @@ export const sitePageByPathQuery = `*[_type == "sitePage" && path == $path][0] {
     intro,
     shapeBody,
     introImage{..., alt},
+    tocCompare,
+    tocSize,
+    tocKitchen,
+    tocFaq,
+    tocModels,
     sizeTitle,
     sizeNote,
     sizeRows[]{

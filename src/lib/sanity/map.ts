@@ -410,6 +410,11 @@ export type SitePageDoc = {
     intro?: string;
     shapeBody?: string;
     introImage?: unknown;
+    tocCompare?: string;
+    tocSize?: string;
+    tocKitchen?: string;
+    tocFaq?: string;
+    tocModels?: string;
     sizeTitle?: string;
     sizeNote?: string;
     sizeRows?: {
@@ -494,6 +499,11 @@ export function mapSitePage(doc: SitePageDoc) {
           shapeBody: doc.podGuide.shapeBody,
           introImageUrl: img(doc.podGuide.introImage),
           introImageAlt: cmsImageAlt(doc.podGuide.introImage),
+          tocCompare: doc.podGuide.tocCompare,
+          tocSize: doc.podGuide.tocSize,
+          tocKitchen: doc.podGuide.tocKitchen,
+          tocFaq: doc.podGuide.tocFaq,
+          tocModels: doc.podGuide.tocModels,
           sizeTitle: doc.podGuide.sizeTitle,
           sizeNote: doc.podGuide.sizeNote,
           sizeRows: (doc.podGuide.sizeRows ?? []).map((row) => ({

@@ -33,11 +33,22 @@ export type SeriesGuideDefaults = {
   faqTitle: string;
   faq: { question: string; answer: string }[];
   tocCompare: string;
+  tocSize: string;
+  tocKitchen: string;
+  tocFaq: string;
+  tocModels: string;
   compareSectionId: string;
   pdpNote: string;
   metaTitle: string;
   metaDescription: string;
 };
+
+const TOC_BAR = {
+  tocSize: "Sizing Guide",
+  tocKitchen: "Specs & Layout",
+  tocFaq: "FAQ",
+  tocModels: "Models",
+} as const;
 
 function bands(rows: Omit<SeriesGuideSizeRow, "exampleHref" | "imageUrl" | "imageAlt">[]): SeriesGuideSizeRow[] {
   return rows.map((row) => ({ ...row, exampleHref: "" }));
@@ -129,6 +140,7 @@ Stainless steel is the show finish; paint is the wrap finish. Neither one change
     },
   ],
   tocCompare: "375 / 500 / 700",
+  ...TOC_BAR,
   compareSectionId: "arc-guide",
   metaTitle: "How to Choose an Airstream Food Trailer | Chris Machinery",
   metaDescription:
@@ -221,6 +233,7 @@ Paint is the only Square finish in the catalog. Window count and equipment lists
     },
   ],
   tocCompare: "Why Square",
+  ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Square Food Trailer | Chris Machinery",
   metaDescription:
@@ -313,6 +326,7 @@ Paint is the only Container finish in the catalog. Equipment lists belong on Cus
     },
   ],
   tocCompare: "Why Container",
+  ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Container Food Trailer | Chris Machinery",
   metaDescription:
@@ -405,6 +419,7 @@ Window configuration is a custom drawing. Use Customize for that. Product pages 
     },
   ],
   tocCompare: "Capsule vs Airstream",
+  ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Capsule Food Trailer | Chris Machinery",
   metaDescription:
@@ -428,6 +443,7 @@ function withPodNav(pod: typeof POD_SERIES_GUIDE_DEFAULTS): SeriesGuideDefaults 
     faqTitle: pod.faqTitle,
     faq: [...pod.faq],
     tocCompare: "Dome / Square",
+    ...TOC_BAR,
     compareSectionId: "shape-guide",
     pdpNote: "Dome vs Square body. See the series guide.",
     metaTitle: "How to Choose a Pod Food Trailer Size | Chris Machinery",
@@ -467,6 +483,11 @@ export type SeriesGuideCms = {
   quoteHref?: string;
   faqTitle?: string;
   faq?: { question?: string; answer?: string }[];
+  tocCompare?: string;
+  tocSize?: string;
+  tocKitchen?: string;
+  tocFaq?: string;
+  tocModels?: string;
 };
 
 export function resolveSeriesFaq(series: GuideSeries, cms?: SeriesGuideCms | null) {
@@ -514,6 +535,11 @@ export function seedSeriesGuide(series: GuideSeries) {
     quoteLabel: d.quoteLabel,
     quoteHref: d.quoteHref,
     faqTitle: d.faqTitle,
+    tocCompare: d.tocCompare,
+    tocSize: d.tocSize,
+    tocKitchen: d.tocKitchen,
+    tocFaq: d.tocFaq,
+    tocModels: d.tocModels,
     faq: d.faq.map((item, index) => ({
       _key: `${series}Faq${index}`,
       _type: "object" as const,

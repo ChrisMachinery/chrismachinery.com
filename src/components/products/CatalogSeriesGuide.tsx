@@ -4,11 +4,29 @@ import { LinkPlaceholder } from "@/components/media/LinkPlaceholder";
 import { PlainTextBody } from "@/components/media/PlainTextBody";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { cmsEdit, cmsLinkEdit, stegaText } from "@/lib/sanity/visual";
+import { isProductDetailPath } from "@/lib/productUrl";
 import {
   SERIES_GUIDE_DEFAULTS,
   type GuideSeries,
   type SeriesGuideCms,
 } from "@/lib/seriesGuides";
+
+function productPathFromHref(raw: string) {
+  const value = raw.trim();
+  if (!value) return "";
+  try {
+    const url = value.startsWith("http") ? new URL(value) : new URL(value, "https://www.chrismachinery.com");
+    if (!isProductDetailPath(url.pathname)) return "";
+    return url.pathname.replace(/^\/(en|es|fr|ar)(?=\/)/, "") || url.pathname;
+  } catch {
+    return "";
+  }
+}
+
+function productSlugFromPath(pathname: string) {
+  const parts = pathname.split("/").filter(Boolean);
+  return parts[0] === "products" ? parts[2] || "" : "";
+}
 
 export function CatalogSeriesGuide({
   series,
@@ -24,12 +42,20 @@ export function CatalogSeriesGuide({
   const d = SERIES_GUIDE_DEFAULTS[series];
   const s = (path: string, text: string) => stegaText(documentId, "sitePage", path, text);
   const toc = [
-    { href: `#${d.compareSectionId}`, label: d.tocCompare },
-    { href: `#${series}-size`, label: "Size × menu" },
-    { href: `#${series}-kitchen`, label: "Kitchen & axle" },
-    { href: `#${series}-faq`, label: "FAQ" },
-    { href: "#series-catalog", label: "Models" },
-  ] as const;
+    {
+      href: `#${d.compareSectionId}`,
+      label: cms?.tocCompare?.trim() || d.tocCompare,
+      path: "podGuide.tocCompare",
+    },
+    { href: `#${series}-size`, label: cms?.tocSize?.trim() || d.tocSize, path: "podGuide.tocSize" },
+    {
+      href: `#${series}-kitchen`,
+      label: cms?.tocKitchen?.trim() || d.tocKitchen,
+      path: "podGuide.tocKitchen",
+    },
+    { href: `#${series}-faq`, label: cms?.tocFaq?.trim() || d.tocFaq, path: "podGuide.tocFaq" },
+    { href: "#series-catalog", label: cms?.tocModels?.trim() || d.tocModels, path: "podGuide.tocModels" },
+  ];
   const rows = d.sizeRows.map((row, i) => {
     const cmsRow = cms?.sizeRows?.[i];
     return {
@@ -91,8 +117,9 @@ export function CatalogSeriesGuide({
               key={item.href}
               href={item.href}
               className="flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-full bg-accent px-1 text-center text-[11px] font-semibold leading-tight text-brand sm:px-3 sm:text-sm"
+              {...cmsEdit(documentId, "sitePage", item.path)}
             >
-              {item.label}
+              {s(item.path, item.label)}
             </a>
           ))}
         </div>
@@ -100,7 +127,9 @@ export function CatalogSeriesGuide({
 
       <section id={shapeGuide ? undefined : d.compareSectionId} className={shapeGuide ? undefined : "scroll-mt-24"}>
         {shapeGuide ?? (
-          <h2 className="type-section">{d.tocCompare}</h2>
+          <h2 className="type-section" {...cmsEdit(documentId, "sitePage", "podGuide.tocCompare")}>
+            {s("podGuide.tocCompare", cms?.tocCompare?.trim() || d.tocCompare)}
+          </h2>
         )}
         <PlainTextBody
           text={cms?.shapeBody?.trim() || d.shapeBody}
@@ -123,10 +152,32 @@ export function CatalogSeriesGuide({
           className="mt-4"
         />
         <div className="mt-6 grid gap-5 lg:grid-cols-3" {...cmsEdit(documentId, "sitePage", "podGuide.sizeRows")}>
-          {rows.map((row, i) => (
+          {rows.map((row, i) => {
+            const productPath = productPathFromHref(row.exampleHref);
+            const productSlug = productSlugFromPath(productPath);
+            const cardQuoteHref = (
+              productSlug
+                ? `/contact?product=${productSlug}&from=${encodeURIComponent(`/products/${series}`)}`
+                : quoteHref
+            ) as ComponentProps<typeof PreviewNavLink>["href"];
+            return (
             <article key={row.scene} className="flex flex-col rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
-              <h3 className="font-heading text-lg text-brand" {...cmsEdit(documentId, "sitePage", `podGuide.sizeRows[${i}].scene`)}>
-                {s(`podGuide.sizeRows[${i}].scene`, row.scene)}
+              <h3
+                className="font-heading text-lg text-brand"
+                {...cmsLinkEdit(documentId, "sitePage", `podGuide.sizeRows[${i}].exampleHref`)}
+              >
+                <span {...cmsEdit(documentId, "sitePage", `podGuide.sizeRows[${i}].scene`)}>
+                  {productPath ? (
+                    <PreviewNavLink
+                      href={productPath as ComponentProps<typeof PreviewNavLink>["href"]}
+                      className="text-inherit no-underline hover:no-underline"
+                    >
+                      {s(`podGuide.sizeRows[${i}].scene`, row.scene)}
+                    </PreviewNavLink>
+                  ) : (
+                    s(`podGuide.sizeRows[${i}].scene`, row.scene)
+                  )}
+                </span>
               </h3>
               <dl className="type-body mt-3 space-y-1 text-sm">
                 <div>
@@ -173,18 +224,17 @@ export function CatalogSeriesGuide({
                 src={row.imageUrl}
               />
               <div className="mt-4">
-                <LinkPlaceholder
-                  documentId={documentId}
-                  path={`podGuide.sizeRows[${i}].exampleHref`}
-                  writePath={`podGuide.sizeRows[${i}].exampleHref`}
-                  label={row.exampleLabel}
-                  href={row.exampleHref}
-                />
+                <PreviewNavLink
+                  href={cardQuoteHref}
+                  className="min-touch inline-flex items-center justify-center rounded bg-accent px-6 font-heading text-brand no-underline hover:no-underline"
+                >
+                  {s("podGuide.quoteLabel", quoteLabel)}
+                </PreviewNavLink>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
-        <div className="mt-6">{quoteButton()}</div>
       </section>
 
       <section id={`${series}-kitchen`} className="scroll-mt-24">

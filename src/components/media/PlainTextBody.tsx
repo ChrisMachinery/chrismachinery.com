@@ -20,6 +20,31 @@ function headingLevel(line: string): 2 | 3 | null {
   return match[1] === "##" ? 2 : 3;
 }
 
+function Inline({
+  text,
+  encode,
+}: {
+  text: string;
+  encode: (value: string) => string;
+}) {
+  const parts = text.split(/(\*\*[^*]+?\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const bold = part.match(/^\*\*([^*]+?)\*\*$/);
+        if (bold) {
+          return (
+            <strong key={i} className="font-semibold text-brand">
+              {encode(bold[1])}
+            </strong>
+          );
+        }
+        return <span key={i}>{encode(part)}</span>;
+      })}
+    </>
+  );
+}
+
 export function PlainTextBody({
   text,
   documentId,
@@ -87,27 +112,29 @@ export function PlainTextBody({
               const introHeading = j === intro.length - 1 && bullets.length > 0;
               if (introHeading) {
                 return (
-                  <p key={`s-${j}`} className="type-body font-semibold text-black/80">
-                    {encode(line)}
+                  <p key={`s-${j}`} className="type-body font-semibold text-brand">
+                    <Inline text={line} encode={encode} />
                   </p>
                 );
               }
               return (
                 <p key={`p-${j}`} className={j === 0 ? "type-body" : "type-body mt-3"}>
-                  {encode(line)}
+                  <Inline text={line} encode={encode} />
                 </p>
               );
             })}
             {bullets.length ? (
               <ul className={`type-body list-disc space-y-1.5 ps-5 ${intro.length ? "mt-2" : ""}`}>
                 {bullets.map((line, j) => (
-                  <li key={j}>{encode(bulletText(line))}</li>
+                  <li key={j}>
+                    <Inline text={bulletText(line)} encode={encode} />
+                  </li>
                 ))}
               </ul>
             ) : null}
             {extra.map((line, j) => (
               <p key={`e-${j}`} className="type-body mt-3">
-                {encode(line)}
+                <Inline text={line} encode={encode} />
               </p>
             ))}
           </div>

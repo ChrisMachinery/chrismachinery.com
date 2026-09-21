@@ -1,5 +1,12 @@
 import { defineField, defineType } from "sanity";
 import { imageAltField, siteImageHotspot } from "../imageHotspot";
+import {
+  GuideAxleInput,
+  GuideLengthInput,
+  GuideMaterialInput,
+  GuideShapeInput,
+  GuideWidthInput,
+} from "../components/GuideSizeParamInputs";
 
 const aboutOnly = ({ document }: { document?: { path?: unknown } }) => document?.path !== "/about";
 const contactOnly = ({ document }: { document?: { path?: unknown } }) => document?.path !== "/contact";
@@ -168,6 +175,38 @@ export const sitePage = defineType({
       fields: [
         defineField({ name: "introTitle", title: "H1 下方选型标题", type: "string" }),
         defineField({
+          name: "tocCompare",
+          title: "目录栏 · 第 1 粒（对比）",
+          type: "string",
+          description: "空则用默认：Pod=Dome / Square，Airstream=375 / 500 / 700。点黄条可改。",
+        }),
+        defineField({
+          name: "tocSize",
+          title: "目录栏 · 第 2 粒",
+          type: "string",
+          initialValue: "Sizing Guide",
+          description: "空则显示 Sizing Guide。",
+        }),
+        defineField({
+          name: "tocKitchen",
+          title: "目录栏 · 第 3 粒",
+          type: "string",
+          initialValue: "Specs & Layout",
+          description: "空则显示 Specs & Layout。",
+        }),
+        defineField({
+          name: "tocFaq",
+          title: "目录栏 · 第 4 粒",
+          type: "string",
+          initialValue: "FAQ",
+        }),
+        defineField({
+          name: "tocModels",
+          title: "目录栏 · 第 5 粒",
+          type: "string",
+          initialValue: "Models",
+        }),
+        defineField({
           name: "intro",
           title: "定位正文（约 100–140 词）",
           type: "text",
@@ -202,15 +241,46 @@ export const sitePage = defineType({
               fields: [
                 defineField({ name: "scene", title: "场景名", type: "string" }),
                 defineField({
-                  name: "length",
-                  title: "长度（现有筛选项）",
+                  name: "exampleHref",
+                  title: "链接",
                   type: "string",
-                  description: "只写已有长度，例如 2300 / 2500 / 2800 / 2900 / 3000 mm",
+                  description: "粘贴推荐产品页，例如 /products/pod/pod-2300-… 或完整 URL。场景名会成为标题入口，无下划线。",
                 }),
-                defineField({ name: "width", title: "宽度", type: "string" }),
-                defineField({ name: "axle", title: "轴数", type: "string" }),
-                defineField({ name: "shape", title: "造型", type: "string" }),
-                defineField({ name: "material", title: "材质", type: "string" }),
+                defineField({
+                  name: "length",
+                  title: "长度",
+                  type: "string",
+                  description: "与本系列产品筛选相同，可多选。网页显示为 2300 / 2500 mm。",
+                  components: { input: GuideLengthInput },
+                }),
+                defineField({
+                  name: "width",
+                  title: "宽度",
+                  type: "string",
+                  description: "与本系列产品筛选相同，可多选。",
+                  components: { input: GuideWidthInput },
+                }),
+                defineField({
+                  name: "axle",
+                  title: "轴数",
+                  type: "string",
+                  description: "Single / Tandem，与本系列筛选相同。",
+                  components: { input: GuideAxleInput },
+                }),
+                defineField({
+                  name: "shape",
+                  title: "造型",
+                  type: "string",
+                  description: "与本系列筛选相同（Pod=Dome/Square，Airstream=弧度）。",
+                  components: { input: GuideShapeInput },
+                }),
+                defineField({
+                  name: "material",
+                  title: "材质",
+                  type: "string",
+                  description: "与本系列筛选相同。",
+                  components: { input: GuideMaterialInput },
+                }),
                 defineField({ name: "note", title: "说明", type: "text", rows: 3 }),
                 defineField({
                   name: "image",
@@ -219,13 +289,6 @@ export const sitePage = defineType({
                   description: "可选。4:3，约 1200×900。空则占位图会写出该档参数。",
                   options: { hotspot: siteImageHotspot },
                   fields: [imageAltField],
-                }),
-                defineField({ name: "exampleLabel", title: "代表车型链接文案", type: "string" }),
-                defineField({
-                  name: "exampleHref",
-                  title: "代表车型链接（可空）",
-                  type: "string",
-                  description: "写入位置：podGuide.sizeRows[n].exampleHref。粘贴 /products/{系列}/slug 或完整 URL。空则网页显示【LINK】占位。",
                 }),
               ],
               preview: { select: { title: "scene", subtitle: "length" } },

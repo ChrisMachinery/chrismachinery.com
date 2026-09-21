@@ -5,7 +5,6 @@ import { getCustomizeOptions, getSolution, getSolutions } from "@/lib/sanity/fet
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { MarkdownBody } from "@/components/media/MarkdownBody";
 import { PortableText } from "@/components/sanity/PortableText";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
 import { equipmentPackageTotal, withSearchParams } from "@/lib/solutionQuote";
 import { uiText } from "@/lib/i18nCopy";
@@ -63,7 +62,6 @@ export default async function SolutionArticlePage({
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
-      <Hreflang path={`/solutions/${item.slug}`} />
       <PreviewNavLink href="/solutions" className="text-sm font-semibold text-brand underline underline-offset-2">
         {t("solutions.backToCatalog")}
       </PreviewNavLink>

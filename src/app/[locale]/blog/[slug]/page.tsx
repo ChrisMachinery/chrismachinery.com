@@ -5,7 +5,6 @@ import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getBlogPost, getBlogPosts } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { PortableText } from "@/components/sanity/PortableText";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import { stegaText } from "@/lib/sanity/visual";
 import type { Metadata } from "next";
@@ -78,7 +77,6 @@ export default async function BlogPostPage({
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
-      <Hreflang path={`/blog/${slug}`} />
       <ImgPlaceholder
         documentId={post._id}
         documentType="blogPost"

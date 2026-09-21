@@ -10,7 +10,7 @@ import { POD_SHAPE_PDP_NOTE } from "@/lib/podShapeGuide";
 import { isGuideSeries, SERIES_GUIDE_DEFAULTS } from "@/lib/seriesGuides";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
-import { Hreflang, JsonLd } from "@/components/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { productJsonLd } from "@/lib/seo";
 import { productCustomizable, productIncluded, productKgLabel, productOverallLength, productOverallWidth, productSizeLabel } from "@/data/products";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
@@ -94,7 +94,6 @@ export default async function ProductDetailPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <Hreflang path={`/products/${series}/${slug}`} />
       <JsonLd data={productJsonLd(product)} />
       <div className="grid gap-10 lg:grid-cols-2">
         <ProductGallery

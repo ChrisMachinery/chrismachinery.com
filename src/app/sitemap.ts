@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getBlogPosts, getCatalogProducts, getSolutions } from "@/lib/sanity/fetch";
+import { routing } from "@/i18n/routing";
 import { seriesList } from "@/lib/site";
 import { localeLanguageMap, localizedHref } from "@/lib/seoCanonical";
 
@@ -21,10 +22,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...solutions.map((item) => `/solutions/${item.slug}`),
     ...posts.map((post) => `/blog/${post.slug}`),
   ];
-  return paths.map((path) => ({
-    url: localizedHref("en", path),
-    changeFrequency: "weekly" as const,
-    priority: path === "/" ? 1 : 0.7,
-    alternates: { languages: localeLanguageMap(path) },
-  }));
+  return paths.flatMap((path) =>
+    routing.locales.map((locale) => ({
+      url: localizedHref(locale, path),
+      changeFrequency: "weekly" as const,
+      priority: path === "/" && locale === "en" ? 1 : 0.7,
+      alternates: { languages: localeLanguageMap(path) },
+    })),
+  );
 }

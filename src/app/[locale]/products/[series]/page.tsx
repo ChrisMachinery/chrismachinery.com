@@ -7,7 +7,7 @@ import { CatalogSeriesGuide } from "@/components/products/CatalogSeriesGuide";
 import { faqJsonLd, isGuideSeries, resolveSeriesFaq, SERIES_GUIDE_DEFAULTS } from "@/lib/seriesGuides";
 import { AIRSTREAM_ARC_GUIDE_DEFAULTS, AIRSTREAM_ARC_IMAGES } from "@/lib/airstreamArc";
 import { POD_SHAPE_GUIDE_DEFAULTS, POD_SHAPE_IMAGES } from "@/lib/podShapeGuide";
-import { Hreflang, JsonLd } from "@/components/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getProductsBySeries, getSitePage, getStockBoardId, getStockCards } from "@/lib/sanity/fetch";
 import { seriesList, seriesMeta, type SeriesSlug } from "@/lib/site";
 import { productJsonLd } from "@/lib/seo";
@@ -84,7 +84,6 @@ export default async function SeriesPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <Hreflang path={`/products/${series}`} />
       {items.slice(0, 3).map((item) => (
         <JsonLd key={item.sku} data={productJsonLd(item)} />
       ))}

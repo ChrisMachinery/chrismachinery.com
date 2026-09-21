@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/contact/ContactForm";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { getCatalogProduct, getSitePage, getSolutions, getCustomizeOptions } from "@/lib/sanity/fetch";
 import { uiText } from "@/lib/i18nCopy";
 import { stegaText } from "@/lib/sanity/visual";
@@ -72,7 +71,6 @@ export default async function ContactPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <Hreflang path="/contact" />
       <h1 className="sr-only">{s("title", uiText(locale, page?.title, t("nav.contact")))}</h1>
       <Suspense>
         <ContactForm

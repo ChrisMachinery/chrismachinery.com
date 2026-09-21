@@ -2,7 +2,6 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { getCatalogProducts, getCustomizeOptions, getSitePage, getSolutions } from "@/lib/sanity/fetch";
 import { Customizer } from "@/components/customizer/CanvasPreview";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import type { Metadata } from "next";
@@ -45,7 +44,6 @@ export default async function CustomizePage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <Hreflang path="/customize" />
       <h1 className="type-page mb-8">
         {stegaText(page?._id, "sitePage", "title", uiText(locale, page?.title, t("title")))}
       </h1>

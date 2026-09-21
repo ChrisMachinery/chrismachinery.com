@@ -3,7 +3,6 @@ import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getSitePage, getSolutions, getSolutionsBoardId } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { DetailShotCarousel } from "@/components/home/DetailShotCarousel";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
@@ -54,7 +53,6 @@ export default async function SolutionsPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <Hreflang path="/solutions" />
       <h1 className="type-page">{pageS("title", uiText(locale, page?.title, t("solutions.title")))}</h1>
       <p className="type-lede mt-3 w-full">
         {pageS("subtitle", uiText(locale, page?.subtitle, t("solutions.subtitle") || catalogSubtitle))}

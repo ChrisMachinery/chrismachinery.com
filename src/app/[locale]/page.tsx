@@ -5,7 +5,6 @@ import { HeroBanner } from "@/components/home/HeroBanner";
 import { AdvantageIcon } from "@/components/home/AdvantageIcon";
 import { DetailShotCarousel } from "@/components/home/DetailShotCarousel";
 import { ProductDetailRows } from "@/components/home/ProductDetailRows";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { FlagAvatar } from "@/components/home/FlagAvatar";
 import { getPageContent } from "@/lib/sanity/fetch";
 import { urlFor } from "@/lib/sanity/client";
@@ -217,7 +216,6 @@ export default async function HomePage({
 
   return (
     <div>
-      <Hreflang path="/" />
       <HeroBanner documentId={id} slides={heroSlides} />
 
       <section className="bg-white py-16 md:py-20">

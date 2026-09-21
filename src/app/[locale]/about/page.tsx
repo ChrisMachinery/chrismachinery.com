@@ -4,7 +4,6 @@ import { FactoryPhotoGallery, FactoryPhotoGalleryEditor } from "@/components/abo
 import { ProcessStepCarousel } from "@/components/about/ProcessStepCarousel";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { PlainTextBody } from "@/components/media/PlainTextBody";
-import { Hreflang } from "@/components/seo/JsonLd";
 import { factoryVideoEmbedSrc } from "@/lib/factoryVideoEmbed";
 import { getSitePage } from "@/lib/sanity/fetch";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
@@ -57,7 +56,6 @@ export default async function AboutPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <Hreflang path="/about" />
       <h1 className="type-page" {...cmsEdit(id, "sitePage", "title")}>
         {s("title", uiText(locale, page?.title, copy.title))}
       </h1>

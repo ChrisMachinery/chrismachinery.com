@@ -8,14 +8,22 @@ import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Custom Trailer Solutions & Equipment - Chris Machinery",
-  description:
-    "Coffee, fast food, ice cream, mobile bar and night market trailer chapters. Open a card for the full article, then get a quote.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return withCanonical(locale, "/solutions", {
+    title: "Custom Trailer Solutions & Equipment - Chris Machinery",
+    description:
+      "Coffee, fast food, ice cream, mobile bar and night market trailer chapters. Open a card for the full article, then get a quote.",
+  });
+}
 
 export default async function SolutionsPage({
   params,

@@ -6,11 +6,19 @@ import { isProductDetailPath } from "./lib/productUrl";
 const intl = createMiddleware(routing);
 
 export default function proxy(request: NextRequest) {
-  if (request.nextUrl.search && isProductDetailPath(request.nextUrl.pathname)) {
-    const url = request.nextUrl.clone();
+  const url = request.nextUrl.clone();
+  const { pathname } = url;
+
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
+    url.pathname = pathname.slice(3) || "/";
+    return NextResponse.redirect(url, 301);
+  }
+
+  if (url.search && isProductDetailPath(pathname)) {
     url.search = "";
     return NextResponse.redirect(url, 301);
   }
+
   return intl(request);
 }
 

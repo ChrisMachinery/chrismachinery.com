@@ -16,6 +16,7 @@ import { uiText } from "@/lib/i18nCopy";
 import { localizedAirstreamGuide, localizedPodGuide, localizedSeries } from "@/data/localizedHome";
 import type { Product } from "@/data/products";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
@@ -26,28 +27,29 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ series: string }>;
+  params: Promise<{ locale: string; series: string }>;
 }): Promise<Metadata> {
-  const { series } = await params;
+  const { locale, series } = await params;
+  const path = `/products/${series}`;
   if (series === "in-stock") {
-    return {
+    return withCanonical(locale, path, {
       title: "In Stock Food Trailers | Chris Machinery",
       description: "Cross-series units available for immediate shipment.",
-    };
+    });
   }
   if (isGuideSeries(series)) {
     const guide = SERIES_GUIDE_DEFAULTS[series];
-    return {
+    return withCanonical(locale, path, {
       title: guide.metaTitle,
       description: guide.metaDescription,
-    };
+    });
   }
   const meta = seriesMeta[series as Exclude<SeriesSlug, "in-stock">];
   if (!meta) return {};
-  return {
+  return withCanonical(locale, path, {
     title: `${meta.name} for Sale | Custom Manufacturer - Chris Machinery`,
     description: `Explore our ${meta.name}. Factory-built, CE certified. Get a quote today!`,
-  };
+  });
 }
 
 export default async function SeriesPage({

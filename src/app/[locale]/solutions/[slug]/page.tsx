@@ -11,6 +11,7 @@ import { equipmentPackageTotal, withSearchParams } from "@/lib/solutionQuote";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 import type { ComponentProps } from "react";
 
 export const revalidate = 60;
@@ -23,16 +24,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const item = await getSolution(slug);
   if (!item) return {};
-  return {
+  return withCanonical(locale, `/solutions/${item.slug}`, {
     title: `${item.name} Food Trailer Solution | Chris Machinery`,
     description: item.lede || item.advice,
-    alternates: { canonical: `/solutions/${item.slug}` },
-  };
+  });
 }
 
 export default async function SolutionArticlePage({

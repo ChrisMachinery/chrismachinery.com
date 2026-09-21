@@ -5,13 +5,21 @@ import { getBlogPosts, getSitePage } from "@/lib/sanity/fetch";
 import { stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 10;
 
-export const metadata: Metadata = {
-  title: "Blog | Food Trailer Guides & Cases - Chris Machinery",
-  description: "Buying guides, industry news, and customer case studies.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return withCanonical(locale, "/blog", {
+    title: "Blog | Food Trailer Guides & Cases - Chris Machinery",
+    description: "Buying guides, industry news, and customer case studies.",
+  });
+}
 
 export default async function BlogPage({
   params,

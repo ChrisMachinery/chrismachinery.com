@@ -9,6 +9,7 @@ import { Hreflang } from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import { stegaText } from "@/lib/sanity/visual";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
@@ -20,12 +21,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) return {};
-  return { title: `${post.title} | Chris Machinery`, description: post.excerpt };
+  return withCanonical(locale, `/blog/${slug}`, {
+    title: `${post.title} | Chris Machinery`,
+    description: post.excerpt,
+  });
 }
 
 function escapeHtml(value: string) {

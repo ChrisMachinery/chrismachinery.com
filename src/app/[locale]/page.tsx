@@ -20,12 +20,21 @@ import {
   localizedTestimonials,
 } from "@/data/localizedHome";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 10;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations("meta");
-  return { title: t("homeTitle"), description: t("homeDescription") };
+  return withCanonical(locale, "/", {
+    title: t("homeTitle"),
+    description: t("homeDescription"),
+  });
 }
 
 export default async function HomePage({

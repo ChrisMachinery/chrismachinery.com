@@ -6,13 +6,21 @@ import { Hreflang } from "@/components/seo/JsonLd";
 import { stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Customize Your Food Trailer | Chris Machinery",
-  description: "Choose series, size, colors, logo and kitchen equipment, then send a factory inquiry.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return withCanonical(locale, "/customize", {
+    title: "Customize Your Food Trailer | Chris Machinery",
+    description: "Choose series, size, colors, logo and kitchen equipment, then send a factory inquiry.",
+  });
+}
 
 export default async function CustomizePage({
   params,

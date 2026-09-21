@@ -23,6 +23,7 @@ import {
 } from "@/data/localizedHome";
 import { specLabel, specList } from "@/lib/specI18n";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
@@ -35,16 +36,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const product = await getCatalogProduct(slug);
   if (!product) return {};
-  return {
+  return withCanonical(locale, `/products/${product.series}/${product.slug}`, {
     title: `${product.name} (${productSizeLabel(product)} ${product.axle}) Food Trailer - Chris Machinery`,
     description: `Buy ${product.name} custom food trailer (body ${productSizeLabel(product)}, ${productShapes(product).join(" / ") || "standard"}, ${productMaterials(product).join(" / ") || "factory finish"}). Fast shipping worldwide.`,
-    alternates: { canonical: `/products/${product.series}/${product.slug}` },
-  };
+  });
 }
 
 export default async function ProductDetailPage({

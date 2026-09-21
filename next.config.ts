@@ -30,6 +30,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/en", destination: "/", permanent: true },
+      { source: "/en/:path*", destination: "/:path*", permanent: true },
+      { source: "/products", destination: "/products/pod", permanent: true },
+      { source: "/favicon.ico", destination: "/icon-48.png", permanent: true },
+      { source: "/zh", destination: "/", permanent: true },
+      { source: "/cn", destination: "/", permanent: true },
+      { source: "/zh-CN", destination: "/", permanent: true },
+      { source: "/zh-cn", destination: "/", permanent: true },
       { source: "/products/ny", destination: "/products/capsule", permanent: true },
       { source: "/products/ny/:slug", destination: "/products/capsule/:slug", permanent: true },
       { source: "/es/products/ny", destination: "/es/products/capsule", permanent: true },

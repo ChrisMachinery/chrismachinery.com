@@ -1,7 +1,7 @@
 import type { Product } from "@/data/products";
 import { productSizeLabel } from "@/data/products";
 import { productShapes } from "@/lib/productFamily";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { DEFAULT_OG, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function productJsonLd(product: Product) {
   const availability =
@@ -16,9 +16,10 @@ export function productJsonLd(product: Product) {
     "@type": "Product",
     name: product.name,
     image: [
-      product.imageUrl ?? `${SITE_URL}/images/products/${product.slug}.jpg`,
+      product.imageUrl,
       ...(product.galleryImages?.map((item) => item.url) ?? []),
-    ].filter((url, i, list) => list.indexOf(url) === i),
+      DEFAULT_OG,
+    ].filter((url, i, list): url is string => Boolean(url) && list.indexOf(url) === i),
     description: product.description,
     sku: product.sku,
     mpn: product.sku,

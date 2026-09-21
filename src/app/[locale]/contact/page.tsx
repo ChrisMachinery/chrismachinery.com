@@ -7,11 +7,19 @@ import { getCatalogProduct, getSitePage, getSolutions, getCustomizeOptions } fro
 import { uiText } from "@/lib/i18nCopy";
 import { stegaText } from "@/lib/sanity/visual";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
-export const metadata: Metadata = {
-  title: "Contact Chris Machinery | Food Trailer Quotes",
-  description: "Request a factory quote within 24 hours. WhatsApp, email, and inquiry form.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return withCanonical(locale, "/contact", {
+    title: "Contact Chris Machinery | Food Trailer Quotes",
+    description: "Request a factory quote within 24 hours. WhatsApp, email, and inquiry form.",
+  });
+}
 
 export default async function ContactPage({
   params,

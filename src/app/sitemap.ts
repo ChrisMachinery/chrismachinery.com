@@ -1,17 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getBlogPosts, getCatalogProducts, getSolutions } from "@/lib/sanity/fetch";
-import { seriesList, SITE_URL } from "@/lib/site";
-import { routing } from "@/i18n/routing";
-
-function localized(path: string) {
-  return routing.locales.map((locale) => {
-    const href =
-      locale === "en"
-        ? `${SITE_URL}${path}`
-        : `${SITE_URL}/${locale}${path === "/" ? "" : path}`;
-    return href;
-  });
-}
+import { seriesList } from "@/lib/site";
+import { localeLanguageMap, localizedHref } from "@/lib/seoCanonical";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, posts, solutions] = await Promise.all([
@@ -31,7 +21,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...solutions.map((item) => `/solutions/${item.slug}`),
     ...posts.map((post) => `/blog/${post.slug}`),
   ];
-  return paths.flatMap((path) =>
-    localized(path).map((url) => ({ url, changeFrequency: "weekly" as const, priority: path === "/" ? 1 : 0.7 })),
-  );
+  return paths.map((path) => ({
+    url: localizedHref("en", path),
+    changeFrequency: "weekly" as const,
+    priority: path === "/" ? 1 : 0.7,
+    alternates: { languages: localeLanguageMap(path) },
+  }));
 }

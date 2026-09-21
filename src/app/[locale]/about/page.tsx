@@ -11,13 +11,21 @@ import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import { localizedAbout } from "@/data/localizedHome";
 import type { Metadata } from "next";
+import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "About Chris Machinery | Food Trailer Factory",
-  description: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return withCanonical(locale, "/about", {
+    title: "About Chris Machinery | Food Trailer Factory",
+    description: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
+  });
+}
 
 export default async function AboutPage({
   params,

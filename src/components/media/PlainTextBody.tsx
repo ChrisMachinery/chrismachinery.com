@@ -109,14 +109,6 @@ export function PlainTextBody({
                   </Tag>
                 );
               }
-              const introHeading = j === intro.length - 1 && bullets.length > 0;
-              if (introHeading) {
-                return (
-                  <p key={`s-${j}`} className="type-body font-semibold text-brand">
-                    <Inline text={line} encode={encode} />
-                  </p>
-                );
-              }
               return (
                 <p key={`p-${j}`} className={j === 0 ? "type-body" : "type-body mt-3"}>
                   <Inline text={line} encode={encode} />

@@ -5,11 +5,11 @@ import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 
 export function ProductGallery({
   documentId,
-  label,
+  alt,
   images,
 }: {
   documentId?: string;
-  label: string;
+  alt: string;
   images: { url: string; objectPosition?: string; path: string }[];
 }) {
   const [index, setIndex] = useState(0);
@@ -21,7 +21,7 @@ export function ProductGallery({
         documentId={documentId}
         documentType="product"
         path="mainImage"
-        label={label}
+        alt={alt}
         className="aspect-square w-full rounded-lg"
       />
     );
@@ -33,7 +33,7 @@ export function ProductGallery({
         documentId={documentId}
         documentType="product"
         path={current.path}
-        label={label}
+        alt={alt}
         className="aspect-square w-full rounded-lg"
         src={current.url}
         objectPosition={current.objectPosition}
@@ -55,7 +55,7 @@ export function ProductGallery({
                 documentId={documentId}
                 documentType="product"
                 path={image.path}
-                label={`${label} ${i + 1}`}
+                alt={`${alt} photo ${i + 1}`}
                 className="aspect-square w-full"
                 src={image.url}
                 objectPosition={image.objectPosition}

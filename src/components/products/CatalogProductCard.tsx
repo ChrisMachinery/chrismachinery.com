@@ -49,7 +49,7 @@ export function CatalogProductCard({
         documentId={item._id}
         documentType="product"
         path="mainImage"
-        label={`${item.series}系列白底图`}
+        alt={item.name}
         className="aspect-square w-full shrink-0"
         src={item.imageUrl}
         objectPosition={item.imageObjectPosition}

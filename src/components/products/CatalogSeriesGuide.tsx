@@ -218,8 +218,7 @@ export function CatalogSeriesGuide({
                 documentId={documentId}
                 documentType="sitePage"
                 path={`podGuide.sizeRows[${i}].image`}
-                label={row.imageLabel}
-                alt={row.imageAlt || `${row.scene} ${series} size band`}
+                alt={row.imageAlt || `${row.scene} ${series} food trailer`}
                 className="mt-4 aspect-[4/3] w-full rounded-lg"
                 src={row.imageUrl}
               />

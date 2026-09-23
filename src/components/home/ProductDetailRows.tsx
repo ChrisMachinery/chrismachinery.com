@@ -43,7 +43,7 @@ export function ProductDetailRows({
                   documentId={documentId}
                   documentType="pageContent"
                   path={`productDetails[${i}].image`}
-                  label={item.imageLabel}
+                  alt={item.title}
                   className={`aspect-[8/5] w-full rounded-2xl ${imageFirst ? "lg:order-1" : ""}`}
                   src={item.imageUrl}
                 />

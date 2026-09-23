@@ -100,8 +100,7 @@ export function DetailShotCarousel({
                 documentId={documentId}
                 documentType={documentType}
                 path={`${pathPrefix}[${i}].image`}
-                label={slide.imageLabel}
-                alt={slide.alt}
+                alt={slide.alt || ""}
                 className="aspect-[4/3] w-full rounded-xl"
                 src={slide.imageUrl}
               />

@@ -1,8 +1,7 @@
-import { vercelStegaClean } from "@vercel/stega";
-import { cmsEdit, stegaText, type SanityEditProps } from "@/lib/sanity/visual";
+import { cmsEdit, type SanityEditProps } from "@/lib/sanity/visual";
 
 export function ImgPlaceholder({
-  label,
+  label: _label,
   alt,
   className = "",
   priority = false,
@@ -12,7 +11,7 @@ export function ImgPlaceholder({
   documentType,
   path,
 }: {
-  label: string;
+  label?: string;
   alt?: string;
   className?: string;
   priority?: boolean;
@@ -22,12 +21,7 @@ export function ImgPlaceholder({
   documentType?: string;
   path?: string;
 }) {
-  const encoded =
-    documentId && documentType && path
-      ? stegaText(documentId, documentType, path, vercelStegaClean(label))
-      : label;
-  const clean = vercelStegaClean(encoded);
-  const seoAlt = vercelStegaClean(alt ?? "");
+  const seoAlt = (alt || "").trim();
   const edit: SanityEditProps | undefined =
     documentId && documentType && path ? cmsEdit(documentId, documentType, path) : undefined;
 
@@ -37,34 +31,17 @@ export function ImgPlaceholder({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
-          alt={seoAlt || clean}
+          alt={seoAlt}
           className="pointer-events-none h-full w-full object-cover"
           style={objectPosition ? { objectPosition } : undefined}
           loading={priority ? "eager" : "lazy"}
           draggable={false}
           suppressHydrationWarning
         />
-        <span
-          data-protect-image=""
-          className="img-seo-label absolute inset-0 z-[1] flex items-center justify-center overflow-hidden px-3 text-center text-sm text-transparent"
-          style={{ fontSize: 0, color: "transparent", overflow: "hidden" }}
-          aria-hidden
-        >
-          {encoded}
-        </span>
+        <span data-protect-image="" className="absolute inset-0 z-[1]" aria-hidden />
       </div>
     );
   }
 
-  return (
-    <div
-      className={`img-placeholder flex items-center justify-center text-center px-3 ${className}`}
-      role="img"
-      aria-label={clean}
-      data-priority={priority ? "true" : undefined}
-      {...edit}
-    >
-      [图片: {encoded}]
-    </div>
-  );
+  return <div className={`img-placeholder ${className}`} {...edit} />;
 }

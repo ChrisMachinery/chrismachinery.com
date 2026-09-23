@@ -54,8 +54,7 @@ export function StockCardCarousel({
             documentId={documentId}
             documentType="stockUnit"
             path={`photos[${i}]`}
-            label={`${label} ${i + 1}`}
-            alt={photo.alt}
+            alt={photo.alt || label}
             className="h-full w-full"
             src={photo.url}
           />

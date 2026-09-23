@@ -238,8 +238,7 @@ export default async function HomePage({
                   documentId={id}
                   documentType="pageContent"
                   path={`advantages[${i}].image`}
-                  label={item.imageLabel}
-                  alt={item.imageAlt}
+                  alt={item.imageAlt || item.title}
                   className="mt-4 aspect-[4/3] w-full rounded-2xl"
                   src={item.imageUrl}
                 />
@@ -306,7 +305,7 @@ export default async function HomePage({
             documentId={id}
             documentType="pageContent"
             path="aboutImage"
-            label="工厂车间实拍 - 焊接工位"
+            alt="Factory workshop"
             className="min-h-[260px] rounded-lg"
             src={page?.aboutImageUrl}
           />

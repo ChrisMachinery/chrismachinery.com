@@ -69,8 +69,7 @@ export function SeriesArcGuide({
                 documentId={documentId}
                 documentType="sitePage"
                 path={`arcGuides[${i}].image`}
-                label={`${label} ${placeholderSuffix}`}
-                alt={row.imageAlt || imageAlts?.[i]?.alt}
+                alt={row.imageAlt || imageAlts?.[i]?.alt || `${label} food trailer`}
                 className={`mt-4 ${imageAspectClass} w-full rounded-lg`}
                 src={row.imageUrl}
               />

@@ -47,7 +47,7 @@ export function ProcessStepCarousel({
               documentId={documentId}
               documentType="sitePage"
               path={`buildSteps[${stepIndex}].images[${i}]`}
-              label={`工序实拍 ${i + 1}/3 · 4:3 · 约 1200×900 JPG`}
+              alt={`Build step photo ${i + 1}`}
               className="h-full w-full break-words px-2 leading-snug"
               src={srcs?.[i]}
             />

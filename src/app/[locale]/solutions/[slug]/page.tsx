@@ -71,7 +71,7 @@ export default async function SolutionArticlePage({
         documentId={item._id}
         documentType="solution"
         path="sceneImage"
-        label={`场景图 ${item.name} food trailer`}
+        alt={`${title} food trailer`}
         className="mt-8 min-h-56 w-full rounded-lg"
         src={item.imageUrl}
       />

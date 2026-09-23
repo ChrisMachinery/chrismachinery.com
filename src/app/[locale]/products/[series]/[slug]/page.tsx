@@ -98,7 +98,7 @@ export default async function ProductDetailPage({
       <div className="grid gap-10 lg:grid-cols-2">
         <ProductGallery
           documentId={id}
-          label={`${product.series}系列 - ${productSizeLabel(product)} ${product.axle}白底图`}
+          alt={product.name}
           images={gallery}
         />
         <div>
@@ -244,7 +244,7 @@ export default async function ProductDetailPage({
                     documentId={item._id}
                     documentType="product"
                     path="mainImage"
-                    label={item.name}
+                    alt={item.name}
                     className="aspect-square w-full"
                     src={item.imageUrl}
                     objectPosition={item.imageObjectPosition}

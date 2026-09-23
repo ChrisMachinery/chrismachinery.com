@@ -104,7 +104,7 @@ export default async function AboutPage({
               documentId={id}
               documentType="sitePage"
               path="heroImage"
-              label="可贴 YouTube 链接播视频，或放工厂全景 1 张。建议 16:9，约 1800×1000 JPG。"
+              alt="Factory"
               className="min-h-64 rounded-lg lg:min-h-80"
               src={page?.heroImageUrl}
             />

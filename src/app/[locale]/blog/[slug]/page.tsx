@@ -81,7 +81,7 @@ export default async function BlogPostPage({
         documentId={post._id}
         documentType="blogPost"
         path="coverImage"
-        label={`博客大图 ${post.title}`}
+        alt={post.title}
         className="min-h-56 rounded-lg"
         src={post.coverUrl}
       />

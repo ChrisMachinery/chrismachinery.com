@@ -64,7 +64,7 @@ export function Header({
             documentId={cms?.documentId}
             documentType="pageContent"
             path="logo"
-            label="网站Logo"
+            alt={cms?.brand ?? "Chris Machinery"}
             className="h-10 w-10 shrink-0 rounded-sm"
             src={cms?.logoUrl}
           />

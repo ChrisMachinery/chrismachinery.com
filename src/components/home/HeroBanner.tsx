@@ -87,7 +87,7 @@ export function HeroBanner({
               documentId={documentId}
               documentType="pageContent"
               path={`heroSlides[${i}].image`}
-              label={slide.imageLabel}
+              alt={slide.title}
               className="h-full min-h-[70vh] w-full md:min-h-[80vh]"
               src={slide.src}
             />

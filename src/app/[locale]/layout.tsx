@@ -125,7 +125,6 @@ img,video{max-width:100%;height:auto;display:block;}
   .site-nav-desktop{display:flex;align-items:center;gap:4px;}
   .site-menu-btn{display:none;}
 }
-.img-seo-label{position:absolute;inset:0;overflow:hidden;font-size:0;line-height:0;color:transparent;}
 `,
           }}
         />

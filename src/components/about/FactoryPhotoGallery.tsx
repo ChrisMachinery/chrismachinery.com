@@ -29,14 +29,14 @@ function PhotoGrid({
             documentId={documentId}
             documentType="sitePage"
             path={`gallery[${i}]`}
-            label={`补充工厂图 ${i + 1} · 16:9 · 1800×1000 JPG`}
+            alt={`Factory photo ${i + 1}`}
             className="aspect-video min-h-48 w-full rounded-lg"
             src={src}
           />
           {onRemove ? (
             <button
               type="button"
-              aria-label={`删除工厂图 ${i + 1}`}
+              aria-label={`Remove factory photo ${i + 1}`}
               onClick={() => onRemove(i)}
               className="absolute top-2 right-2 z-10 rounded bg-white/90 px-2 py-1 text-xs font-heading text-brand shadow"
             >

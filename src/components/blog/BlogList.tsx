@@ -47,7 +47,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
               documentId={post._id}
               documentType="blogPost"
               path="coverImage"
-              label={`博客封面 ${post.title}`}
+              alt={post.title}
               className="h-40"
               src={post.coverUrl}
             />

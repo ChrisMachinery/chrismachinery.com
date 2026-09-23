@@ -1,16 +1,18 @@
 import { draftMode } from "next/headers";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FactoryPhotoGallery, FactoryPhotoGalleryEditor } from "@/components/about/FactoryPhotoGallery";
 import { ProcessStepCarousel } from "@/components/about/ProcessStepCarousel";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { PlainTextBody } from "@/components/media/PlainTextBody";
 import { factoryVideoEmbedSrc } from "@/lib/factoryVideoEmbed";
-import { getSitePage } from "@/lib/sanity/fetch";
-import { cmsEdit, stegaText } from "@/lib/sanity/visual";
+import { getPageContent, getSitePage } from "@/lib/sanity/fetch";
+import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import { localizedAbout } from "@/data/localizedHome";
 import type { Metadata } from "next";
 import { withCanonical } from "@/lib/seoCanonical";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { aboutMetaDescription, aboutPageJsonLd, breadcrumbJsonLd, DEFAULT_ABOUT_STATS } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -20,9 +22,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const page = await getSitePage("/about");
   return withCanonical(locale, "/about", {
     title: "About Chris Machinery | Food Trailer Factory",
-    description: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
+    description: aboutMetaDescription({
+      factoryArea: page?.factoryArea,
+      annualOutput: page?.annualOutput,
+      technicians: page?.technicians,
+      countries: page?.countries,
+    }),
   });
 }
 
@@ -33,16 +41,19 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations();
   const copy = localizedAbout[locale] ?? localizedAbout.en;
   const isDraft = (await draftMode()).isEnabled;
-  const page = await getSitePage("/about");
+  const [page, site] = await Promise.all([getSitePage("/about"), getPageContent()]);
   const id = page?._id;
   const s = (path: string, text: string) => stegaText(id, "sitePage", path, text);
+  const heading = s("title", uiText(locale, page?.title, copy.title));
+  const lede = s("subtitle", uiText(locale, page?.subtitle, copy.subtitle));
   const stats = [
-    [copy.stats[0], s("factoryArea", page?.factoryArea ?? "5,000㎡")],
-    [copy.stats[1], s("annualOutput", page?.annualOutput ?? "200+ Units")],
-    [copy.stats[2], s("technicians", page?.technicians ?? "50+")],
-    [copy.stats[3], s("countries", page?.countries ?? "30+")],
+    [copy.stats[0], s("factoryArea", page?.factoryArea ?? DEFAULT_ABOUT_STATS.factoryArea)],
+    [copy.stats[1], s("annualOutput", page?.annualOutput ?? DEFAULT_ABOUT_STATS.annualOutput)],
+    [copy.stats[2], s("technicians", page?.technicians ?? DEFAULT_ABOUT_STATS.technicians)],
+    [copy.stats[3], s("countries", page?.countries ?? DEFAULT_ABOUT_STATS.countries)],
   ] as const;
   const factoryVideo = factoryVideoEmbedSrc(page?.factoryVideoUrl);
   const gallery = isDraft
@@ -53,14 +64,40 @@ export default async function AboutPage({
     body: s(`buildSteps[${i}].body`, uiText(locale, page?.buildSteps?.[i]?.body, step.body)),
     imageUrls: page?.buildSteps?.[i]?.imageUrls,
   }));
+  const description = aboutMetaDescription({
+    factoryArea: page?.factoryArea,
+    annualOutput: page?.annualOutput,
+    technicians: page?.technicians,
+    countries: page?.countries,
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: t("nav.home"), path: "/" },
+          { name: t("nav.about"), path: "/about" },
+        ])}
+      />
+      <JsonLd
+        data={aboutPageJsonLd({
+          locale,
+          name: plainText(heading),
+          description,
+          logo: site?.logoUrl,
+          email: site?.footerInfo?.email,
+          telephone: site?.footerInfo?.phone,
+          address: site?.footerInfo?.address,
+          sameAs: (site?.footerSocialLinks ?? [])
+            .map((item) => item.url || "")
+            .filter((url) => /^https?:\/\//i.test(url) && !url.includes("wa.me")),
+        })}
+      />
       <h1 className="type-page" {...cmsEdit(id, "sitePage", "title")}>
-        {s("title", uiText(locale, page?.title, copy.title))}
+        {heading}
       </h1>
       <p className="type-lede mt-4 max-w-3xl" {...cmsEdit(id, "sitePage", "subtitle")}>
-        {s("subtitle", uiText(locale, page?.subtitle, copy.subtitle))}
+        {lede}
       </p>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(([k, v], i) => {
@@ -104,7 +141,7 @@ export default async function AboutPage({
               documentId={id}
               documentType="sitePage"
               path="heroImage"
-              alt="Factory"
+              alt="Chris Machinery food trailer factory"
               className="min-h-64 rounded-lg lg:min-h-80"
               src={page?.heroImageUrl}
             />

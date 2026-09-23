@@ -203,11 +203,11 @@ async function main() {
     {
       path: "/about",
       title: "About Us",
-      subtitle: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
+      subtitle: "7,000㎡ factory, 500+ units per year, 15+ technicians, 30+ export markets.",
       extra: {
-        factoryArea: "5,000㎡",
-        annualOutput: "200+ Units",
-        technicians: "50+",
+        factoryArea: "7,000㎡",
+        annualOutput: "500+ Units",
+        technicians: "15+",
         countries: "30+",
       },
     },

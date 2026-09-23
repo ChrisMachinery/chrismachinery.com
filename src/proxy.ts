@@ -19,6 +19,16 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
+  const blog = pathname.match(/^(\/(?:es|fr|ar))?\/blog\/([^/]+)\/?$/i);
+  if (blog) {
+    const localePrefix = blog[1] || "";
+    const slug = blog[2];
+    if (slug !== slug.toLowerCase()) {
+      url.pathname = `${localePrefix}/blog/${slug.toLowerCase()}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
   return intl(request);
 }
 

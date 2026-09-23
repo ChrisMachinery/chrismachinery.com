@@ -12,6 +12,9 @@ import { advantageImageAlt, resolveAdvantageIcon } from "@/lib/advantageIcons";
 import { resolveTestimonialPlace } from "@/lib/testimonialFlags";
 import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { homeGraphJsonLd } from "@/lib/seo";
+import { socialHref } from "@/lib/socialLinks";
 import {
   localizedAdvantages,
   localizedBlock,
@@ -55,7 +58,7 @@ export default async function HomePage({
     {
       title: t("home.slogan"),
       subtitle: t("home.sub"),
-      imageLabel: "首页Hero Banner - 高清白底餐车全景图",
+      imageLabel: "Homepage hero banner",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
       secondaryText: t("cta.products"),
@@ -65,7 +68,7 @@ export default async function HomePage({
     {
       title: t("home.hero2Title"),
       subtitle: t("home.hero2Sub"),
-      imageLabel: "首页Banner 2 - Pod / Airstream 餐车",
+      imageLabel: "Homepage banner 2 - Pod / Airstream",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
       secondaryText: t("cta.products"),
@@ -74,7 +77,7 @@ export default async function HomePage({
     {
       title: t("home.hero3Title"),
       subtitle: t("home.hero3Sub"),
-      imageLabel: "首页Banner 3 - 热镀锌底盘",
+      imageLabel: "Homepage banner 3 - galvanized chassis",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
       secondaryText: t("cta.products"),
@@ -83,7 +86,7 @@ export default async function HomePage({
     {
       title: t("home.hero4Title"),
       subtitle: t("home.hero4Sub"),
-      imageLabel: "首页Banner 4 - 定制图纸",
+      imageLabel: "Homepage banner 4 - custom drawings",
       primaryText: t("cta.quote"),
       primaryHref: "/contact",
       secondaryText: t("cta.customize"),
@@ -174,7 +177,7 @@ export default async function HomePage({
       title: s(`advantages[${i}].title`, copy.title),
       body: s(`advantages[${i}].body`, copy.body),
       imageUrl: cms?.image ? urlFor(cms.image as never)?.width(1200).auto("format").url() : undefined,
-      imageLabel: s(`advantages[${i}].image`, `优势配图 ${i + 1}`),
+      imageLabel: s(`advantages[${i}].image`, `Advantage photo ${i + 1}`),
       imageAlt: advantageImageAlt(cms?.image, i),
     };
   });
@@ -183,12 +186,12 @@ export default async function HomePage({
     {
       title: "Galvanized chassis and food-grade interiors",
       body: "Hot-dip galvanized frames for coastal and winter roads. Stainless prep surfaces and wrap-ready bodies specified for daily service.",
-      imageLabel: "产品细节图 1 - 底盘与内装",
+      imageLabel: "Product detail 1 - chassis and interior",
     },
     {
       title: "Drawings, QC, and export packing",
       body: "Layout drawings before production. In-process and final inspection, then crate-ready packing with photos before shipment.",
-      imageLabel: "产品细节图 2 - 图纸与质检",
+      imageLabel: "Product detail 2 - drawings and QC",
     },
   ];
   const cmsDetails = page?.productDetails ?? [];
@@ -209,14 +212,30 @@ export default async function HomePage({
     return {
       imageUrl: cms?.imageUrl,
       caption: s(`detailShots[${i}].caption`, cms?.caption || ""),
-      imageLabel: s(`detailShots[${i}].image`, `局部细节图 ${i + 1} · 4:3 · 1200×900`),
+      imageLabel: s(`detailShots[${i}].image`, `Close-up ${i + 1}`),
       alt: cms?.imageAlt,
     };
   });
 
   return (
     <div>
+      <JsonLd
+        data={homeGraphJsonLd({
+          description: t("meta.homeDescription"),
+          logo: page?.logoUrl,
+          email: page?.footerInfo?.email,
+          telephone: page?.footerInfo?.phone,
+          address: page?.footerInfo?.address,
+          sameAs: (page?.footerSocialLinks ?? [])
+            .map((item) => socialHref(undefined, item.url) || item.url || "")
+            .filter((url) => /^https?:\/\//i.test(url) && !url.includes("wa.me")),
+        })}
+      />
       <HeroBanner documentId={id} slides={heroSlides} />
+      <section className="mx-auto max-w-7xl px-4 pt-10">
+        <h1 className="type-page">{t("home.pageHeading")}</h1>
+        <p className="type-lede mt-3 max-w-3xl">{t("meta.homeDescription")}</p>
+      </section>
 
       <section className="bg-white py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-4">

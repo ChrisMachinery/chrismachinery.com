@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getBlogPost, getBlogPosts } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { PortableText } from "@/components/sanity/PortableText";
 import { SITE_URL } from "@/lib/site";
-import { stegaText } from "@/lib/sanity/visual";
+import { plainText, stegaText } from "@/lib/sanity/visual";
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { withCanonical } from "@/lib/seoCanonical";
 
 export const revalidate = 60;
@@ -25,7 +27,7 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) return {};
-  return withCanonical(locale, `/blog/${slug}`, {
+  return withCanonical(locale, `/blog/${post.slug}`, {
     title: `${post.title} | Chris Machinery`,
     description: post.excerpt,
   });
@@ -56,11 +58,12 @@ export default async function BlogPostPage({
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations();
   const post = await getBlogPost(slug);
   if (!post) notFound();
   const all = await getBlogPosts();
   const related = all
-    .filter((item) => item.slug !== slug)
+    .filter((item) => item.slug !== post.slug)
     .sort((a, b) => {
       if (post.category === "Case Study") {
         const aCase = a.category === "Case Study" ? 0 : 1;
@@ -72,11 +75,29 @@ export default async function BlogPostPage({
     .slice(0, 3);
 
   const s = (path: string, text: string) => stegaText(post._id, "blogPost", path, text);
-  const shareUrl = encodeURIComponent(`${SITE_URL}/blog/${slug}`);
+  const shareUrl = encodeURIComponent(`${SITE_URL}/blog/${post.slug}`);
   const shareTitle = encodeURIComponent(post.title);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: t("nav.home"), path: "/" },
+          { name: t("nav.blog"), path: "/blog" },
+          { name: plainText(post.title), path: `/blog/${post.slug}` },
+        ])}
+      />
+      <JsonLd
+        data={blogPostingJsonLd({
+          locale,
+          title: plainText(post.title),
+          description: plainText(post.excerpt),
+          slug: post.slug,
+          date: post.date,
+          author: plainText(post.author),
+          image: post.coverUrl,
+        })}
+      />
       <ImgPlaceholder
         documentId={post._id}
         documentType="blogPost"
@@ -104,7 +125,7 @@ export default async function BlogPostPage({
       {post.category === "Case Study" ? (
         <p className="mt-10">
           <PreviewNavLink
-            href={`/contact?from=/blog/${slug}`}
+            href={`/contact?from=/blog/${post.slug}`}
             className="min-touch inline-flex items-center rounded bg-accent px-5 font-heading text-brand"
           >
             Get Quote

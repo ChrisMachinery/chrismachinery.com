@@ -27,6 +27,7 @@
     "customize": "Customize your own"
   },
   "home": {
+    "pageHeading": "Custom Food Trailers Manufacturer & Factory Direct Solutions",
     "slogan": "Factory-built food trailers, specified for real kitchens.",
     "sub": "Hot-dip galvanized chassis, 1-year warranty, drawings and quotes within 24 hours.",
     "advantages": "Why operators choose Chris Machinery",
@@ -36,7 +37,7 @@
     "footprint": "Global footprint",
     "testimonials": "What buyers say",
     "aboutTitle": "Built in-house, exported worldwide",
-    "aboutBody": "From drafting to QC, every trailer is produced in our own plant — 5,000㎡, 200+ units a year, 50+ technicians, 30+ export markets.",
+    "aboutBody": "From drafting to QC, every trailer is produced in our own plant — 7,000㎡, 500+ units a year, 15+ technicians, 30+ export markets.",
     "hero2Title": "Pod and Airstream series, wrap-ready from the factory.",
     "hero2Sub": "Compact street setups with stainless interiors and export packing included.",
     "hero3Title": "Galvanized chassis built for daily service.",
@@ -145,6 +146,7 @@
     "others": "Others"
   },
   "contact": {
+    "heading": "Contact Our Team for Custom Trailer Quotes",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",

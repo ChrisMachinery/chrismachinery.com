@@ -316,13 +316,14 @@ export async function getStockCards() {
 export async function getBlogPosts() {
   const docs = await querySanity<SanityPostDoc[]>(blogPostsQuery, {}, { useCdn: false });
   if (docs?.length) return docs.map(mapSanityPost);
-  return localPosts.map((item) => ({ ...item, _id: `post-${item.slug}` }));
+  return localPosts.map((item) => ({ ...item, _id: `post-${item.slug}`, slug: item.slug.toLowerCase() }));
 }
 
 export async function getBlogPost(slug: string) {
-  const doc = await querySanity<SanityPostDoc | null>(blogPostBySlugQuery, { slug }, { useCdn: false });
+  const needle = slug.trim().toLowerCase();
+  const doc = await querySanity<SanityPostDoc | null>(blogPostBySlugQuery, { slug: needle }, { useCdn: false });
   if (doc?.slug) return mapSanityPost(doc);
-  const local = localPosts.find((item) => item.slug === slug);
+  const local = localPosts.find((item) => item.slug.toLowerCase() === needle);
   return local ? { ...local, _id: `post-${local.slug}` } : undefined;
 }
 

@@ -10,6 +10,8 @@ import { equipmentPackageTotal, withSearchParams } from "@/lib/solutionQuote";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 import { withCanonical } from "@/lib/seoCanonical";
 import type { ComponentProps } from "react";
 
@@ -62,6 +64,13 @@ export default async function SolutionArticlePage({
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: t("nav.home"), path: "/" },
+          { name: t("nav.solutions"), path: "/solutions" },
+          { name: plainText(title), path: `/solutions/${item.slug}` },
+        ])}
+      />
       <PreviewNavLink href="/solutions" className="text-sm font-semibold text-brand underline underline-offset-2">
         {t("solutions.backToCatalog")}
       </PreviewNavLink>

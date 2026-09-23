@@ -102,9 +102,9 @@ export function HeroBanner({
             key={index}
             className="w-[min(100%,13.75rem)] rounded-md bg-white/25 p-2.5 shadow-sm ring-1 ring-white/35 backdrop-blur-[4px] sm:w-auto sm:max-w-xs sm:p-3 md:max-w-sm md:p-3.5"
           >
-            <h1 className="font-heading text-base leading-snug text-brand drop-shadow-sm sm:text-lg md:text-xl">
+            <h2 className="font-heading text-base leading-snug text-brand drop-shadow-sm sm:text-lg md:text-xl">
               {current.title}
-            </h1>
+            </h2>
             <p className="mt-1 text-xs leading-snug text-black/70 sm:text-sm">{current.subtitle}</p>
             <div className="mt-2.5 flex flex-col gap-1.5 sm:mt-3 sm:flex-row sm:flex-wrap sm:gap-2">
               <BannerLink

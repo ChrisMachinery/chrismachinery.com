@@ -96,7 +96,7 @@ export const blogPostsQuery = `*[_type == "blogPost" && defined(slug.current)] |
   category
 }`;
 
-export const blogPostBySlugQuery = `*[_type == "blogPost" && slug.current == $slug][0] {
+export const blogPostBySlugQuery = `*[_type == "blogPost" && lower(slug.current) == lower($slug)][0] {
   _id,
   title,
   "slug": slug.current,

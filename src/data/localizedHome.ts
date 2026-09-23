@@ -399,7 +399,7 @@ export const localizedAbout: Record<
 > = {
   en: {
     title: "About Us",
-    subtitle: "5,000㎡ factory, 200+ units per year, 50+ technicians, 30+ export markets.",
+    subtitle: "7,000㎡ factory, 500+ units per year, 15+ technicians, 30+ export markets.",
     factoryTitle: "Our factory",
     factoryBody:
       "One plant in Jiangsu: drawings, fabrication, finish, and export packing under the same roof. Buyers get a named factory — not a trading desk.",
@@ -416,7 +416,7 @@ export const localizedAbout: Record<
   },
   fr: {
     title: "À propos",
-    subtitle: "Usine de 5 000㎡, 200+ unités/an, 50+ techniciens, 30+ marchés d’export.",
+    subtitle: "Usine de 7 000㎡, 500+ unités/an, 15+ techniciens, 30+ marchés d’export.",
     factoryTitle: "Notre usine",
     factoryBody:
       "Un seul site au Jiangsu : plans, fabrication, finition et emballage export sous le même toit. Vous achetez à l’usine, pas à un bureau de trading.",
@@ -433,7 +433,7 @@ export const localizedAbout: Record<
   },
   es: {
     title: "Nosotros",
-    subtitle: "Fábrica de 5.000㎡, 200+ unidades/año, 50+ técnicos, 30+ mercados de exportación.",
+    subtitle: "Fábrica de 7.000㎡, 500+ unidades/año, 15+ técnicos, 30+ mercados de exportación.",
     factoryTitle: "Nuestra fábrica",
     factoryBody:
       "Una planta en Jiangsu: planos, fabricación, acabado y embalaje de exportación bajo el mismo techo. Compra a fábrica, no a un trading.",
@@ -450,7 +450,7 @@ export const localizedAbout: Record<
   },
   ar: {
     title: "من نحن",
-    subtitle: "مصنع 5000㎡، أكثر من 200 وحدة سنوياً، 50+ فنياً، 30+ سوق تصدير.",
+    subtitle: "مصنع 7000㎡، أكثر من 500 وحدة سنوياً، 15+ فنياً، 30+ سوق تصدير.",
     factoryTitle: "مصنعنا",
     factoryBody:
       "مصنع واحد في جيانغسو: الرسوم والتصنيع والتشطيب وتعبئة التصدير تحت سقف واحد. تشتري من المصنع وليس من مكتب تجاري.",

@@ -10,6 +10,10 @@ export type SanityEditProps = {
 
 const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "http://localhost:3333";
 
+function publicHtml() {
+  return process.env.NODE_ENV === "production";
+}
+
 export function stegaText(
   id: string | undefined,
   type: string,
@@ -19,7 +23,7 @@ export function stegaText(
   if (!text) return text;
   if (VERCEL_STEGA_REGEX.test(text)) return text;
   // Public Vercel HTML stays clean. Local / Presentation still encode for click-to-edit.
-  if (process.env.NODE_ENV === "production") return text;
+  if (publicHtml()) return text;
   const href = createEditUrl({
     baseUrl: studioUrl,
     id: (id || "pageContent").replace(/^drafts\./, ""),
@@ -40,7 +44,7 @@ export function cmsEdit(
   type: string,
   path: string,
 ): SanityEditProps | undefined {
-  if (!id) return undefined;
+  if (!id || publicHtml()) return undefined;
   const attr = createDataAttribute({
     id: id.replace(/^drafts\./, ""),
     type,
@@ -56,7 +60,7 @@ export function cmsEdit(
 }
 
 export function cmsLinkEdit(id: string | undefined, type: string, path: string) {
-  if (!id) return undefined;
+  if (!id || publicHtml()) return undefined;
   const attr = createDataAttribute({
     id: id.replace(/^drafts\./, ""),
     type,
@@ -81,7 +85,8 @@ export function homePageAttr(documentId?: string) {
   });
 }
 
-export function editField(attr: ReturnType<typeof homePageAttr>, path: string): SanityEditProps {
+export function editField(attr: ReturnType<typeof homePageAttr>, path: string): SanityEditProps | undefined {
+  if (publicHtml()) return undefined;
   return {
     "data-sanity": attr(path),
     "data-sanity-edit-target": "",

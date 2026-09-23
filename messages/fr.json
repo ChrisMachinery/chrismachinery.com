@@ -27,6 +27,7 @@
     "customize": "Personnalisez le vôtre"
   },
   "home": {
+    "pageHeading": "Custom Food Trailers Manufacturer & Factory Direct Solutions",
     "slogan": "Food trailers d’usine, conçus pour de vraies cuisines.",
     "sub": "Châssis galvanisé à chaud, 1 an de garantie, plans et prix sous 24 h.",
     "advantages": "Pourquoi les opérateurs nous choisissent",
@@ -36,7 +37,7 @@
     "footprint": "Empreinte mondiale",
     "testimonials": "Ce que disent les acheteurs",
     "aboutTitle": "Production interne, export mondial",
-    "aboutBody": "Du plan au QC dans notre usine — 5 000㎡, 200+ unités/an, 50+ techniciens, 30+ marchés.",
+    "aboutBody": "Du plan au QC dans notre usine — 7 000㎡, 500+ unités/an, 15+ techniciens, 30+ marchés.",
     "hero2Title": "Séries Pod et Airstream, prêtes au covering, sorties d’usine.",
     "hero2Sub": "Setups de rue compacts, intérieurs inox et emballage export inclus.",
     "hero3Title": "Châssis galvanisé pour le service quotidien.",
@@ -145,6 +146,7 @@
     "others": "Autres"
   },
   "contact": {
+    "heading": "Contact Our Team for Custom Trailer Quotes",
     "name": "Nom",
     "email": "Email",
     "phone": "Téléphone",

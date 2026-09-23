@@ -304,7 +304,7 @@ export function mapSanityPost(doc: SanityPostDoc): Post {
     : ((tag as Post["category"]) ?? "Industry News");
   return {
     _id: doc._id?.replace(/^drafts\./, ""),
-    slug: doc.slug,
+    slug: vercelStegaClean(doc.slug || "").toLowerCase(),
     title: doc.title,
     excerpt: doc.excerpt ?? "",
     author: doc.author ?? "Chris Machinery",

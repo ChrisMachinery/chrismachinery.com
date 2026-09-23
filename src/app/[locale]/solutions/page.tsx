@@ -3,11 +3,13 @@ import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getSitePage, getSolutions, getSolutionsBoardId } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { DetailShotCarousel } from "@/components/home/DetailShotCarousel";
-import { cmsEdit, stegaText } from "@/lib/sanity/visual";
+import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
 import type { Metadata } from "next";
 import { withCanonical } from "@/lib/seoCanonical";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbJsonLd, collectionPageJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -50,13 +52,31 @@ export default async function SolutionsPage({
   });
   const catalogSubtitle =
     "Menu chapters, not a quote sheet. Open a card for the 800–1500 word article, recommended models, and Get Quote.";
+  const heading = pageS("title", uiText(locale, page?.title, t("solutions.title")));
+  const lede = pageS("subtitle", uiText(locale, page?.subtitle, t("solutions.subtitle") || catalogSubtitle));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <h1 className="type-page">{pageS("title", uiText(locale, page?.title, t("solutions.title")))}</h1>
-      <p className="type-lede mt-3 w-full">
-        {pageS("subtitle", uiText(locale, page?.subtitle, t("solutions.subtitle") || catalogSubtitle))}
-      </p>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: t("nav.home"), path: "/" },
+          { name: t("nav.solutions"), path: "/solutions" },
+        ])}
+      />
+      <JsonLd
+        data={collectionPageJsonLd({
+          locale,
+          name: plainText(heading),
+          description: plainText(lede),
+          path: "/solutions",
+          items: solutions.map((item) => ({
+            name: plainText(uiText(locale, item.name, solutionTitles[locale]?.[item.slug] || item.name)),
+            path: `/solutions/${item.slug}`,
+          })),
+        })}
+      />
+      <h1 className="type-page">{heading}</h1>
+      <p className="type-lede mt-3 w-full">{lede}</p>
       <div
         className="mt-10 grid auto-rows-fr grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
         {...cmsEdit(boardId, "solutionsBoard", "cards")}

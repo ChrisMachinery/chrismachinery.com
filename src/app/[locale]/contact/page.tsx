@@ -2,11 +2,17 @@ import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { ContactForm } from "@/components/contact/ContactForm";
-import { getCatalogProduct, getSitePage, getSolutions, getCustomizeOptions } from "@/lib/sanity/fetch";
+import { getCatalogProduct, getPageContent, getSitePage, getSolutions, getCustomizeOptions } from "@/lib/sanity/fetch";
 import { uiText } from "@/lib/i18nCopy";
-import { stegaText } from "@/lib/sanity/visual";
+import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { contactPageJsonLd } from "@/lib/seo";
+import { faqJsonLd } from "@/lib/seriesGuides";
 import type { Metadata } from "next";
 import { withCanonical } from "@/lib/seoCanonical";
+
+const CONTACT_H1 = "Contact Our Team for Custom Trailer Quotes";
+const CONTACT_DESCRIPTION = "Request a factory quote within 24 hours. WhatsApp, email, and inquiry form.";
 
 export async function generateMetadata({
   params,
@@ -15,9 +21,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return withCanonical(locale, "/contact", {
-    title: "Contact Chris Machinery | Food Trailer Quotes",
-    description: "Request a factory quote within 24 hours. WhatsApp, email, and inquiry form.",
+    title: "Contact Our Team for Custom Trailer Quotes | Chris Machinery",
+    description: CONTACT_DESCRIPTION,
   });
+}
+
+function visibleHeading(locale: string, cmsTitle: string | undefined, translated: string) {
+  const cms = cmsTitle?.trim();
+  if (cms && !/^contact$/i.test(cms)) {
+    return locale === "en" ? cms : translated;
+  }
+  return translated;
 }
 
 export default async function ContactPage({
@@ -42,7 +56,7 @@ export default async function ContactPage({
   const query = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
-  const page = await getSitePage("/contact");
+  const [page, site] = await Promise.all([getSitePage("/contact"), getPageContent()]);
   const [catalogProduct, solutions, options] = await Promise.all([
     query.product ? getCatalogProduct(query.product) : Promise.resolve(undefined),
     getSolutions(),
@@ -55,6 +69,14 @@ export default async function ContactPage({
       ? await getCatalogProduct(solution.recommendedProducts[0].slug)
       : undefined);
   const s = (path: string, text: string) => stegaText(page?._id, "sitePage", path, text);
+  const heading = s(
+    "title",
+    visibleHeading(locale, page?.title, t("contact.heading") || CONTACT_H1),
+  );
+  const lede = s(
+    "subtitle",
+    uiText(locale, page?.subtitle, CONTACT_DESCRIPTION),
+  );
   const faqs = (
     [
       ["q1", "a1"],
@@ -71,7 +93,35 @@ export default async function ContactPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="sr-only">{s("title", uiText(locale, page?.title, t("nav.contact")))}</h1>
+      <JsonLd
+        data={contactPageJsonLd({
+          locale,
+          name: plainText(heading),
+          description: plainText(lede),
+          logo: site?.logoUrl,
+          email: site?.footerInfo?.email,
+          telephone: site?.footerInfo?.phone,
+          address: site?.footerInfo?.address,
+          hours: site?.footerInfo?.hours,
+          sameAs: (site?.footerSocialLinks ?? [])
+            .map((item) => item.url || "")
+            .filter((url) => /^https?:\/\//i.test(url) && !url.includes("wa.me")),
+        })}
+      />
+      <JsonLd
+        data={faqJsonLd(
+          faqs.map((item) => ({
+            question: plainText(item.q),
+            answer: plainText(item.a),
+          })),
+        )}
+      />
+      <h1 className="type-page" {...cmsEdit(page?._id, "sitePage", "title")}>
+        {heading}
+      </h1>
+      <p className="type-lede mt-3 mb-8" {...cmsEdit(page?._id, "sitePage", "subtitle")}>
+        {lede}
+      </p>
       <Suspense>
         <ContactForm
           catalogProduct={quotedProduct}

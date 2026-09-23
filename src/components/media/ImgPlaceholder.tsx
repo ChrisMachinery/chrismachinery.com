@@ -27,7 +27,7 @@ export function ImgPlaceholder({
 
   if (src) {
     return (
-      <div className={`relative overflow-hidden ${className}`} {...edit}>
+      <div className={`relative overflow-hidden ${className}`} data-protect-image="" {...edit}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
@@ -38,7 +38,6 @@ export function ImgPlaceholder({
           draggable={false}
           suppressHydrationWarning
         />
-        <span data-protect-image="" className="absolute inset-0 z-[1]" aria-hidden />
       </div>
     );
   }

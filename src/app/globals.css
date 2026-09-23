@@ -117,3 +117,62 @@ picture {
   line-height: 1.2;
   text-align: center;
 }
+
+.contact-faq summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  list-style: none;
+}
+.contact-faq summary::-webkit-details-marker {
+  display: none;
+}
+.contact-faq summary::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: -1px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease;
+}
+.contact-faq details[open] > summary::before {
+  margin-top: 2px;
+  transform: rotate(225deg);
+}
+.contact-faq details:first-of-type:not([open]) > summary::before {
+  animation: faq-open-hint 1.4s ease-in-out 0.4s 3;
+}
+.contact-faq details[open] > p {
+  animation: faq-answer-in 0.28s ease-out;
+}
+
+@keyframes faq-open-hint {
+  0%,
+  100% {
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+  45% {
+    transform: rotate(45deg) translate(3px, 4px);
+  }
+}
+@keyframes faq-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-faq details:first-of-type:not([open]) > summary::before,
+  .contact-faq details[open] > p {
+    animation: none;
+  }
+}

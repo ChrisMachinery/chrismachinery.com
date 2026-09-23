@@ -155,7 +155,7 @@ export default async function ContactPage({
         <h2 className="font-heading text-base font-semibold text-brand">
           {s("faqTitle", uiText(locale, page?.faqTitle, t("faq.title")))}
         </h2>
-        <div className="mt-3 divide-y border-y">
+        <div className="contact-faq mt-3 divide-y border-y">
           {faqs.map((item, i) => (
             <details key={i} className="py-2.5">
               <summary className="min-touch cursor-pointer font-heading text-sm font-semibold text-brand">

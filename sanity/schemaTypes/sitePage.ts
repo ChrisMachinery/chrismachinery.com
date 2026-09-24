@@ -173,7 +173,12 @@ export const sitePage = defineType({
       description:
         "写在对应系列页（Pod / Airstream / Square / Container / Capsule）。不改产品参数。图片可空（网页显示带参数的占位图）。代表车型链接可空（网页显示【LINK】和写入位置）。",
       fields: [
-        defineField({ name: "introTitle", title: "H1 下方选型标题", type: "string" }),
+        defineField({
+          name: "introTitle",
+          title: "H1 下方选型标题",
+          type: "string",
+          description: "这一行前台固定是 H2，直接写标题文字，不要加 ##。正文里的小标题才用 ## / ###。",
+        }),
         defineField({
           name: "tocCompare",
           title: "目录栏 · 第 1 粒（对比）",

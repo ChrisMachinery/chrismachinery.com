@@ -73,6 +73,7 @@ export function CatalogSeriesGuide({
       imageLabel: row.imageLabel,
     };
   });
+  const introTitle = (cms?.introTitle?.trim() || d.introTitle).replace(/^#{1,6}\s+/, "");
   const quoteLabel = cms?.quoteLabel?.trim() || d.quoteLabel;
   const quoteHref = (cms?.quoteHref?.trim() || d.quoteHref) as ComponentProps<typeof PreviewNavLink>["href"];
   function quoteButton() {
@@ -93,10 +94,10 @@ export function CatalogSeriesGuide({
   }));
 
   return (
-    <div className="mt-8 space-y-12">
+    <div className="mt-10 space-y-12">
       <section>
         <h2 className="type-section" {...cmsEdit(documentId, "sitePage", "podGuide.introTitle")}>
-          {s("podGuide.introTitle", cms?.introTitle?.trim() || d.introTitle)}
+          {s("podGuide.introTitle", introTitle)}
         </h2>
         <PlainTextBody
           text={cms?.intro?.trim() || d.intro}

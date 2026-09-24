@@ -18,7 +18,7 @@ export function MarkdownBody({ text }: { text: string }) {
     <div>
       {text.split("\n").map((line, i) => {
         if (line.startsWith("## ")) return <h2 key={i} className="type-section mt-8">{line.slice(3)}</h2>;
-        if (line.startsWith("### ")) return <h3 key={i} className="type-sub mt-6">{line.slice(4)}</h3>;
+        if (line.startsWith("### ")) return <h3 key={i} className="type-h3 mt-6 mb-1.5">{line.slice(4)}</h3>;
         if (line.startsWith("- ")) {
           return (
             <li key={i} className="type-body ms-5 list-disc" dangerouslySetInnerHTML={{ __html: withLinks(escapeHtml(line.slice(2))) }} />

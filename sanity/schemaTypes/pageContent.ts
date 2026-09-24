@@ -86,6 +86,21 @@ export const pageContent = defineType({
       ],
     }),
     defineField({
+      name: "pageHeading",
+      title: "Banner 下方 H1 大标题",
+      type: "string",
+      group: "hero",
+      description:
+        "轮播图下面那一行全站主标题（给 Google 看的 H1）。预览里点击该文字即可改。不要写进 Banner 叠字里。",
+    }),
+    defineField({
+      name: "pageLede",
+      title: "Banner 下方说明",
+      type: "text",
+      group: "hero",
+      description: "H1 下面那句简介。预览里点击即可改。",
+    }),
+    defineField({
       name: "heroTitle",
       title: "首页大标题（旧）",
       type: "string",

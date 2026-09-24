@@ -33,9 +33,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations("meta");
+  const page = await getPageContent();
   return withCanonical(locale, "/", {
     title: t("homeTitle"),
-    description: t("homeDescription"),
+    description: uiText(locale, page?.pageLede, t("homeDescription")),
   });
 }
 
@@ -221,7 +222,7 @@ export default async function HomePage({
     <div>
       <JsonLd
         data={homeGraphJsonLd({
-          description: t("meta.homeDescription"),
+          description: uiText(locale, page?.pageLede, t("meta.homeDescription")),
           logo: page?.logoUrl,
           email: page?.footerInfo?.email,
           telephone: page?.footerInfo?.phone,
@@ -233,8 +234,12 @@ export default async function HomePage({
       />
       <HeroBanner documentId={id} slides={heroSlides} />
       <section className="mx-auto max-w-7xl px-4 pt-10">
-        <h1 className="type-page">{t("home.pageHeading")}</h1>
-        <p className="type-lede mt-3 max-w-3xl">{t("meta.homeDescription")}</p>
+        <h1 className="type-page" {...cmsEdit(id, "pageContent", "pageHeading")}>
+          {s("pageHeading", uiText(locale, page?.pageHeading, t("home.pageHeading")))}
+        </h1>
+        <p className="type-lede mt-3 w-full whitespace-pre-wrap" {...cmsEdit(id, "pageContent", "pageLede")}>
+          {s("pageLede", uiText(locale, page?.pageLede, t("meta.homeDescription")))}
+        </p>
       </section>
 
       <section className="bg-white py-16 md:py-20">

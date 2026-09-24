@@ -118,6 +118,8 @@ export type PageContent = {
   footerAddress?: string;
   footerBlurb?: string;
   heroButtonProducts?: string;
+  pageHeading?: string;
+  pageLede?: string;
   advantagesTitle?: string;
   advantages?: { _key?: string; title?: string; body?: string; icon?: string; image?: unknown }[];
   productDetailsTitle?: string;

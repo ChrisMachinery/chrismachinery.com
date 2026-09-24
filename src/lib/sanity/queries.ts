@@ -145,6 +145,8 @@ export const pageContentQuery = `*[
   footerBlurb,
   footerSocialLinks,
   heroButtonProducts,
+  pageHeading,
+  pageLede,
   advantagesTitle,
   advantages[]{ title, body, icon, image{..., alt} },
   productDetailsTitle,

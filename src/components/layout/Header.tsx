@@ -38,11 +38,13 @@ export function Header({
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [prodOpen, setProdOpen] = useState(false);
+  const [mobileProdOpen, setMobileProdOpen] = useState(true);
 
   useEffect(() => {
     setProdOpen(false);
     setLangOpen(false);
     setOpen(false);
+    setMobileProdOpen(true);
   }, [pathname]);
 
   const tExtra = useTranslations("navExtra");
@@ -152,7 +154,7 @@ export function Header({
             className="site-menu-btn min-touch lg:hidden rounded border border-black/10 px-3 text-xl"
             aria-label="Menu"
             onClick={() => {
-              setProdOpen(false);
+              setMobileProdOpen(true);
               setOpen(true);
             }}
           >
@@ -173,19 +175,20 @@ export function Header({
             <div className="flex flex-col gap-2">
               {links.map((item) =>
                 "mega" in item && item.mega ? (
-                  <div key={item.href}>
+                  <div key="products-menu">
                     <button
                       type="button"
-                      className="min-touch flex w-full items-center justify-between text-lg font-heading text-brand"
-                      aria-expanded={prodOpen}
-                      onClick={() => setProdOpen((v) => !v)}
+                      className="min-touch inline-flex items-center gap-1.5 text-lg font-heading text-brand"
+                      aria-expanded={mobileProdOpen}
+                      aria-haspopup="true"
+                      onClick={() => setMobileProdOpen((v) => !v)}
                     >
                       {item.label}
-                      <span aria-hidden className="text-sm text-black/40">
-                        {prodOpen ? "▴" : "▾"}
+                      <span aria-hidden className="text-[0.7em] leading-none">
+                        {mobileProdOpen ? "▲" : "▼"}
                       </span>
                     </button>
-                    {prodOpen ? (
+                    {mobileProdOpen ? (
                       <div className="mt-1 mb-1 flex flex-col gap-1 border-s border-black/10 ps-3">
                         {productNavItems.map((p) => (
                           <PreviewNavLink

@@ -7,6 +7,7 @@ import { cmsEdit, cmsLinkEdit, stegaText } from "@/lib/sanity/visual";
 import { isProductDetailPath } from "@/lib/productUrl";
 import {
   SERIES_GUIDE_DEFAULTS,
+  resolveGuideFaq,
   type GuideSeries,
   type SeriesGuideCms,
 } from "@/lib/seriesGuides";
@@ -74,6 +75,7 @@ export function CatalogSeriesGuide({
     };
   });
   const introTitle = (cms?.introTitle?.trim() || d.introTitle).replace(/^#{1,6}\s+/, "");
+  const compareTitle = (cms?.compareTitle?.trim() || d.compareTitle).replace(/^#{1,6}\s+/, "");
   const quoteLabel = cms?.quoteLabel?.trim() || d.quoteLabel;
   const quoteHref = (cms?.quoteHref?.trim() || d.quoteHref) as ComponentProps<typeof PreviewNavLink>["href"];
   function quoteButton() {
@@ -88,10 +90,7 @@ export function CatalogSeriesGuide({
       </span>
     );
   }
-  const faqs = d.faq.map((item, i) => ({
-    question: cms?.faq?.[i]?.question?.trim() || item.question,
-    answer: cms?.faq?.[i]?.answer?.trim() || item.answer,
-  }));
+  const faqs = resolveGuideFaq(d.faq, cms?.faq);
 
   return (
     <div className="mt-10 space-y-12">
@@ -128,8 +127,8 @@ export function CatalogSeriesGuide({
 
       <section id={shapeGuide ? undefined : d.compareSectionId} className={shapeGuide ? undefined : "scroll-mt-24"}>
         {shapeGuide ?? (
-          <h2 className="type-section" {...cmsEdit(documentId, "sitePage", "podGuide.tocCompare")}>
-            {s("podGuide.tocCompare", cms?.tocCompare?.trim() || d.tocCompare)}
+          <h2 className="type-section" {...cmsEdit(documentId, "sitePage", "podGuide.compareTitle")}>
+            {s("podGuide.compareTitle", compareTitle)}
           </h2>
         )}
         <PlainTextBody

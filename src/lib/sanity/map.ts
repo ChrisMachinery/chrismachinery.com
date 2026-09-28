@@ -307,10 +307,10 @@ export function mapSanityPost(doc: SanityPostDoc): Post {
   return {
     _id: doc._id?.replace(/^drafts\./, ""),
     slug: vercelStegaClean(doc.slug || "").toLowerCase(),
-    title: doc.title,
-    excerpt: doc.excerpt ?? "",
-    author: doc.author ?? "Chris Machinery",
-    date: (doc.publishedAt ?? "").slice(0, 10),
+    title: doc.title ? vercelStegaClean(doc.title) : "",
+    excerpt: doc.excerpt ? vercelStegaClean(doc.excerpt) : "",
+    author: vercelStegaClean(doc.author ?? "Chris Machinery"),
+    date: vercelStegaClean(doc.publishedAt ?? "").slice(0, 10),
     category,
     body: "",
     coverUrl: imageUrl(doc.coverImage),
@@ -413,6 +413,7 @@ export type SitePageDoc = {
     shapeBody?: string;
     introImage?: unknown;
     tocCompare?: string;
+    compareTitle?: string;
     tocSize?: string;
     tocKitchen?: string;
     tocFaq?: string;
@@ -502,6 +503,7 @@ export function mapSitePage(doc: SitePageDoc) {
           introImageUrl: img(doc.podGuide.introImage),
           introImageAlt: cmsImageAlt(doc.podGuide.introImage),
           tocCompare: doc.podGuide.tocCompare,
+          compareTitle: doc.podGuide.compareTitle,
           tocSize: doc.podGuide.tocSize,
           tocKitchen: doc.podGuide.tocKitchen,
           tocFaq: doc.podGuide.tocFaq,

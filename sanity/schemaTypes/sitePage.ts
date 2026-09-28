@@ -183,7 +183,7 @@ export const sitePage = defineType({
           name: "tocCompare",
           title: "目录栏 · 第 1 粒（对比）",
           type: "string",
-          description: "空则用默认：Pod=Dome / Square，Airstream=375 / 500 / 700。点黄条可改。",
+          description: "只改黄条文案。下面那行 H2 是「对比节标题」，两边互不影响。空则用默认：Pod=Dome / Square，Airstream=375 / 500 / 700。",
         }),
         defineField({
           name: "tocSize",
@@ -225,6 +225,12 @@ export const sitePage = defineType({
           description: "可选。空则显示占位：长宽/造型/轴数。建议 16:9，约 1800×1000 JPG。",
           options: { hotspot: siteImageHotspot },
           fields: [imageAltField],
+        }),
+        defineField({
+          name: "compareTitle",
+          title: "对比节标题（H2）",
+          type: "string",
+          description: "黄条下面那行标题。与第 1 粒分开改。Pod / Airstream 有对比卡时前台用 arcGuideTitle，这一格不显示。空则用默认（如 Why Square）。不要加 ##。",
         }),
         defineField({
           name: "shapeBody",

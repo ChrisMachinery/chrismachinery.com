@@ -33,6 +33,7 @@ export type SeriesGuideDefaults = {
   faqTitle: string;
   faq: { question: string; answer: string }[];
   tocCompare: string;
+  compareTitle: string;
   tocSize: string;
   tocKitchen: string;
   tocFaq: string;
@@ -140,6 +141,7 @@ Stainless steel is the show finish; paint is the wrap finish. Neither one change
     },
   ],
   tocCompare: "375 / 500 / 700",
+  compareTitle: "Window arcs: 375 / 500 / 700",
   ...TOC_BAR,
   compareSectionId: "arc-guide",
   metaTitle: "How to Choose an Airstream Food Trailer | Chris Machinery",
@@ -233,6 +235,7 @@ Paint is the only Square finish in the catalog. Window count and equipment lists
     },
   ],
   tocCompare: "Why Square",
+  compareTitle: "Why Square",
   ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Square Food Trailer | Chris Machinery",
@@ -326,6 +329,7 @@ Paint is the only Container finish in the catalog. Equipment lists belong on Cus
     },
   ],
   tocCompare: "Why Container",
+  compareTitle: "Why Container",
   ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Container Food Trailer | Chris Machinery",
@@ -419,6 +423,7 @@ Window configuration is a custom drawing. Use Customize for that. Product pages 
     },
   ],
   tocCompare: "Capsule vs Airstream",
+  compareTitle: "Capsule vs Airstream",
   ...TOC_BAR,
   compareSectionId: "series-compare",
   metaTitle: "How to Choose a Capsule Food Trailer | Chris Machinery",
@@ -443,6 +448,7 @@ function withPodNav(pod: typeof POD_SERIES_GUIDE_DEFAULTS): SeriesGuideDefaults 
     faqTitle: pod.faqTitle,
     faq: [...pod.faq],
     tocCompare: "Dome / Square",
+    compareTitle: "Body shapes: Dome / Square",
     ...TOC_BAR,
     compareSectionId: "shape-guide",
     pdpNote: "Dome vs Square body. See the series guide.",
@@ -484,17 +490,28 @@ export type SeriesGuideCms = {
   faqTitle?: string;
   faq?: { question?: string; answer?: string }[];
   tocCompare?: string;
+  compareTitle?: string;
   tocSize?: string;
   tocKitchen?: string;
   tocFaq?: string;
   tocModels?: string;
 };
 
+export function resolveGuideFaq(
+  defaults: { question: string; answer: string }[],
+  cmsFaq?: { question?: string; answer?: string }[] | null,
+) {
+  if (!Array.isArray(cmsFaq)) return defaults.map((item) => ({ ...item }));
+  return cmsFaq
+    .map((item) => ({
+      question: item?.question?.trim() || "",
+      answer: item?.answer?.trim() || "",
+    }))
+    .filter((item) => item.question || item.answer);
+}
+
 export function resolveSeriesFaq(series: GuideSeries, cms?: SeriesGuideCms | null) {
-  return SERIES_GUIDE_DEFAULTS[series].faq.map((item, i) => ({
-    question: cms?.faq?.[i]?.question?.trim() || item.question,
-    answer: cms?.faq?.[i]?.answer?.trim() || item.answer,
-  }));
+  return resolveGuideFaq(SERIES_GUIDE_DEFAULTS[series].faq, cms?.faq);
 }
 
 export function faqJsonLd(items: { question: string; answer: string }[]) {
@@ -536,6 +553,7 @@ export function seedSeriesGuide(series: GuideSeries) {
     quoteHref: d.quoteHref,
     faqTitle: d.faqTitle,
     tocCompare: d.tocCompare,
+    compareTitle: d.compareTitle,
     tocSize: d.tocSize,
     tocKitchen: d.tocKitchen,
     tocFaq: d.tocFaq,

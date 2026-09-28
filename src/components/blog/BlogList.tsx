@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Post } from "@/data/posts";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
-import { stegaText } from "@/lib/sanity/visual";
+import { cmsEdit, plainText } from "@/lib/sanity/visual";
 
 const cats = ["All", "Case Study", "Buying Guide", "Industry News"] as const;
 
@@ -47,14 +47,18 @@ export function BlogList({ posts }: { posts: Post[] }) {
               documentId={post._id}
               documentType="blogPost"
               path="coverImage"
-              alt={post.title}
+              alt={plainText(post.title)}
               className="h-40"
               src={post.coverUrl}
             />
             <div className="p-4">
-              <p className="text-xs">{post.date} · {labels[post.category as keyof typeof labels] || post.category}</p>
-              <h2 className="type-card mt-2">{stegaText(post._id, "blogPost", "title", post.title)}</h2>
-              <p className="type-body mt-2">{stegaText(post._id, "blogPost", "excerpt", post.excerpt)}</p>
+              <p className="text-xs">{plainText(post.date)} · {labels[post.category as keyof typeof labels] || post.category}</p>
+              <h2 className="type-card mt-2" {...cmsEdit(post._id, "blogPost", "title")}>
+                {plainText(post.title)}
+              </h2>
+              <p className="type-body mt-2" {...cmsEdit(post._id, "blogPost", "excerpt")}>
+                {plainText(post.excerpt)}
+              </p>
             </div>
           </Link>
         ))}

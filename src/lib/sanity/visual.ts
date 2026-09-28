@@ -1,6 +1,6 @@
 import { createDataAttribute } from "next-sanity";
 import { createEditUrl } from "@sanity/client/csm";
-import { VERCEL_STEGA_REGEX, vercelStegaClean, vercelStegaCombine } from "@vercel/stega";
+import { vercelStegaClean, vercelStegaCombine } from "@vercel/stega";
 import { sanityDataset, sanityProjectId } from "@/lib/sanity.client";
 
 export type SanityEditProps = {
@@ -21,9 +21,10 @@ export function stegaText(
   text: string,
 ) {
   if (!text) return text;
-  if (VERCEL_STEGA_REGEX.test(text)) return text;
+  const clean = vercelStegaClean(text);
   // Public Vercel HTML stays clean. Local / Presentation still encode for click-to-edit.
-  if (publicHtml()) return text;
+  // Always re-encode from cleaned text so SSR and the client emit the same bytes.
+  if (publicHtml()) return clean;
   const href = createEditUrl({
     baseUrl: studioUrl,
     id: (id || "pageContent").replace(/^drafts\./, ""),
@@ -32,7 +33,7 @@ export function stegaText(
     projectId: sanityProjectId,
     dataset: sanityDataset,
   });
-  return vercelStegaCombine(text, { origin: "sanity.io", href }, false);
+  return vercelStegaCombine(clean, { origin: "sanity.io", href }, false);
 }
 
 export function plainText(text: string) {

@@ -6,6 +6,7 @@ import { SeriesArcGuide } from "@/components/products/SeriesArcGuide";
 import { CatalogSeriesGuide } from "@/components/products/CatalogSeriesGuide";
 import { faqJsonLd, isGuideSeries, resolveSeriesFaq, SERIES_GUIDE_DEFAULTS } from "@/lib/seriesGuides";
 import { AIRSTREAM_ARC_GUIDE_DEFAULTS, AIRSTREAM_ARC_IMAGES } from "@/lib/airstreamArc";
+import { CAPSULE_GLASS_GUIDE_DEFAULTS, CAPSULE_GLASS_IMAGES } from "@/lib/capsuleGlassGuide";
 import { POD_SHAPE_GUIDE_DEFAULTS, POD_SHAPE_IMAGES } from "@/lib/podShapeGuide";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getProductsBySeries, getSitePage, getStockBoardId, getStockCards } from "@/lib/sanity/fetch";
@@ -13,7 +14,7 @@ import { seriesList, seriesMeta, type SeriesSlug } from "@/lib/site";
 import { productJsonLd } from "@/lib/seo";
 import { stegaText } from "@/lib/sanity/visual";
 import { uiText } from "@/lib/i18nCopy";
-import { localizedAirstreamGuide, localizedPodGuide, localizedSeries } from "@/data/localizedHome";
+import { localizedAirstreamGuide, localizedCapsuleGuide, localizedPodGuide, localizedSeries } from "@/data/localizedHome";
 import type { Product } from "@/data/products";
 import type { Metadata } from "next";
 import { withCanonical } from "@/lib/seoCanonical";
@@ -80,6 +81,7 @@ export default async function SeriesPage({
   const s = (path: string, text: string) => stegaText(page?._id, "sitePage", path, text);
   const airstreamGuide = localizedAirstreamGuide[locale] ?? AIRSTREAM_ARC_GUIDE_DEFAULTS;
   const podGuide = localizedPodGuide[locale] ?? POD_SHAPE_GUIDE_DEFAULTS;
+  const capsuleGuide = localizedCapsuleGuide[locale] ?? CAPSULE_GLASS_GUIDE_DEFAULTS;
   const guideSeries = isGuideSeries(series) ? series : null;
 
   return (
@@ -138,6 +140,27 @@ export default async function SeriesPage({
                 sectionId="arc-guide"
                 placeholderSuffix="弧度示意 · 5:2 · 1000×400 JPG"
                 columns={3}
+              />
+            ) : series === "capsule" ? (
+              <SeriesArcGuide
+                documentId={page?._id}
+                title={uiText(locale, page?.arcGuideTitle, capsuleGuide.title)}
+                note={uiText(locale, page?.arcGuideNote, capsuleGuide.note)}
+                items={
+                  locale === "en"
+                    ? page?.arcGuides
+                    : capsuleGuide.items.map((item, i) => ({
+                        ...item,
+                        imageUrl: page?.arcGuides?.[i]?.imageUrl,
+                        imageAlt: page?.arcGuides?.[i]?.imageAlt,
+                      }))
+                }
+                defaults={capsuleGuide}
+                imageAlts={CAPSULE_GLASS_IMAGES}
+                sectionId="glass-guide"
+                placeholderSuffix="玻璃高度示意 · 4:3 · 1200×900 JPG"
+                columns={2}
+                imageAspectClass="aspect-[4/3]"
               />
             ) : undefined
           }

@@ -705,6 +705,37 @@ export const localizedPodGuide: Record<string, { title: string; note: string; it
     },
   };
 
+export const localizedCapsuleGuide: Record<string, { title: string; note: string; items: { label: string; body: string }[]; pdp: string }> =
+  {
+    fr: {
+      title: "Hauteurs de verre : Above / Below",
+      note: "Deux hauteurs de vitrine sur la même famille Capsule. Le verre au-dessus du comptoir est plus haut. Le verre sous le comptoir descend. La longueur ne change pas.",
+      pdp: "Verre au-dessus ou sous le comptoir. Voir le guide de série.",
+      items: [
+        { label: "Above counter", body: "Vitrine au-dessus du comptoir — face plus haute pour la rue et le night market." },
+        { label: "Below counter", body: "Vitrine plus basse — fenêtre de service plus basse, autre vue intérieure." },
+      ],
+    },
+    es: {
+      title: "Alturas de cristal: Above / Below",
+      note: "Dos alturas de vitrina en la misma familia Capsule. El cristal sobre el mostrador es más alto. El cristal bajo el mostrador baja. La longitud no cambia.",
+      pdp: "Cristal sobre o bajo el mostrador. Ver la guía de serie.",
+      items: [
+        { label: "Above counter", body: "Cristal sobre el mostrador — cara más alta para calle y night market." },
+        { label: "Below counter", body: "Cristal más bajo — ventana de servicio más baja y otra vista interior." },
+      ],
+    },
+    ar: {
+      title: "ارتفاع الزجاج: Above / Below",
+      note: "ارتفاعان لزجاج سلسلة Capsule على نفس العائلة. الزجاج فوق المنضدة أطول. الزجاج تحت المنضدة ينخفض. الطول لا يتغير.",
+      pdp: "زجاج فوق المنضدة أو تحتها. راجع دليل السلسلة.",
+      items: [
+        { label: "Above counter", body: "زجاج فوق منضدة الخدمة — واجهة أطول للشارع والسوق الليلي." },
+        { label: "Below counter", body: "زجاج أخفض — نافذة خدمة أدنى ومنظر داخلي مختلف." },
+      ],
+    },
+  };
+
 export function localizedList(locale: string, cms: string[] | undefined, translated: string[] | undefined) {
   if (locale === "en") return cms?.length ? cms : translated || [];
   return translated?.length ? translated : cms || [];

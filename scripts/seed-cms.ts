@@ -8,6 +8,7 @@ import { equipment, trailerExtras } from "../src/data/catalog";
 import { SOLUTION_ARTICLES } from "../src/lib/solutionArticles";
 import { seriesMeta } from "../src/lib/site";
 import { AIRSTREAM_ARC_GUIDE_DEFAULTS } from "../src/lib/airstreamArc";
+import { CAPSULE_GLASS_GUIDE_DEFAULTS } from "../src/lib/capsuleGlassGuide";
 import { POD_SHAPE_GUIDE_DEFAULTS } from "../src/lib/podShapeGuide";
 import { isGuideSeries, seedSeriesGuide, type GuideSeries } from "../src/lib/seriesGuides";
 
@@ -268,7 +269,18 @@ async function main() {
                   body: item.body,
                 })),
               }
-            : {}),
+            : series === "capsule"
+              ? {
+                  arcGuideTitle: CAPSULE_GLASS_GUIDE_DEFAULTS.title,
+                  arcGuideNote: CAPSULE_GLASS_GUIDE_DEFAULTS.note,
+                  arcGuides: CAPSULE_GLASS_GUIDE_DEFAULTS.items.map((item, index) => ({
+                    _key: `glass${index}`,
+                    _type: "object",
+                    label: item.label,
+                    body: item.body,
+                  })),
+                }
+              : {}),
         ...(isGuideSeries(series) ? { podGuide: seedSeriesGuide(series as GuideSeries) } : {}),
       },
     });

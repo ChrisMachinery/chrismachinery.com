@@ -339,15 +339,15 @@ Paint is the only Container finish in the catalog. Equipment lists belong on Cus
 
 const capsule: SeriesGuideDefaults = {
   introTitle: "How to choose a Capsule trailer",
-  intro: `Capsule is the glass-window street family: body length 3900, 4000, 4500, 5000 or 5500 mm; width 2200 mm; 375 Arc; paint or stainless steel; Single Axle or Tandem Axle. Those numbers are already in the filters at the bottom of this page.
+  intro: `Capsule is the glass-window street family: body length 3900, 4000, 4500, 5000 or 5500 mm; width 2200 mm; 375 Arc; paint or stainless steel; Single Axle or Tandem Axle; two glass heights, Above counter or Below counter. Those numbers are already in the filters at the bottom of this page.
 
-Use this chapter to pick a length band, a finish, and an axle. Capsule is not an Airstream with more arcs — the Capsule filter is 375 Arc only. Prices stay in the inquiry.`,
-  shapeBody: `Capsule uses a 375 window arc and a glass service face for street and night-market display. Airstream offers 375, 500 and 700 on a longer length list. If you need 500 or 700, or bodies longer than 5500 mm, you are choosing Airstream, not Capsule.
+Use this chapter to pick a glass height, a length band, a finish, and an axle. Capsule is not an Airstream with more arcs — the Capsule filter is 375 Arc only. Prices stay in the inquiry.`,
+  shapeBody: `Above-counter and below-counter glass share the same Capsule length, width, and 375 Arc. Above-counter glass is the taller display face: more vitrine over the service line. Below-counter glass drops the glazing for a lower serving window.
 
-Paint versus stainless is the Capsule finish split, same idea as Airstream. Width is 2200 mm. Filter Material after the length band. Glass layout details belong on Customize, not in a second shape chip.`,
+Pick Above when the street face should show product. Pick Below when the window should sit lower on the body. A 4000 mm Above and a 4000 mm Below are the same working length. Paint versus stainless is the finish. 500 and 700 arcs still belong on Airstream.`,
   sizeTitle: "Size band × typical menu",
-  sizeNote: `The three cards group lengths already in the Capsule filter (3900–5500 mm). Width is 2200 mm. Shape is 375 Arc on every Capsule. After you pick a card, filter Length, Material, and Axle. Example links are placeholders until you paste /products/capsule/your-slug.`,
-  pdpNote: "Capsule vs Airstream. See the series guide.",
+  sizeNote: `The three cards group lengths already in the Capsule filter (3900–5500 mm). Width is 2200 mm. Shape is 375 Arc on every Capsule. Glass height is Above or Below counter — see the two cards above. After you pick a card, filter Length, Material, and Axle. Example links are placeholders until you paste /products/capsule/your-slug.`,
+  pdpNote: "Above-counter vs below-counter glass. See the series guide.",
   sizeRows: bands([
     {
       scene: "Street / night-market",
@@ -387,9 +387,9 @@ Paint versus stainless is the Capsule finish split, same idea as Airstream. Widt
     },
   ]),
   kitchenTitle: "Glass face, finish, and workflow",
-  kitchenBody: `The Capsule kitchen sits behind a glass service window on a 2200 mm body. 375 Arc is fixed in the filter. Stainless versus paint is the finish. Single Axle covers most 3900–4000 mm units; Tandem Axle is the usual choice at 5500 mm.
+  kitchenBody: `The Capsule kitchen sits behind a glass service window on a 2200 mm body. 375 Arc is fixed in the filter. Glass height is the series split: Above counter or Below counter. Stainless versus paint is the finish. Single Axle covers most 3900–4000 mm units; Tandem Axle is the usual choice at 5500 mm.
 
-Window configuration is a custom drawing. Use Customize for that. Product pages list what is included on every Capsule.`,
+Window count and interior drawings belong on Customize. Product pages list what is included on every Capsule.`,
   kitchenLinkLabel: "Customize kitchen layout",
   kitchenLinkHref: "",
   quoteLabel: "Get Quote",
@@ -402,9 +402,14 @@ Window configuration is a custom drawing. Use Customize for that. Product pages 
         "Not in the Capsule filter. Capsule is 375 Arc only. 500 and 700 live on Airstream.",
     },
     {
+      question: "What are the two glass heights?",
+      answer:
+        "Above-counter glass sits over the service line for a taller display face. Below-counter glass drops the window. Length stays the same. See the two cards on this page.",
+    },
+    {
       question: "Capsule or Airstream?",
       answer:
-        "Capsule for a glass-forward street unit on 3900–5500 mm. Airstream for 375/500/700 arcs and lengths up to 7000 mm.",
+        "Capsule for a glass-forward street unit on 3900–5500 mm with two glass heights. Airstream for 375/500/700 arcs and lengths up to 7000 mm.",
     },
     {
       question: "Paint or stainless?",
@@ -422,10 +427,10 @@ Window configuration is a custom drawing. Use Customize for that. Product pages 
         "This page chooses the class. Open a model in the catalog, then Get Quote.",
     },
   ],
-  tocCompare: "Capsule vs Airstream",
-  compareTitle: "Capsule vs Airstream",
+  tocCompare: "Above / Below",
+  compareTitle: "Glass heights: Above / Below",
   ...TOC_BAR,
-  compareSectionId: "series-compare",
+  compareSectionId: "glass-guide",
   metaTitle: "How to Choose a Capsule Food Trailer | Chris Machinery",
   metaDescription:
     "Choose Capsule length 3900–5500 mm, 375 arc, paint or stainless, and Single or Tandem axle. Then filter the catalog and get a quote.",

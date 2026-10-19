@@ -6,6 +6,7 @@ import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { ProductDetailActions } from "@/components/products/ProductDetailActions";
 import { productMaterials, productShapes } from "@/lib/productFamily";
 import { AIRSTREAM_ARC_PDP_NOTE } from "@/lib/airstreamArc";
+import { CAPSULE_GLASS_PDP_NOTE } from "@/lib/capsuleGlassGuide";
 import { POD_SHAPE_PDP_NOTE } from "@/lib/podShapeGuide";
 import { isGuideSeries, SERIES_GUIDE_DEFAULTS } from "@/lib/seriesGuides";
 import { ProductGallery } from "@/components/products/ProductGallery";
@@ -16,6 +17,7 @@ import { productCustomizable, productIncluded, productKgLabel, productOverallLen
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 import {
   localizedAirstreamGuide,
+  localizedCapsuleGuide,
   localizedCustomOptions,
   localizedIncluded,
   localizedList,
@@ -79,6 +81,7 @@ export default async function ProductDetailPage({
   const customFromCms = Boolean(seriesPage?.customizable?.length || pageContent?.productCustomOptions?.length);
   const airstreamNote = localizedAirstreamGuide[locale]?.pdp || AIRSTREAM_ARC_PDP_NOTE;
   const podNote = localizedPodGuide[locale]?.pdp || POD_SHAPE_PDP_NOTE;
+  const capsuleNote = localizedCapsuleGuide[locale]?.pdp || CAPSULE_GLASS_PDP_NOTE;
   const overallLength = productOverallLength(product.length);
   const overallWidth = productOverallWidth(product.width);
   const seriesId = seriesPage?._id;
@@ -196,9 +199,11 @@ export default async function ProductDetailPage({
                   ? airstreamNote
                   : product.series === "pod"
                     ? podNote
-                    : isGuideSeries(product.series)
-                      ? SERIES_GUIDE_DEFAULTS[product.series].pdpNote
-                      : undefined
+                    : product.series === "capsule"
+                      ? capsuleNote
+                      : isGuideSeries(product.series)
+                        ? SERIES_GUIDE_DEFAULTS[product.series].pdpNote
+                        : undefined
               }
               materialLabel={t("specs.material")}
             />

@@ -18,7 +18,7 @@ const notSeriesPage = ({ document }: { document?: { path?: unknown } }) =>
   );
 const notOptionGuidePage = ({ document }: { document?: { path?: unknown } }) => {
   const path = String(document?.path || "");
-  return path !== "/products/airstream" && path !== "/products/pod";
+  return path !== "/products/airstream" && path !== "/products/pod" && path !== "/products/capsule";
 };
 const notSeriesGuidePage = ({ document }: { document?: { path?: unknown } }) =>
   !["/products/pod", "/products/airstream", "/products/square", "/products/container", "/products/capsule"].includes(
@@ -112,7 +112,7 @@ export const sitePage = defineType({
       type: "string",
       hidden: notOptionGuidePage,
       description:
-        "系列页顶部图文。Airstream 写窗弧；Pod 写 Dome / Square。全系列只写一次，不要写进每台产品。",
+        "系列页顶部图文。Airstream 写窗弧；Pod 写 Dome / Square；Capsule 写 Above / Below 玻璃高度。全系列只写一次，不要写进每台产品。",
     }),
     defineField({
       name: "arcGuideNote",
@@ -128,7 +128,7 @@ export const sitePage = defineType({
       type: "array",
       hidden: notOptionGuidePage,
       description:
-        "Airstream 建议 3 条（375 / 500 / 700）。Pod 建议 2 条（Dome / Square）。卡片和详情页只显示芯片；不要写价格。",
+        "Airstream 建议 3 条（375 / 500 / 700）。Pod 建议 2 条（Dome / Square）。Capsule 建议 2 条（Above counter / Below counter）。卡片和详情页只显示芯片；不要写价格。",
       validation: (Rule) => Rule.max(3),
       of: [
         {
@@ -138,7 +138,7 @@ export const sitePage = defineType({
               name: "label",
               title: "名称",
               type: "string",
-              description: "例如 375，或 Dome / Square",
+              description: "例如 375，Dome / Square，或 Above counter / Below counter",
             }),
             defineField({ name: "body", title: "一句说明", type: "text", rows: 2 }),
             defineField({
@@ -146,7 +146,7 @@ export const sitePage = defineType({
               title: "示意小图",
               type: "image",
               description:
-                "卡片底部示意。Airstream 窗弧用 5:2（建议 1000×400）。Pod 造型用 4:3（建议 1200×900），方便对比 Dome / Square。JPG/WebP 或白底 PNG。车身轮廓居中。Alt 仅给 Google，网页上不显示。",
+                "卡片底部示意。Airstream 窗弧用 5:2（建议 1000×400）。Pod 造型和 Capsule 玻璃高度用 4:3（建议 1200×900）。JPG/WebP 或白底 PNG。车身轮廓居中。Alt 仅给 Google，网页上不显示。",
               options: { hotspot: siteImageHotspot },
               fields: [
                 defineField({
@@ -183,7 +183,7 @@ export const sitePage = defineType({
           name: "tocCompare",
           title: "目录栏 · 第 1 粒（对比）",
           type: "string",
-          description: "只改黄条文案。下面那行 H2 是「对比节标题」，两边互不影响。空则用默认：Pod=Dome / Square，Airstream=375 / 500 / 700。",
+          description: "只改黄条文案。下面那行 H2 是「对比节标题」，两边互不影响。空则用默认：Pod=Dome / Square，Airstream=375 / 500 / 700，Capsule=Above / Below。",
         }),
         defineField({
           name: "tocSize",
@@ -230,14 +230,14 @@ export const sitePage = defineType({
           name: "compareTitle",
           title: "对比节标题（H2）",
           type: "string",
-          description: "黄条下面那行标题。与第 1 粒分开改。Pod / Airstream 有对比卡时前台用 arcGuideTitle，这一格不显示。空则用默认（如 Why Square）。不要加 ##。",
+          description: "黄条下面那行标题。与第 1 粒分开改。Pod / Airstream / Capsule 有对比卡时前台用 arcGuideTitle，这一格不显示。空则用默认（如 Why Square）。不要加 ##。",
         }),
         defineField({
           name: "shapeBody",
           title: "造型/系列对比正文（约 80–160 词）",
           type: "text",
           rows: 6,
-          description: "写在对比卡下方（Pod 的 Dome/Square、Airstream 的弧度）。Square / Container / Capsule 没有对比卡，这段就是对比节正文。",
+          description: "写在对比卡下方（Pod 的 Dome/Square、Airstream 的弧度、Capsule 的玻璃高度）。Square / Container 没有对比卡，这段就是对比节正文。",
         }),
         defineField({ name: "sizeTitle", title: "尺寸对照标题", type: "string" }),
         defineField({ name: "sizeNote", title: "尺寸对照说明（约 80–120 词）", type: "text", rows: 5 }),

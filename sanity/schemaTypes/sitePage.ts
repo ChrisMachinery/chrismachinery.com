@@ -216,7 +216,7 @@ export const sitePage = defineType({
           title: "定位正文（约 100–140 词）",
           type: "text",
           rows: 8,
-          description: "页面第 1 块。800–1500 是全页各块加总，不是只写在这里。",
+          description: "页面第 1 块。800–1500 是全页各块加总，不是只写在这里。链接直接粘贴 https://… 即可，或写 [文案](https://…)。不要写 HTML。",
         }),
         defineField({
           name: "introImage",
@@ -237,7 +237,7 @@ export const sitePage = defineType({
           title: "造型/系列对比正文（约 80–160 词）",
           type: "text",
           rows: 6,
-          description: "写在对比卡下方（Pod 的 Dome/Square、Airstream 的弧度、Capsule 的玻璃高度）。Square / Container 没有对比卡，这段就是对比节正文。",
+          description: "写在对比卡下方（Pod 的 Dome/Square、Airstream 的弧度、Capsule 的玻璃高度）。Square / Container 没有对比卡，这段就是对比节正文。链接直接粘贴 https://… 或 [文案](https://…)。",
         }),
         defineField({ name: "sizeTitle", title: "尺寸对照标题", type: "string" }),
         defineField({ name: "sizeNote", title: "尺寸对照说明（约 80–120 词）", type: "text", rows: 5 }),

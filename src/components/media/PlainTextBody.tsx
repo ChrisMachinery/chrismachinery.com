@@ -24,6 +24,17 @@ function headingLevel(line: string): 2 | 3 | null {
   return match[1] === "##" ? 2 : 3;
 }
 
+const LINK_CHUNK =
+  /(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>"'）】\]]+)/g;
+
+function hrefFromMatch(raw: string) {
+  const labeled = raw.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+  if (labeled) return { href: labeled[2], label: labeled[1], suffix: "" };
+  const split = raw.match(/^(https?:\/\/[^\s]+?)([),.;:!?]*)$/);
+  const href = split ? split[1] : raw;
+  return { href, label: href, suffix: split?.[2] || "" };
+}
+
 function Inline({
   text,
   encode,
@@ -31,19 +42,42 @@ function Inline({
   text: string;
   encode: (value: string) => string;
 }) {
-  const parts = text.split(/(\*\*[^*]+?\*\*)/g);
+  const chunks = text.split(LINK_CHUNK).filter((part) => part !== "");
   return (
     <>
-      {parts.map((part, i) => {
-        const bold = part.match(/^\*\*([^*]+?)\*\*$/);
-        if (bold) {
+      {chunks.map((chunk, i) => {
+        if (chunk.startsWith("http://") || chunk.startsWith("https://") || /^\[[^\]]+\]\(https?:\/\//.test(chunk)) {
+          const { href, label, suffix } = hrefFromMatch(chunk);
           return (
-            <strong key={i} className="font-semibold text-brand">
-              {encode(bold[1])}
-            </strong>
+            <span key={i}>
+              <a
+                href={vercelStegaClean(href)}
+                className="break-all font-semibold text-brand underline underline-offset-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {encode(label)}
+              </a>
+              {suffix ? encode(suffix) : null}
+            </span>
           );
         }
-        return <span key={i}>{encode(part)}</span>;
+        const parts = chunk.split(/(\*\*[^*]+?\*\*)/g);
+        return (
+          <span key={i}>
+            {parts.map((part, j) => {
+              const bold = part.match(/^\*\*([^*]+?)\*\*$/);
+              if (bold) {
+                return (
+                  <strong key={j} className="font-semibold text-brand">
+                    {encode(bold[1])}
+                  </strong>
+                );
+              }
+              return <span key={j}>{encode(part)}</span>;
+            })}
+          </span>
+        );
       })}
     </>
   );

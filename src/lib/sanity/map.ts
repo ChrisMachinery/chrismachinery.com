@@ -412,6 +412,7 @@ export type SitePageDoc = {
     slug?: string;
     body?: string;
     image?: unknown;
+    gallery?: unknown[];
   }[];
   arcGuideTitle?: string;
   arcGuideNote?: string;
@@ -499,6 +500,7 @@ export function mapSitePage(doc: SitePageDoc) {
       slug: item.slug ? vercelStegaClean(item.slug) : undefined,
       body: item.body ? vercelStegaClean(item.body) : undefined,
       imageUrl: imageUrl(item.image, 1200),
+      galleryUrls: uniqueProductImages(item.gallery ?? []).map((image) => image.url),
     })),
     arcGuideTitle: doc.arcGuideTitle ? vercelStegaClean(doc.arcGuideTitle) : undefined,
     arcGuideNote: doc.arcGuideNote ? vercelStegaClean(doc.arcGuideNote) : undefined,

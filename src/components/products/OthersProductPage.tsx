@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
+import { ProductGallery } from "@/components/products/ProductGallery";
 import { PlainTextBody } from "@/components/media/PlainTextBody";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { ProductCtaButton } from "@/components/products/ProductCtaButton";
@@ -27,7 +27,14 @@ export async function OthersProductPage({ locale, slug }: { locale: string; slug
   const page = await getSitePage("/products/others");
   const card = resolveOthersCatalog(page?._id, page?.othersCards).find((row) => row.item.slug === slug);
   if (!card) notFound();
-  const { item, body, edit } = card;
+  const { item, body, galleryUrls, edit } = card;
+  const cardIndex = Number((edit.imagePath || "").match(/othersCards\[(\d+)\]/)?.[1] ?? 0);
+  const images = [
+    { url: item.imageUrl || "", path: edit.imagePath || `othersCards[${cardIndex}].image` },
+    ...galleryUrls
+      .filter((url) => url && url !== item.imageUrl)
+      .map((url, i) => ({ url, path: `othersCards[${cardIndex}].gallery[${i}]` })),
+  ];
   const s = (path: string, text: string) => stegaText(edit.documentId, "sitePage", path, text);
   const from = `${localePrefix(locale)}/products/others/${item.slug}`;
   const quoteHref = `/contact?product=${item.slug}&from=${encodeURIComponent(from)}`;
@@ -38,13 +45,11 @@ export async function OthersProductPage({ locale, slug }: { locale: string; slug
         {t("products.backToOthers")}
       </PreviewNavLink>
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,28rem)_1fr] lg:items-start">
-        <ImgPlaceholder
+        <ProductGallery
           documentId={edit.documentId}
           documentType="sitePage"
-          path={edit.imagePath}
           alt={item.name}
-          className="aspect-square w-full rounded-lg"
-          src={item.imageUrl}
+          images={images}
         />
         <div>
           <h1 className="type-page" {...cmsEdit(edit.documentId, "sitePage", edit.titlePath || "title")}>

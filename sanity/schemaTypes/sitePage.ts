@@ -150,7 +150,7 @@ export const sitePage = defineType({
               name: "image",
               title: "主图",
               type: "image",
-              description: "目录卡片 1:1 方图。建议 1200×1200 px，JPG/WebP，车身居中。",
+              description: "目录卡片 1:1 方图。建议 1200×1200 px，JPG/WebP，车身居中。表格导入时 (1) 写入这里。",
               options: { hotspot: siteImageHotspot },
               fields: [
                 defineField({
@@ -158,6 +158,25 @@ export const sitePage = defineType({
                   type: "string",
                   title: "Alt text（仅 Google SEO）",
                 }),
+              ],
+            }),
+            defineField({
+              name: "gallery",
+              title: "详情图库",
+              type: "array",
+              description: "查看详情页缩略图。表格导入时 (1) 以外的图写入这里。建议 1:1，1200×1200。",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: siteImageHotspot },
+                  fields: [
+                    defineField({
+                      name: "alt",
+                      type: "string",
+                      title: "Alt text（仅 Google SEO）",
+                    }),
+                  ],
+                },
               ],
             }),
           ],

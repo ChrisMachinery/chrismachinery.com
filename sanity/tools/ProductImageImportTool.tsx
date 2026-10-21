@@ -10,6 +10,7 @@ import {
   imageImportExampleRows,
   parseAltCatalog,
   planImageImport,
+  type ImageImportOthersCard,
   type ImageImportPlan,
   type ImageImportProduct,
 } from "../lib/productImageImport";
@@ -51,6 +52,28 @@ function groupByProduct(plans: ImageImportPlan[]) {
   return map;
 }
 
+function groupByOthersCard(plans: ImageImportPlan[]) {
+  const map = new Map<string, ImageImportPlan[]>();
+  for (const plan of plans) {
+    if (!plan.othersCard || plan.error) continue;
+    const key = `${publishedDocumentId(plan.othersCard.pageId)}:${plan.othersCard.index}`;
+    const list = map.get(key) || [];
+    list.push(plan);
+    map.set(key, list);
+  }
+  for (const list of map.values()) list.sort((a, b) => a.sequence - b.sequence);
+  return map;
+}
+
+function sanityImage(assetId: string, alt: string, sequence: number) {
+  return {
+    _type: "image" as const,
+    _key: `${assetId.replace(/^image-/, "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 40)}${sequence}`,
+    alt,
+    asset: { _type: "reference" as const, _ref: assetId },
+  };
+}
+
 export function ProductImageImportTool() {
   const client = useClient({ apiVersion: "2024-08-21" }).withConfig({ perspective: "raw" });
   const [excelName, setExcelName] = useState("");
@@ -62,6 +85,7 @@ export function ProductImageImportTool() {
   const [log, setLog] = useState<string[]>([]);
   const [catalog, setCatalog] = useState<ReturnType<typeof parseAltCatalog>>([]);
   const [products, setProducts] = useState<ImageImportProduct[]>([]);
+  const [othersCards, setOthersCards] = useState<ImageImportOthersCard[]>([]);
   const [pickedCount, setPickedCount] = useState(0);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,6 +99,35 @@ export function ProductImageImportTool() {
       { ok: 0, skip: 0 },
     );
   }, [plans]);
+
+  async function loadOthersCards() {
+    const docs = await client.fetch<{ _id: string; othersCards?: { _key?: string; title?: string; slug?: string }[] }[]>(
+      `*[_type == "sitePage" && path == "/products/others"]{_id, othersCards[]{_key, title, slug}}`,
+    );
+    const byId = new Map<string, (typeof docs)[0]>();
+    for (const doc of docs || []) {
+      const key = publishedDocumentId(doc._id);
+      const prev = byId.get(key);
+      if (!prev || doc._id.startsWith("drafts.")) {
+        byId.set(key, doc);
+      }
+    }
+    const cards: ImageImportOthersCard[] = [];
+    for (const doc of byId.values()) {
+      (doc.othersCards ?? []).forEach((card, index) => {
+        if (!card.title && !card.slug) return;
+        cards.push({
+          pageId: publishedDocumentId(doc._id),
+          index,
+          key: card._key,
+          title: card.title || "",
+          slug: card.slug || "",
+        });
+      });
+    }
+    setOthersCards(cards);
+    return cards;
+  }
 
   async function loadProducts() {
     const docs = await client.fetch<ImageImportProduct[]>(
@@ -120,6 +173,7 @@ export function ProductImageImportTool() {
     setBusy(true);
     try {
       const loaded = products.length ? products : await loadProducts();
+      const others = othersCards.length ? othersCards : await loadOthersCards();
       const files = picked.filter(isImportableImage);
       if (!files.length) {
         setPlans([]);
@@ -127,7 +181,7 @@ export function ProductImageImportTool() {
         setError(`选了 ${picked.length} 个文件，但没有识别成图片（网盘文件可没有 .jpg 后缀，现已支持）。`);
         return;
       }
-      const next = planImageImport(files, catalog, loaded);
+      const next = planImageImport(files, catalog, loaded, others);
       setPickedCount(files.length);
       setPlans(next);
       setLog([
@@ -151,14 +205,13 @@ export function ProductImageImportTool() {
   }
 
   async function runImport() {
-    const ready = plans.filter((item) => !item.error && item.product);
+    const ready = plans.filter((item) => !item.error && (item.product || item.othersCard));
     if (!ready.length) return;
     setBusy(true);
     setError("");
     const lines: string[] = [];
     try {
-      const grouped = groupByProduct(ready);
-      for (const [productId, items] of grouped) {
+      async function uploadGroup(items: ImageImportPlan[]) {
         const uploaded: { sequence: number; alt: string; assetId: string; fileName: string }[] = [];
         for (const item of items) {
           const filename = /\.[a-z0-9]+$/i.test(item.fileName) ? item.fileName : `${item.fileName}.jpg`;
@@ -172,20 +225,17 @@ export function ProductImageImportTool() {
             assetId: asset._id,
             fileName: item.fileName,
           });
-          lines.push(`已上传 ${item.fileName} → ${item.product?.slug || productId}`);
         }
-        const main = uploaded[0];
-        const gallery = uploaded.map((item) => ({
-          _type: "image" as const,
-          _key: `${item.assetId.replace(/^image-/, "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 40)}${item.sequence}`,
-          alt: item.alt,
-          asset: { _type: "reference" as const, _ref: item.assetId },
-        }));
-        const mainImage = {
-          _type: "image" as const,
-          alt: main.alt,
-          asset: { _type: "reference" as const, _ref: main.assetId },
-        };
+        return uploaded;
+      }
+
+      const grouped = groupByProduct(ready.filter((item) => item.product));
+      for (const [productId, items] of grouped) {
+        const uploaded = await uploadGroup(items);
+        uploaded.forEach((item) => lines.push(`已上传 ${item.fileName} → ${items[0]?.product?.slug || productId}`));
+        const main = uploaded.find((item) => item.sequence === 1) || uploaded[0];
+        const gallery = uploaded.map((item) => sanityImage(item.assetId, item.alt, item.sequence));
+        const mainImage = sanityImage(main.assetId, main.alt, main.sequence);
         const pubId = publishedDocumentId(productId);
         const targets = [...new Set([pubId, draftId(pubId)])];
         const existing = await client.getDocuments(targets);
@@ -202,6 +252,36 @@ export function ProductImageImportTool() {
         }
         await tx.commit();
         lines.push(`已写入产品 ${items[0]?.product?.slug || pubId}（主图 + ${gallery.length} 张，前台即可看到）`);
+      }
+
+      const othersGrouped = groupByOthersCard(ready.filter((item) => item.othersCard));
+      for (const [, items] of othersGrouped) {
+        const card = items[0]?.othersCard;
+        if (!card) continue;
+        const uploaded = await uploadGroup(items);
+        uploaded.forEach((item) => lines.push(`已上传 ${item.fileName} → Others / ${card.title}`));
+        const main = uploaded.find((item) => item.sequence === 1) || uploaded[0];
+        const rest = uploaded.filter((item) => item.assetId !== main.assetId);
+        const mainImage = sanityImage(main.assetId, main.alt, main.sequence);
+        const gallery = rest.map((item) => sanityImage(item.assetId, item.alt, item.sequence));
+        const pubId = publishedDocumentId(card.pageId);
+        const targets = [...new Set([pubId, draftId(pubId)])];
+        const existing = await client.getDocuments(targets);
+        const ids = existing.filter(Boolean).map((doc) => doc!._id);
+        const patchIds = ids.includes(pubId) ? ids : ids.length ? ids : [pubId];
+        const imagePath = `othersCards[${card.index}].image`;
+        const galleryPath = `othersCards[${card.index}].gallery`;
+        const tx = client.transaction();
+        for (const id of patchIds) {
+          if (replace) {
+            tx.patch(id, { set: { [imagePath]: mainImage, [galleryPath]: gallery } });
+          } else {
+            tx.patch(id, { set: { [imagePath]: mainImage }, setIfMissing: { [galleryPath]: [] } });
+            if (gallery.length) tx.patch(id, { insert: { after: `${galleryPath}[-1]`, items: gallery } });
+          }
+        }
+        await tx.commit();
+        lines.push(`已写入 Others「${card.title}」（卡片主图 + 详情 ${gallery.length} 张）`);
       }
       setLog(["导入完成：图片已写入已发布产品，刷新产品页即可看到。", ...lines]);
     } catch (err) {
@@ -224,8 +304,9 @@ export function ProductImageImportTool() {
           或
           {" "}
           <code>390NY Tandem axle black (1).jpg</code>
-          Capsule = NY（390NY）。F = Square（280F）。400C = Container 4000mm。表格列：图片名称、图片序号、Alt 文案。
-          默认第 (1) 张当主图，其余进 Gallery，并覆盖该产品旧图。百度网盘无法直接读取，请先下载到电脑再多选上传。
+          Capsule = NY（390NY）。F = Square（280F）。400C = Container 4000mm。
+          Others 用名称即可：Bullet (1)、RM (2)、Dog (3)、SA (1)、Citroën (4)，会对上卡片（RM → RM Series，Dog → Dog Trailer）。(1) 当卡片主图，其余进该车详情图库。
+          表格列：图片名称、图片序号、Alt 文案。百度网盘无法直接读取，请先下载到电脑再多选上传。
         </Text>
         <Flex gap={3} wrap="wrap" align="center">
           <Button text="下载 Alt 模板" mode="ghost" onClick={downloadTemplate} disabled={busy} />
@@ -303,7 +384,11 @@ export function ProductImageImportTool() {
                         <td style={{ padding: "6px 8px", borderBottom: "1px solid #eee" }}>{item.fileName}</td>
                         <td style={{ padding: "6px 8px", borderBottom: "1px solid #eee" }}>{item.sequence}</td>
                         <td style={{ padding: "6px 8px", borderBottom: "1px solid #eee" }}>
-                          {item.product ? `${item.product.series} / ${item.product.slug}` : "—"}
+                          {item.othersCard
+                            ? `Others / ${item.othersCard.title}`
+                            : item.product
+                              ? `${item.product.series} / ${item.product.slug}`
+                              : "—"}
                         </td>
                         <td style={{ padding: "6px 8px", borderBottom: "1px solid #eee" }}>{item.alt || "—"}</td>
                         <td style={{ padding: "6px 8px", borderBottom: "1px solid #eee", color: item.error ? "#b42318" : "#667" }}>

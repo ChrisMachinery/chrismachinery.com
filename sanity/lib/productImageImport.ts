@@ -25,6 +25,14 @@ export type AltCatalogRow = {
   rowNumber: number;
 };
 
+export type ImageImportOthersCard = {
+  pageId: string;
+  index: number;
+  key?: string;
+  title: string;
+  slug: string;
+};
+
 export type ImageImportPlan = {
   file: File;
   fileName: string;
@@ -32,6 +40,7 @@ export type ImageImportPlan = {
   groupName: string;
   alt: string;
   product?: ImageImportProduct;
+  othersCard?: ImageImportOthersCard;
   error?: string;
 };
 
@@ -71,6 +80,8 @@ function cellText(value: unknown) {
 
 export function normalizeLabel(value: string) {
   return cellText(value)
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/\.(jpe?g|png|webp|gif)$/i, "")
     .replace(/[（）]/g, (ch) => (ch === "（" ? "(" : ")"))
@@ -81,8 +92,11 @@ export function normalizeLabel(value: string) {
 
 export function parseSequence(value: string) {
   const text = cellText(value);
-  const match = text.match(/\((\d+)\)\s*$/) || text.match(/^(\d+)$/);
-  return match ? Number(match[1]) : undefined;
+  const paren = text.match(/\((\d+)\)\s*$/);
+  if (paren) return Number(paren[1]);
+  const plain = text.match(/^-?(\d+)$/);
+  if (plain) return Number(plain[1]);
+  return undefined;
 }
 
 export function parseImageFileName(fileName: string): ParsedImageFile {
@@ -198,6 +212,24 @@ function pickProduct(candidates: ImageImportProduct[], parsed: ParsedImageFile) 
   return pool[0];
 }
 
+export function findOthersCardForImage(parsed: ParsedImageFile, cards: ImageImportOthersCard[]) {
+  const key = normalizeLabel(parsed.groupName);
+  if (!key) return undefined;
+  const scored = cards
+    .map((card) => {
+      const title = normalizeLabel(card.title);
+      const slug = normalizeLabel((card.slug || "").replace(/-/g, " "));
+      let score = 0;
+      if (title === key || slug === key) score = 100;
+      else if (title.startsWith(`${key} `) || slug.startsWith(`${key} `)) score = 80;
+      else if (title.split(" ").includes(key) || slug.split(" ").includes(key)) score = 60;
+      return { card, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return scored[0]?.card;
+}
+
 export function findProductForImage(parsed: ParsedImageFile, products: ImageImportProduct[]) {
   const model = normalizeLabel(parsed.groupName).match(/\b(\d{3,4})\s*(ny|[capskf])\b/);
   const modelToken = model ? `${model[1]}${model[2]}` : "";
@@ -222,11 +254,13 @@ export function planImageImport(
   files: File[],
   catalog: AltCatalogRow[],
   products: ImageImportProduct[],
+  othersCards: ImageImportOthersCard[] = [],
 ): ImageImportPlan[] {
   return files.map((file) => {
     const parsed = parseImageFileName(file.name);
     const alt = findAlt(catalog, parsed.groupName, parsed.sequence);
-    const product = findProductForImage(parsed, products);
+    const othersCard = findOthersCardForImage(parsed, othersCards);
+    const product = othersCard ? undefined : findProductForImage(parsed, products);
     const plan: ImageImportPlan = {
       file,
       fileName: file.name,
@@ -234,9 +268,11 @@ export function planImageImport(
       groupName: parsed.groupName,
       alt,
       product,
+      othersCard,
     };
+    if (othersCard) return plan;
     if (!parsed.series || !parsed.length) {
-      plan.error = "文件名无法识别型号（Container 用 400C；Capsule/NY 用 390NY；Square 用 280F）";
+      plan.error = "文件名无法识别型号（Others 用 Bullet (1)；目录用 400C / 390NY / 280F）";
     } else if (!product) {
       plan.error = `没有对应产品：${parsed.series} ${parsed.length}mm ${parsed.axle || ""}`.trim();
     }
@@ -252,5 +288,7 @@ export function imageImportExampleRows() {
     ["400C Tandem axle black", "(2)", "Chris Machinery 4000mm tandem axle matte black food trailer parked outside factory lot"],
     ["280F Single axle white", "(1)", "Chris Machinery 2800mm single axle white square food trailer exterior side view with hatch"],
     ["400NY Tandem axle Ti", "(1)", "Chris Machinery 4000mm tandem axle titanium grey capsule food trailer front side view"],
+    ["Bullet", "(1)", "Chris Machinery Airstream style food trailer rear side view with tail lights"],
+    ["RM", "(2)", "Chris Machinery modern black square catering trailer front side angle view"],
   ];
 }

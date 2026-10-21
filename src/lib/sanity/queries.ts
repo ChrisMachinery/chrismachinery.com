@@ -202,7 +202,7 @@ export const sitePageByPathQuery = `*[_type == "sitePage" && path == $path][0] {
   faq,
   included,
   customizable,
-  othersCards[]{ _key, title, axle, length, width, year, slug, body, image{..., alt} },
+  othersCards[]{ _key, title, axle, length, width, year, slug, body, image{..., alt}, gallery[]{..., alt} },
   arcGuideTitle,
   arcGuideNote,
   arcGuides[]{ _key, label, body, image{..., alt} },

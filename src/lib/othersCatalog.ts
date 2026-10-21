@@ -9,6 +9,7 @@ export type OthersCardCms = {
   year?: number;
   slug?: string;
   imageUrl?: string;
+  galleryUrls?: string[];
   body?: string;
 };
 
@@ -41,7 +42,7 @@ export function othersItemSlug(title?: string, slug?: string, fallback?: string)
 export function resolveOthersCatalog(
   pageId: string | undefined,
   cards?: OthersCardCms[] | null,
-): { item: Product; body: string; edit: CatalogCardEdit }[] {
+): { item: Product; body: string; galleryUrls: string[]; edit: CatalogCardEdit }[] {
   const defaults = productsBySeries("others");
   const filled = (cards ?? []).filter((card) => card.title || card.imageUrl || card.body || card.length);
   const rows = filled.length
@@ -54,6 +55,7 @@ export function resolveOthersCatalog(
         year: item.year,
         slug: item.slug,
         imageUrl: item.imageUrl,
+        galleryUrls: [],
         body: item.description,
       }));
 
@@ -67,6 +69,7 @@ export function resolveOthersCatalog(
     const width = row.width || fallback?.width || 0;
     return {
       body: row.body?.trim() || "",
+      galleryUrls: (row.galleryUrls ?? []).filter(Boolean),
       item: {
         _id: pageId,
         slug,

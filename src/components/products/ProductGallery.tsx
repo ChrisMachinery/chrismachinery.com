@@ -5,10 +5,12 @@ import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 
 export function ProductGallery({
   documentId,
+  documentType = "product",
   alt,
   images,
 }: {
   documentId?: string;
+  documentType?: string;
   alt: string;
   images: { url: string; objectPosition?: string; path: string }[];
 }) {
@@ -19,7 +21,7 @@ export function ProductGallery({
     return (
       <ImgPlaceholder
         documentId={documentId}
-        documentType="product"
+        documentType={documentType}
         path="mainImage"
         alt={alt}
         className="aspect-square w-full rounded-lg"
@@ -31,11 +33,11 @@ export function ProductGallery({
     <div>
       <ImgPlaceholder
         documentId={documentId}
-        documentType="product"
+        documentType={documentType}
         path={current.path}
         alt={alt}
         className="aspect-square w-full rounded-lg"
-        src={current.url}
+        src={current.url || undefined}
         objectPosition={current.objectPosition}
         priority
       />
@@ -53,11 +55,11 @@ export function ProductGallery({
             >
               <ImgPlaceholder
                 documentId={documentId}
-                documentType="product"
+                documentType={documentType}
                 path={image.path}
                 alt={`${alt} photo ${i + 1}`}
                 className="aspect-square w-full"
-                src={image.url}
+                src={image.url || undefined}
                 objectPosition={image.objectPosition}
               />
             </button>

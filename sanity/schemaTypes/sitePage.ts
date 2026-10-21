@@ -119,8 +119,9 @@ export const sitePage = defineType({
       title: "系列选项总述",
       type: "text",
       hidden: notOptionGuidePage,
-      rows: 2,
-      description: "只讲造型长什么样，不要写价格。报价在询盘里回复。",
+      rows: 5,
+      description:
+        "只讲造型长什么样，不要写价格。换行：按 Enter。加粗：两侧加 **，例如 **Above Bench**。不要整段加粗。报价在询盘里回复。",
     }),
     defineField({
       name: "arcGuides",
@@ -140,7 +141,13 @@ export const sitePage = defineType({
               type: "string",
               description: "例如 375，Dome / Square，或 Above counter / Below counter",
             }),
-            defineField({ name: "body", title: "一句说明", type: "text", rows: 2 }),
+            defineField({
+              name: "body",
+              title: "一句说明",
+              type: "text",
+              rows: 3,
+              description: "换行：按 Enter。加粗：两侧加 **，例如 **Above counter**。",
+            }),
             defineField({
               name: "image",
               title: "示意小图",

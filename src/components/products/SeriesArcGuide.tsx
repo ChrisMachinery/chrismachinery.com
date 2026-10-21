@@ -1,4 +1,5 @@
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
+import { PlainTextBody } from "@/components/media/PlainTextBody";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 
 export type ArcGuideItem = {
@@ -54,7 +55,13 @@ export function SeriesArcGuide({
       {...cmsEdit(documentId, "sitePage", "arcGuides")}
     >
       <h2 className="font-heading text-lg text-brand">{s("arcGuideTitle", heading)}</h2>
-      <p className="type-body mt-2">{s("arcGuideNote", blurb)}</p>
+      <PlainTextBody
+        text={blurb}
+        documentId={documentId}
+        documentType="sitePage"
+        path="arcGuideNote"
+        className="mt-2"
+      />
       <div className={columns === 2 ? "mt-5 grid gap-4 sm:grid-cols-2" : "mt-5 grid gap-4 sm:grid-cols-3"}>
         {shown.map((item, i) => {
           const fallback = defaults.items[i];
@@ -64,7 +71,13 @@ export function SeriesArcGuide({
           return (
             <article key={row._key || label || i} className="flex flex-col rounded-xl bg-white p-4 shadow-sm">
               <p className="font-heading text-xl text-brand">{s(`arcGuides[${i}].label`, label)}</p>
-              <p className="type-body mt-2">{s(`arcGuides[${i}].body`, body)}</p>
+              <PlainTextBody
+                text={body}
+                documentId={documentId}
+                documentType="sitePage"
+                path={`arcGuides[${i}].body`}
+                className="mt-2"
+              />
               <ImgPlaceholder
                 documentId={documentId}
                 documentType="sitePage"

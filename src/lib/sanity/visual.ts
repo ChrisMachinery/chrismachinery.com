@@ -24,10 +24,10 @@ export function stegaText(
   const clean = vercelStegaClean(text);
   // Public Vercel HTML stays clean. Local / Presentation still encode for click-to-edit.
   // Always re-encode from cleaned text so SSR and the client emit the same bytes.
-  if (publicHtml()) return clean;
+  if (publicHtml() || !id) return clean;
   const href = createEditUrl({
     baseUrl: studioUrl,
-    id: (id || "pageContent").replace(/^drafts\./, ""),
+    id: id.replace(/^drafts\./, ""),
     type,
     path,
     projectId: sanityProjectId,
@@ -57,6 +57,15 @@ export function cmsEdit(
   return {
     "data-sanity": String(attr()),
     "data-sanity-edit-target": "",
+  };
+}
+
+export function cmsImageEdit(id: string | undefined, type: string, path: string) {
+  const edit = cmsEdit(id, type, path);
+  if (!edit) return undefined;
+  return {
+    ...edit,
+    "data-sanity-overlay-element": "capture" as const,
   };
 }
 

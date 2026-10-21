@@ -24,6 +24,8 @@ const notSeriesGuidePage = ({ document }: { document?: { path?: unknown } }) =>
   !["/products/pod", "/products/airstream", "/products/square", "/products/container", "/products/capsule"].includes(
     String(document?.path || ""),
   );
+const notOthersPage = ({ document }: { document?: { path?: unknown } }) =>
+  String(document?.path || "") !== "/products/others";
 
 export const sitePage = defineType({
   name: "sitePage",
@@ -105,6 +107,63 @@ export const sitePage = defineType({
       description:
         "产品详情页右侧 Can be customized。按系列填写。留空则回退到首页「全站选配」列表。",
       of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "othersCards",
+      title: "Others 产品卡片",
+      type: "array",
+      hidden: notOthersPage,
+      description: "预览里点卡片图片上传、点标题改名称。可增减卡片。不要写价格。",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({ name: "title", title: "名称", type: "string" }),
+            defineField({
+              name: "axle",
+              title: "Axle",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Single Axle", value: "Single Axle" },
+                  { title: "Tandem Axle", value: "Tandem Axle" },
+                ],
+              },
+            }),
+            defineField({ name: "length", title: "Body length (mm)", type: "number" }),
+            defineField({ name: "width", title: "Body width (mm)", type: "number" }),
+            defineField({ name: "year", title: "Year", type: "number" }),
+            defineField({
+              name: "slug",
+              title: "Slug",
+              type: "string",
+              description: "详情页网址，例如 citroen。留空则按名称生成。",
+            }),
+            defineField({
+              name: "body",
+              title: "详情说明",
+              type: "text",
+              rows: 12,
+              description: "查看详情页正文。换行：Enter。加粗：**文字**。不要写价格。",
+            }),
+            defineField({
+              name: "image",
+              title: "主图",
+              type: "image",
+              description: "目录卡片 1:1 方图。建议 1200×1200 px，JPG/WebP，车身居中。",
+              options: { hotspot: siteImageHotspot },
+              fields: [
+                defineField({
+                  name: "alt",
+                  type: "string",
+                  title: "Alt text（仅 Google SEO）",
+                }),
+              ],
+            }),
+          ],
+          preview: { select: { title: "title", subtitle: "axle", media: "image" } },
+        },
+      ],
     }),
     defineField({
       name: "arcGuideTitle",

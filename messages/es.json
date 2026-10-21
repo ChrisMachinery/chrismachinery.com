@@ -68,6 +68,9 @@
   },
   "products": {
     "viewProduct": "Ver producto",
+    "viewDetails": "Ver detalles",
+    "backToOthers": "Volver a fabricaciones especiales",
+    "othersBodyHint": "Pulsa para escribir la historia de este producto. Enter para saltos de línea y **negrita**.",
     "emptySeries": "Esta serie aún no tiene modelos. Contáctenos para un pedido a medida.",
     "inStockEmpty": "Ahora no hay unidades listas para envío. Pida un pedido a medida, o vuelva cuando haya stock.",
     "noMatch": "Sin coincidencias. Ajusta los filtros.",

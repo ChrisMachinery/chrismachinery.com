@@ -68,6 +68,9 @@
   },
   "products": {
     "viewProduct": "View product",
+    "viewDetails": "View details",
+    "backToOthers": "Back to custom builds",
+    "othersBodyHint": "Click to write this product’s story. Use Enter for new lines and **bold**.",
     "emptySeries": "This series has no products yet. Contact us for a custom build.",
     "inStockEmpty": "No ready-to-ship units right now. Ask for a custom build, or check back when new stock is listed.",
     "noMatch": "No matching products. Adjust your filters.",

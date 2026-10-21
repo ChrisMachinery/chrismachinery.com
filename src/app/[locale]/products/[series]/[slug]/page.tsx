@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getCatalogProduct, getCatalogProducts, getPageContent, getProductsBySeries, getSitePage } from "@/lib/sanity/fetch";
+import { OthersProductPage, othersProductMetadata } from "@/components/products/OthersProductPage";
+import { resolveOthersCatalog } from "@/lib/othersCatalog";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { ProductDetailActions } from "@/components/products/ProductDetailActions";
 import { productMaterials, productShapes } from "@/lib/productFamily";
@@ -32,15 +34,21 @@ export const revalidate = 60;
 export async function generateStaticParams() {
   const mapped = await getCatalogProducts();
   const items = mapped.length ? mapped : [];
-  return items.map((item) => ({ series: item.series, slug: item.slug }));
+  const othersPage = await getSitePage("/products/others");
+  const others = resolveOthersCatalog(othersPage?._id, othersPage?.othersCards);
+  return [
+    ...items.filter((item) => item.series !== "others").map((item) => ({ series: item.series, slug: item.slug })),
+    ...others.map((row) => ({ series: "others" as const, slug: row.item.slug })),
+  ];
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: string; series: string; slug: string }>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, series, slug } = await params;
+  if (series === "others") return othersProductMetadata(locale, slug);
   const product = await getCatalogProduct(slug);
   if (!product) return {};
   return withCanonical(locale, `/products/${product.series}/${product.slug}`, {
@@ -56,6 +64,7 @@ export default async function ProductDetailPage({
 }) {
   const { locale, series, slug } = await params;
   setRequestLocale(locale);
+  if (series === "others") return <OthersProductPage locale={locale} slug={slug} />;
   const t = await getTranslations();
   const product = await getCatalogProduct(slug);
   if (!product || product.series !== series) notFound();

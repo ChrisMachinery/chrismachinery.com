@@ -1,4 +1,4 @@
-import { cmsEdit, type SanityEditProps } from "@/lib/sanity/visual";
+import { cmsImageEdit } from "@/lib/sanity/visual";
 
 export function ImgPlaceholder({
   label: _label,
@@ -22,8 +22,8 @@ export function ImgPlaceholder({
   path?: string;
 }) {
   const seoAlt = (alt || "").trim();
-  const edit: SanityEditProps | undefined =
-    documentId && documentType && path ? cmsEdit(documentId, documentType, path) : undefined;
+  const edit =
+    documentId && documentType && path ? cmsImageEdit(documentId, documentType, path) : undefined;
 
   if (src) {
     return (
@@ -42,5 +42,14 @@ export function ImgPlaceholder({
     );
   }
 
-  return <div className={`img-placeholder ${className}`} {...edit} />;
+  return (
+    <div
+      className={`img-placeholder relative flex items-center justify-center ${edit ? "cursor-pointer" : ""} ${className}`}
+      {...edit}
+    >
+      {edit ? (
+        <span className="pointer-events-none px-4 text-center text-sm text-black/40">点击上传图片</span>
+      ) : null}
+    </div>
+  );
 }

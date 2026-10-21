@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import type { Product, SeriesKey } from "@/data/products";
 import { filterOptions, productKgLabel, productSizeLabel } from "@/data/products";
 import { CatalogProductCard } from "@/components/products/CatalogProductCard";
+import { cmsEdit } from "@/lib/sanity/visual";
+import type { CatalogCardEdit } from "@/lib/othersCatalog";
 import { materialFilterIsUseful, productMaterials, productShapes, shapeFilterIsUseful } from "@/lib/productFamily";
 import { specLabel, specList } from "@/lib/specI18n";
 
@@ -41,10 +43,14 @@ export function ProductCatalog({
   series,
   items,
   mode,
+  othersEdits,
+  othersDocumentId,
 }: {
   series: SeriesKey | "in-stock";
   items: Product[];
   mode: "filter" | "stock" | "others";
+  othersEdits?: CatalogCardEdit[];
+  othersDocumentId?: string;
 }) {
   const t = useTranslations();
   const [filters, setFilters] = useState<Filters>(empty);
@@ -186,14 +192,21 @@ export function ProductCatalog({
                   : t("products.noMatch")}
             </p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {filtered.map((item) => (
+            <div
+              className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+              {...(mode === "others" ? cmsEdit(othersDocumentId, "sitePage", "othersCards") : {})}
+            >
+              {filtered.map((item, index) => (
                 <CatalogProductCard
                   key={item.slug}
                   item={item}
                   compare={compare.includes(item.slug)}
                   quoteLabel={mode === "stock" ? t("cta.buy") : t("products.getQuote")}
                   onCompare={setCompareSlug}
+                  edit={mode === "others" ? othersEdits?.[index] : undefined}
+                  showCompare={mode !== "others"}
+                  showViewProduct={mode !== "others"}
+                  othersLayout={mode === "others"}
                 />
               ))}
             </div>

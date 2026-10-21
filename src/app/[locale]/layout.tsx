@@ -133,11 +133,11 @@ img,video{max-width:100%;height:auto;display:block;}
           <ProtectSiteImages />
           <main className="overflow-x-hidden">{children}</main>
           <Footer />
-          {isDraft ? (
+          {isDraft || process.env.NODE_ENV !== "production" ? (
             <>
-              <SanityLive onReconnect={false} onRestart={false} />
+              {isDraft ? <SanityLive onReconnect={false} onRestart={false} /> : null}
               <VisualEditing />
-              <DraftPreviewExtras draft />
+              {isDraft ? <DraftPreviewExtras draft /> : null}
             </>
           ) : null}
         </NextIntlClientProvider>

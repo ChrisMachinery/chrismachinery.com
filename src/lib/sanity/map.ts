@@ -402,6 +402,17 @@ export type SitePageDoc = {
   faq?: { question?: string; answer?: string }[];
   included?: string[];
   customizable?: string[];
+  othersCards?: {
+    _key?: string;
+    title?: string;
+    axle?: string;
+    length?: number;
+    width?: number;
+    year?: number;
+    slug?: string;
+    body?: string;
+    image?: unknown;
+  }[];
   arcGuideTitle?: string;
   arcGuideNote?: string;
   arcGuides?: { _key?: string; label?: string; body?: string; image?: unknown }[];
@@ -478,6 +489,17 @@ export function mapSitePage(doc: SitePageDoc) {
     faq: doc.faq,
     included: (doc.included ?? []).map((item) => vercelStegaClean(item)).filter(Boolean),
     customizable: (doc.customizable ?? []).map((item) => vercelStegaClean(item)).filter(Boolean),
+    othersCards: (doc.othersCards ?? []).map((item) => ({
+      _key: item._key,
+      title: item.title ? vercelStegaClean(item.title) : undefined,
+      axle: item.axle ? vercelStegaClean(item.axle) : undefined,
+      length: item.length,
+      width: item.width,
+      year: item.year,
+      slug: item.slug ? vercelStegaClean(item.slug) : undefined,
+      body: item.body ? vercelStegaClean(item.body) : undefined,
+      imageUrl: imageUrl(item.image, 1200),
+    })),
     arcGuideTitle: doc.arcGuideTitle ? vercelStegaClean(doc.arcGuideTitle) : undefined,
     arcGuideNote: doc.arcGuideNote ? vercelStegaClean(doc.arcGuideNote) : undefined,
     customerPhotosTitle: doc.customerPhotosTitle,

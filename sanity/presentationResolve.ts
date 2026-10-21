@@ -17,6 +17,13 @@ function routes(pattern: string) {
 export const presentationResolve = {
   mainDocuments: defineDocuments([
     {
+      route: routes("/products/others/:slug"),
+      resolve: () => ({
+        filter: `_type == "sitePage" && path == $path`,
+        params: { path: "/products/others" },
+      }),
+    },
+    {
       route: routes("/products/:series/:slug"),
       filter: `_type == "product" && slug.current == $slug`,
     },

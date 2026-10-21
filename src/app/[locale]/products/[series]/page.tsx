@@ -18,6 +18,7 @@ import { localizedAirstreamGuide, localizedCapsuleGuide, localizedPodGuide, loca
 import type { Product } from "@/data/products";
 import type { Metadata } from "next";
 import { withCanonical } from "@/lib/seoCanonical";
+import { resolveOthersCatalog } from "@/lib/othersCatalog";
 
 export const revalidate = 60;
 
@@ -78,6 +79,7 @@ export default async function SeriesPage({
   const title = seriesCopy.title;
   const blurb = seriesCopy.blurb;
   const page = await getSitePage(`/products/${series}`);
+  const othersCatalog = isOthers ? resolveOthersCatalog(page?._id, page?.othersCards) : [];
   const s = (path: string, text: string) => stegaText(page?._id, "sitePage", path, text);
   const airstreamGuide = localizedAirstreamGuide[locale] ?? AIRSTREAM_ARC_GUIDE_DEFAULTS;
   const podGuide = localizedPodGuide[locale] ?? POD_SHAPE_GUIDE_DEFAULTS;
@@ -172,8 +174,10 @@ export default async function SeriesPage({
         <div id="series-catalog" className="mt-10 scroll-mt-24">
           <ProductCatalog
             series={isOthers ? "others" : (series as "pod")}
-            items={items}
+            items={isOthers ? othersCatalog.map((row) => row.item) : items}
             mode={isOthers ? "others" : "filter"}
+            othersEdits={isOthers ? othersCatalog.map((row) => row.edit) : undefined}
+            othersDocumentId={isOthers ? page?._id : undefined}
           />
         </div>
       )}

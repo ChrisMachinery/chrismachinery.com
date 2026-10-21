@@ -68,6 +68,9 @@
   },
   "products": {
     "viewProduct": "Voir le produit",
+    "viewDetails": "Voir les détails",
+    "backToOthers": "Retour aux fabrications spéciales",
+    "othersBodyHint": "Cliquez pour rédiger l’histoire de ce produit. Entrée pour les sauts de ligne et **gras**.",
     "emptySeries": "Cette série n’a pas encore de modèles. Contactez-nous pour un sur-mesure.",
     "inStockEmpty": "Aucun modèle prêt à expédier pour le moment. Demandez un sur-mesure, ou revenez quand du stock sera listé.",
     "noMatch": "Aucun modèle. Ajustez les filtres.",

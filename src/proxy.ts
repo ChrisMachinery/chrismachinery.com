@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
+import { legacyPathRedirect } from "./lib/legacySiteRedirects";
 import { isProductDetailPath } from "./lib/productUrl";
 
 const intl = createMiddleware(routing);
@@ -11,6 +12,13 @@ export default function proxy(request: NextRequest) {
 
   if (pathname === "/en" || pathname.startsWith("/en/")) {
     url.pathname = pathname.slice(3) || "/";
+    return NextResponse.redirect(url, 301);
+  }
+
+  const legacy = legacyPathRedirect(pathname);
+  if (legacy) {
+    url.pathname = legacy;
+    url.search = "";
     return NextResponse.redirect(url, 301);
   }
 

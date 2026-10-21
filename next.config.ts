@@ -1,5 +1,6 @@
 import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { legacyFileRedirects } from "./src/lib/legacySiteRedirects";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -50,6 +51,7 @@ const nextConfig: NextConfig = {
       { source: "/fr/products/ny/:slug", destination: "/fr/products/capsule/:slug", permanent: true },
       { source: "/ar/products/ny", destination: "/ar/products/capsule", permanent: true },
       { source: "/ar/products/ny/:slug", destination: "/ar/products/capsule/:slug", permanent: true },
+      ...legacyFileRedirects(),
     ];
   },
   async headers() {

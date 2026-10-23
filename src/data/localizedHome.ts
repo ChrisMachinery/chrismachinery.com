@@ -233,7 +233,7 @@ export const localizedTestimonials: Record<string, string[]> = {
 export const solutionTitles: Record<string, Record<string, string>> = {
   fr: {
     "coffee-shop": "Café",
-    "beer-container": "Conteneur bière",
+    "beer-trailer": "Conteneur bière",
     "burger-station": "Station burgers",
     "ice-cream-trailer": "Glaces",
     "pizza-trailer": "Trailer pizza",
@@ -241,7 +241,7 @@ export const solutionTitles: Record<string, Record<string, string>> = {
   },
   es: {
     "coffee-shop": "Cafetería",
-    "beer-container": "Contenedor de cerveza",
+    "beer-trailer": "Contenedor de cerveza",
     "burger-station": "Estación burger",
     "ice-cream-trailer": "Helados",
     "pizza-trailer": "Trailer de pizza",
@@ -249,7 +249,7 @@ export const solutionTitles: Record<string, Record<string, string>> = {
   },
   ar: {
     "coffee-shop": "مقهى",
-    "beer-container": "حاوية بيرة",
+    "beer-trailer": "حاوية بيرة",
     "burger-station": "محطة برغر",
     "ice-cream-trailer": "آيس كريم",
     "pizza-trailer": "مقطورة بيتزا",

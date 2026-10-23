@@ -288,9 +288,17 @@ export async function getSolutions() {
   });
 }
 
+const BEER_SOLUTION_SLUGS = new Set(["beer-container", "beer-trailer", "mobile-beer-bar-trailer"]);
+
 export async function getSolution(slug: string) {
   const items = await getSolutions();
-  return items.find((item) => item.slug === slug) ?? null;
+  const needle = slug.trim();
+  const exact = items.find((item) => item.slug === needle);
+  if (exact) return exact;
+  if (BEER_SOLUTION_SLUGS.has(needle)) {
+    return items.find((item) => BEER_SOLUTION_SLUGS.has(item.slug)) ?? null;
+  }
+  return null;
 }
 
 const getStockBoardDoc = cache(async () =>

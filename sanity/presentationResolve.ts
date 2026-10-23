@@ -33,7 +33,21 @@ export const presentationResolve = {
     },
     {
       route: routes("/solutions/:slug"),
-      filter: `_type == "solution" && slug.current == $slug`,
+      resolve: ({ params }) => {
+        const slug = String(params.slug || "").trim();
+        const beer = ["beer-container", "beer-trailer", "mobile-beer-bar-trailer"];
+        if (beer.includes(slug)) {
+          return {
+            filter: `_type == "solution" && (
+              string::trim(slug.current) in ["beer-trailer", "beer-container", "mobile-beer-bar-trailer"]
+            )`,
+          };
+        }
+        return {
+          filter: `_type == "solution" && string::trim(slug.current) == $slug`,
+          params: { slug },
+        };
+      },
     },
     {
       route: routes("/products/:series"),
@@ -111,7 +125,16 @@ export const presentationResolve = {
     solution: defineLocations({
       select: { title: "title", slug: "slug.current" },
       resolve: (doc) => ({
-        locations: [{ title: doc?.title || "Solution", href: `/solutions/${doc?.slug}` }],
+        locations: [
+          {
+            title: doc?.title || "Solution",
+            href: `/solutions/${
+              ["beer-container", "mobile-beer-bar-trailer"].includes(String(doc?.slug || "").trim())
+                ? "beer-trailer"
+                : String(doc?.slug || "").trim()
+            }`,
+          },
+        ],
       }),
     }),
     customizeCatalog: defineLocations({

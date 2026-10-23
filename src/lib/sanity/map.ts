@@ -653,8 +653,8 @@ export function mapSanitySolution(doc: SanitySolutionDoc) {
 
   return {
     _id: doc._id?.replace(/^drafts\./, ""),
-    slug: doc.slug,
-    name: doc.title,
+    slug: vercelStegaClean(doc.slug || "").trim(),
+    name: vercelStegaClean(doc.title || "").trim(),
     recommended: doc.recommendedSlugs ?? [],
     recommendedProducts: fromModels.length ? fromModels : fromRefs,
     equipmentIds,

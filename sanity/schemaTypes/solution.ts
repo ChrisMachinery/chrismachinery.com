@@ -21,6 +21,14 @@ export const solution = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "content",
+      title: "Read article 正文",
+      type: "array",
+      description:
+        "点 Solutions 卡片上的 Read article 之后看到的长文，约 800–1500 词。不要写在下面的卡片摘要里。空则前台显示默认英文稿。",
+      of: [{ type: "block" }, { type: "image", options: { hotspot: siteImageHotspot }, fields: [imageAltField] }],
+    }),
+    defineField({
       name: "recommendedModels",
       title: "Recommended models",
       type: "array",
@@ -68,10 +76,10 @@ export const solution = defineType({
     }),
     defineField({
       name: "lede",
-      title: "目录卡片摘要",
+      title: "目录卡片摘要（不是文章）",
       type: "text",
       rows: 3,
-      description: "写在 /solutions 卡片上，一两句。点进卡片才是 800–1500 词正文。",
+      description: "只出现在 /solutions 目录卡片上，一两句。长文请写上面的「Read article 正文」。",
     }),
     defineField({
       name: "sceneImage",
@@ -107,13 +115,6 @@ export const solution = defineType({
       title: "Description (legacy)",
       type: "text",
       hidden: true,
-    }),
-    defineField({
-      name: "content",
-      title: "文章正文（约 800–1500 词）",
-      type: "array",
-      description: "点进目录卡片后的长文。空则网站用英文默认章。不要把长文写在卡片摘要里。",
-      of: [{ type: "block" }, { type: "image", options: { hotspot: siteImageHotspot }, fields: [imageAltField] }],
     }),
     defineField({
       name: "featuredProducts",

@@ -5,7 +5,7 @@ import { getCustomizeOptions, getSolution, getSolutions } from "@/lib/sanity/fet
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { MarkdownBody } from "@/components/media/MarkdownBody";
 import { PortableText } from "@/components/sanity/PortableText";
-import { cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
+import { cmsImageEdit, cmsEdit, plainText, stegaText } from "@/lib/sanity/visual";
 import { equipmentPackageTotal, withSearchParams } from "@/lib/solutionQuote";
 import { uiText } from "@/lib/i18nCopy";
 import { solutionTitles } from "@/data/localizedHome";
@@ -84,11 +84,15 @@ export default async function SolutionArticlePage({
         className="mt-8 min-h-56 w-full rounded-lg"
         src={item.imageUrl}
       />
-      <div className="mt-8" {...cmsEdit(item._id, "solution", "content")}>
+      <div className="mt-8 min-h-48" {...(cmsImageEdit(item._id, "solution", "content") ?? cmsEdit(item._id, "solution", "content"))}>
         {hasCmsBody ? (
           <PortableText value={item.content} documentId={item._id} documentType="solution" pathPrefix="content" />
-        ) : (
+        ) : item.articleBody?.trim() ? (
           <MarkdownBody text={item.articleBody} />
+        ) : (
+          <p className="type-body rounded border border-dashed border-black/15 p-6 text-black/45">
+            Click to write the Read article body (about 800–1500 words). The short line above is only the catalog card summary.
+          </p>
         )}
       </div>
 

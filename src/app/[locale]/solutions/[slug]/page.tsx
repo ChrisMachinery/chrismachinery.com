@@ -84,17 +84,22 @@ export default async function SolutionArticlePage({
         className="mt-8 min-h-56 w-full rounded-lg"
         src={item.imageUrl}
       />
-      <div className="mt-8 min-h-48" {...(cmsImageEdit(item._id, "solution", "content") ?? cmsEdit(item._id, "solution", "content"))}>
-        {hasCmsBody ? (
+      {hasCmsBody ? (
+        <div className="mt-8">
           <PortableText value={item.content} documentId={item._id} documentType="solution" pathPrefix="content" />
-        ) : item.articleBody?.trim() ? (
+        </div>
+      ) : item.articleBody?.trim() ? (
+        <div className="mt-8">
           <MarkdownBody text={item.articleBody} />
-        ) : (
-          <p className="type-body rounded border border-dashed border-black/15 p-6 text-black/45">
-            Click to write the Read article body (about 800–1500 words). The short line above is only the catalog card summary.
-          </p>
-        )}
-      </div>
+        </div>
+      ) : (
+        <p
+          className="type-body mt-8 min-h-48 rounded border border-dashed border-black/15 p-6 text-black/45"
+          {...(cmsImageEdit(item._id, "solution", "content") ?? cmsEdit(item._id, "solution", "content"))}
+        >
+          Click to write the Read article body (about 800–1500 words). The short line above is only the catalog card summary.
+        </p>
+      )}
 
       <section className="mt-14 rounded-2xl border border-black/10 bg-white p-5">
         <h2 className="type-section">{t("solutions.recommendedModels")}</h2>

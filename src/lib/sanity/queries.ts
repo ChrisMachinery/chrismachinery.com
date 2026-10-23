@@ -254,7 +254,15 @@ const solutionFields = `
   equipment,
   advice,
   lede,
-  content,
+  content[]{
+    ...,
+    _type,
+    _key,
+    style,
+    listItem,
+    markDefs[]{..., _key, _type, href},
+    children[]{..., _key, _type, text, marks}
+  },
   recommendedSlugs,
   recommendedModels[]{
     label,

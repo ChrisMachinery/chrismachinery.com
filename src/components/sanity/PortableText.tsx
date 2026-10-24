@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { imageUrl } from "@/lib/sanity/client";
+import { looksLikeArticleHeading } from "@/lib/articleHeading";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 
 type Span = { _type?: string; _key?: string; text?: string; marks?: string[] };
@@ -20,7 +21,7 @@ function applyMarks(node: ReactNode, marks: string[] | undefined, markDefs: Mark
   for (const mark of marks ?? []) {
     if (mark === "strong") {
       result = (
-        <strong key={`${key}-s`} className="font-semibold text-brand">
+        <strong key={`${key}-s`} className="font-semibold [font-size:inherit] [line-height:inherit]">
           {result}
         </strong>
       );
@@ -76,10 +77,11 @@ function lineText(spans: Span[]) {
 
 function lineLooksLikeHeading(spans: Span[]) {
   const text = lineText(spans).trim();
-  if (!text || text.length > 140) return false;
-  if (/^\d+\.\s+\S/.test(text)) return true;
+  if (/^\d+\.\s+\S/.test(text)) return looksLikeArticleHeading(text);
   const marked = spans.filter((span) => (span.text ?? "").trim());
-  return marked.length > 0 && marked.every((span) => (span.marks ?? []).includes("strong"));
+  const allStrong = marked.length > 0 && marked.every((span) => (span.marks ?? []).includes("strong"));
+  if (!allStrong) return false;
+  return looksLikeArticleHeading(text);
 }
 
 function Inline({
@@ -156,7 +158,7 @@ function ParagraphsFromSpans({
             const className = heading
               ? i === 0 && g === 0
                 ? "type-section mt-2"
-                : "type-h3 mt-6 mb-1.5"
+                : "type-h3 mt-8"
               : "type-body mt-3";
             return (
               <Tag key={i} className={className}>
@@ -179,7 +181,7 @@ function ParagraphsFromSpans({
 function headingClass(style?: string) {
   if (style === "h1") return "type-page mt-10";
   if (style === "h2") return "type-section mt-8";
-  if (style === "h3" || style === "h4") return "type-h3 mt-6 mb-1.5";
+  if (style === "h3" || style === "h4") return "type-h3 mt-8";
   return "";
 }
 
@@ -318,5 +320,5 @@ export function PortableText({
     index += 1;
   }
 
-  return <div className="space-y-1">{nodes}</div>;
+  return <div className="article-prose space-y-1">{nodes}</div>;
 }

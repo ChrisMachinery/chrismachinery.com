@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
 import { getBlogPost, getBlogPosts } from "@/lib/sanity/fetch";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
+import { MarkdownBody } from "@/components/media/MarkdownBody";
 import { PortableText } from "@/components/sanity/PortableText";
 import { SITE_URL } from "@/lib/site";
 import { plainText, stegaText } from "@/lib/sanity/visual";
@@ -30,24 +31,6 @@ export async function generateMetadata({
   return withCanonical(locale, `/blog/${post.slug}`, {
     title: `${post.title} | Chris Machinery`,
     description: post.excerpt,
-  });
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function renderMarkdown(body: string) {
-  return body.split("\n").map((line, i) => {
-    if (line.startsWith("## ")) return <h2 key={i} className="type-section mt-8">{line.slice(3)}</h2>;
-    if (line.startsWith("- ")) return <li key={i} className="ms-5 list-disc">{line.slice(2)}</li>;
-    if (!line.trim()) return <br key={i} />;
-    const html = escapeHtml(line).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    return <p key={i} className="type-body mt-3" dangerouslySetInnerHTML={{ __html: html }} />;
   });
 }
 
@@ -119,7 +102,7 @@ export default async function BlogPostPage({
         {post.bodyBlocks?.length ? (
           <PortableText value={post.bodyBlocks} documentId={post._id} documentType="blogPost" />
         ) : (
-          renderMarkdown(s("body", post.body))
+          <MarkdownBody text={s("body", post.body)} />
         )}
       </div>
       {post.category === "Case Study" ? (

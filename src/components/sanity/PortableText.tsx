@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ImgPlaceholder } from "@/components/media/ImgPlaceholder";
 import { imageUrl } from "@/lib/sanity/client";
-import { looksLikeArticleHeading } from "@/lib/articleHeading";
+import { articleHeadingClass, looksLikeArticleHeading } from "@/lib/articleHeading";
 import { cmsEdit, stegaText } from "@/lib/sanity/visual";
 
 type Span = { _type?: string; _key?: string; text?: string; marks?: string[] };
@@ -77,11 +77,9 @@ function lineText(spans: Span[]) {
 
 function lineLooksLikeHeading(spans: Span[]) {
   const text = lineText(spans).trim();
-  if (/^\d+\.\s+\S/.test(text)) return looksLikeArticleHeading(text);
   const marked = spans.filter((span) => (span.text ?? "").trim());
   const allStrong = marked.length > 0 && marked.every((span) => (span.marks ?? []).includes("strong"));
-  if (!allStrong) return false;
-  return looksLikeArticleHeading(text);
+  return looksLikeArticleHeading(text, allStrong);
 }
 
 function Inline({
@@ -122,6 +120,7 @@ function ParagraphsFromSpans({
   documentType,
   path,
   edit,
+  takeHeading,
 }: {
   spans: Span[];
   markDefs?: MarkDef[];
@@ -129,6 +128,7 @@ function ParagraphsFromSpans({
   documentType?: string;
   path: string;
   edit?: ReturnType<typeof cmsEdit>;
+  takeHeading: () => boolean;
 }) {
   const lines = spansToLines(spans);
   const groups: Span[][][] = [];
@@ -154,12 +154,9 @@ function ParagraphsFromSpans({
         <div key={g} className={g === 0 ? undefined : "mt-4"} {...edit}>
           {group.map((line, i) => {
             const heading = lineLooksLikeHeading(line);
-            const Tag = heading ? (i === 0 && g === 0 ? "h2" : "h3") : "p";
-            const className = heading
-              ? i === 0 && g === 0
-                ? "type-section mt-2"
-                : "type-h3 mt-8"
-              : "type-body mt-3";
+            const isLead = heading ? takeHeading() : false;
+            const Tag = heading ? (isLead ? "h2" : "h3") : "p";
+            const className = heading ? articleHeadingClass(isLead) : "type-body mt-3";
             return (
               <Tag key={i} className={className}>
                 <Inline
@@ -176,13 +173,6 @@ function ParagraphsFromSpans({
       ))}
     </>
   );
-}
-
-function headingClass(style?: string) {
-  if (style === "h1") return "type-page mt-10";
-  if (style === "h2") return "type-section mt-8";
-  if (style === "h3" || style === "h4") return "type-h3 mt-8";
-  return "";
 }
 
 function isTextBlock(block: Block) {
@@ -204,6 +194,12 @@ export function PortableText({
 
   const nodes: ReactNode[] = [];
   let index = 0;
+  let headingCount = 0;
+  const takeHeading = () => {
+    headingCount += 1;
+    return headingCount === 1;
+  };
+
   while (index < value.length) {
     const block = value[index] as Block;
     const key = block._key ?? String(index);
@@ -276,6 +272,7 @@ export function PortableText({
           documentType={documentType}
           path={path}
           edit={edit}
+          takeHeading={takeHeading}
         />,
       );
       index += 1;
@@ -291,18 +288,13 @@ export function PortableText({
         path={path}
       />
     );
-    const heading = headingClass(block.style);
-    if (block.style === "h1" || block.style === "h2") {
+    if (block.style === "h1" || block.style === "h2" || block.style === "h3" || block.style === "h4") {
+      const isLead = takeHeading();
+      const Tag = isLead ? "h2" : "h3";
       nodes.push(
-        <h2 key={key} className={heading} {...edit}>
+        <Tag key={key} className={articleHeadingClass(isLead)} {...edit}>
           {inline}
-        </h2>,
-      );
-    } else if (block.style === "h3" || block.style === "h4") {
-      nodes.push(
-        <h3 key={key} className={heading} {...edit}>
-          {inline}
-        </h3>,
+        </Tag>,
       );
     } else if (block.style === "blockquote") {
       nodes.push(

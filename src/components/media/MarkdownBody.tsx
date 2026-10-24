@@ -1,4 +1,4 @@
-import { looksLikeArticleHeading, unwrapMarkdownBoldLine } from "@/lib/articleHeading";
+import { articleHeadingClass, looksLikeArticleHeading, unwrapMarkdownBoldLine } from "@/lib/articleHeading";
 
 function escapeHtml(value: string) {
   return value
@@ -20,11 +20,19 @@ function withInlineBold(html: string) {
 }
 
 export function MarkdownBody({ text }: { text: string }) {
+  let headingCount = 0;
   return (
     <div className="article-prose">
       {text.split("\n").map((line, i) => {
-        if (line.startsWith("## ")) return <h2 key={i} className="type-section mt-8">{line.slice(3)}</h2>;
-        if (line.startsWith("### ")) return <h3 key={i} className="type-h3 mt-8">{line.slice(4)}</h3>;
+        if (line.startsWith("## ") || line.startsWith("### ")) {
+          const isLead = ++headingCount === 1;
+          const Tag = isLead ? "h2" : "h3";
+          return (
+            <Tag key={i} className={articleHeadingClass(isLead)}>
+              {line.replace(/^#{2,3}\s+/, "")}
+            </Tag>
+          );
+        }
         if (line.startsWith("- ")) {
           return (
             <li
@@ -37,10 +45,14 @@ export function MarkdownBody({ text }: { text: string }) {
         if (!line.trim()) return <br key={i} />;
         const boldTitle = unwrapMarkdownBoldLine(line);
         const headingSource = boldTitle ?? line;
-        if (looksLikeArticleHeading(headingSource) && (boldTitle || /^\d+\.\s+\S/.test(line))) {
-          const Tag = i === 0 || !/^\d+\.\s+\S/.test(headingSource) ? "h2" : "h3";
-          const className = Tag === "h2" ? "type-section mt-8" : "type-h3 mt-8";
-          return <Tag key={i} className={className}>{headingSource}</Tag>;
+        if (looksLikeArticleHeading(headingSource, Boolean(boldTitle))) {
+          const isLead = ++headingCount === 1;
+          const Tag = isLead ? "h2" : "h3";
+          return (
+            <Tag key={i} className={articleHeadingClass(isLead)}>
+              {headingSource}
+            </Tag>
+          );
         }
         return (
           <p

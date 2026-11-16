@@ -300,9 +300,11 @@ export function mapSanityProduct(doc: SanityProductDoc): Product {
 const categories = ["Buying Guide", "Industry News", "Case Study"] as const;
 
 export function mapSanityPost(doc: SanityPostDoc): Post {
-  const tag = doc.tags?.find((item) => categories.includes(item as (typeof categories)[number]));
-  const category = categories.includes(doc.category as (typeof categories)[number])
-    ? (doc.category as Post["category"])
+  const rawCategory = vercelStegaClean(doc.category || "");
+  const tags = doc.tags?.map((item) => vercelStegaClean(item));
+  const tag = tags?.find((item) => categories.includes(item as (typeof categories)[number]));
+  const category = categories.includes(rawCategory as (typeof categories)[number])
+    ? (rawCategory as Post["category"])
     : ((tag as Post["category"]) ?? "Industry News");
   return {
     _id: doc._id?.replace(/^drafts\./, ""),
@@ -315,7 +317,7 @@ export function mapSanityPost(doc: SanityPostDoc): Post {
     body: "",
     coverUrl: imageUrl(doc.coverImage),
     bodyBlocks: doc.body,
-    tags: doc.tags,
+    tags,
   };
 }
 

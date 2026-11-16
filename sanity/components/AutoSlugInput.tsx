@@ -5,7 +5,7 @@ function toSlug(title: string) {
   return title
     .trim()
     .toLowerCase()
-    .replace(/['’]/g, "")
+    .replace(/['’"]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 96);
@@ -14,13 +14,15 @@ function toSlug(title: string) {
 export function AutoSlugInput(props: SlugInputProps) {
   const title = useFormValue(["title"]);
   const current = props.value?.current;
+  const readOnly = Boolean(props.readOnly);
 
   useEffect(() => {
+    if (readOnly) return;
     if (current || typeof title !== "string" || !title.trim()) return;
     const next = toSlug(title);
     if (!next) return;
     props.onChange(PatchEvent.from(set({ _type: "slug", current: next })));
-  }, [current, title, props]);
+  }, [current, readOnly, title, props]);
 
   return <SlugInput {...props} />;
 }

@@ -96,17 +96,32 @@ export const blogPostsQuery = `*[_type == "blogPost" && defined(slug.current)] |
   category
 }`;
 
-export const blogPostBySlugQuery = `*[_type == "blogPost" && lower(slug.current) == lower($slug)][0] {
+const blogPostFields = `
   _id,
   title,
   "slug": slug.current,
   coverImage,
   excerpt,
-  body,
+  body[]{
+    ...,
+    _type, _key, style, listItem,
+    markDefs[]{..., _key, _type, href},
+    children[]{..., _key, _type, text, marks}
+  },
   author,
   publishedAt,
   tags,
   category
+`;
+
+export const blogPostBySlugQuery = `*[_type == "blogPost" && lower(slug.current) == lower($slug)][0] {
+  ${blogPostFields}
+}`;
+
+export const blogPostIdsBySlugQuery = `*[_type == "blogPost" && lower(slug.current) == lower($slug)]._id`;
+
+export const blogPostByIdQuery = `*[_id == $id][0] {
+  ${blogPostFields}
 }`;
 
 export const pageContentQuery = `*[

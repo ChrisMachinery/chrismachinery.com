@@ -29,7 +29,9 @@ import {
   type SitePageDoc,
 } from "./map";
 import {
+  blogPostByIdQuery,
   blogPostBySlugQuery,
+  blogPostIdsBySlugQuery,
   blogPostsQuery,
   pageContentQuery,
   productBySlugQuery,
@@ -329,8 +331,31 @@ export async function getBlogPosts() {
 
 export async function getBlogPost(slug: string) {
   const needle = slug.trim().toLowerCase();
-  const doc = await querySanity<SanityPostDoc | null>(blogPostBySlugQuery, { slug: needle }, { useCdn: false });
-  if (doc?.slug) return mapSanityPost(doc);
+  const published = await querySanity<SanityPostDoc | null>(blogPostBySlugQuery, { slug: needle }, { useCdn: false });
+  if (published?._id) return mapSanityPost(published);
+
+  const preferDraft = (await isDraftModeEnabled()) || process.env.NODE_ENV === "development";
+  const token = process.env.SANITY_API_WRITE_TOKEN || process.env.SANITY_API_READ_TOKEN;
+  if (preferDraft && token) {
+    try {
+      const raw = client.withConfig({ token, useCdn: false, perspective: "raw", stega: false });
+      const ids = await withTimeout(
+        raw.fetch<string[]>(blogPostIdsBySlugQuery, { slug: needle }),
+        FETCH_TIMEOUT_MS,
+      );
+      const pick = ids?.find((id) => id.startsWith("drafts.")) || ids?.[0];
+      if (pick) {
+        const doc = await withTimeout(
+          raw.fetch<SanityPostDoc | null>(blogPostByIdQuery, { id: pick }),
+          FETCH_TIMEOUT_MS,
+        );
+        if (doc?._id) return mapSanityPost(doc);
+      }
+    } catch {
+      /* local fallback below */
+    }
+  }
+
   const local = localPosts.find((item) => item.slug.toLowerCase() === needle);
   return local ? { ...local, _id: `post-${local.slug}` } : undefined;
 }

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PreviewNavLink } from "@/components/layout/PreviewNavLink";
@@ -13,18 +14,15 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { withCanonical } from "@/lib/seoCanonical";
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
+  await connection();
   const { locale, slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) return {};
@@ -40,6 +38,7 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
+  await connection();
   setRequestLocale(locale);
   const t = await getTranslations();
   const post = await getBlogPost(slug);
@@ -92,11 +91,6 @@ export default async function BlogPostPage({
       <p className="mt-6 text-sm">
         {s("publishedAt", post.date)} · {s("author", post.author)} · {s("category", post.category)}
       </p>
-      {post.category === "Case Study" ? (
-        <p className="type-body mt-2">
-          Shipping case: country, menu, and the unit we built. Other Case Studies live in the Blog filter — not on Solutions.
-        </p>
-      ) : null}
       <h1 className="type-page mt-2">{s("title", post.title)}</h1>
       <div className="mt-6">
         {post.bodyBlocks?.length ? (

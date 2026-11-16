@@ -29,7 +29,16 @@ export const presentationResolve = {
     },
     {
       route: routes("/blog/:slug"),
-      filter: `_type == "blogPost" && slug.current == $slug`,
+      resolve: ({ params }) => {
+        const slug = String(params.slug || "").trim();
+        return {
+          filter: `_type == "blogPost" && (
+            lower(string::trim(slug.current)) == lower($slug) ||
+            _id in *[_type == "blogPost" && lower(string::trim(slug.current)) == lower($slug)]._id
+          )`,
+          params: { slug },
+        };
+      },
     },
     {
       route: routes("/solutions/:slug"),
@@ -119,7 +128,9 @@ export const presentationResolve = {
     blogPost: defineLocations({
       select: { title: "title", slug: "slug.current" },
       resolve: (doc) => ({
-        locations: [{ title: doc?.title || "Blog post", href: `/blog/${doc?.slug}` }],
+        locations: [
+          { title: doc?.title || "Blog post", href: `/blog/${String(doc?.slug || "").trim()}` },
+        ],
       }),
     }),
     solution: defineLocations({

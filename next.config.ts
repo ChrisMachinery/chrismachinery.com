@@ -55,6 +55,10 @@ const nextConfig: NextConfig = {
       { source: "/es/solutions/mobile-beer-bar-trailer", destination: "/es/solutions/beer-trailer", permanent: true },
       { source: "/fr/solutions/mobile-beer-bar-trailer", destination: "/fr/solutions/beer-trailer", permanent: true },
       { source: "/ar/solutions/mobile-beer-bar-trailer", destination: "/ar/solutions/beer-trailer", permanent: true },
+      { source: "/blog/wvta", destination: "/blog/square-trailer-compare", permanent: true },
+      { source: "/es/blog/wvta", destination: "/es/blog/square-trailer-compare", permanent: true },
+      { source: "/fr/blog/wvta", destination: "/fr/blog/square-trailer-compare", permanent: true },
+      { source: "/ar/blog/wvta", destination: "/ar/blog/square-trailer-compare", permanent: true },
       ...legacyFileRedirects(),
     ];
   },
